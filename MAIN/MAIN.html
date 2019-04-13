@@ -1,0 +1,143 @@
+<!DOCTYPE HTML>
+<HTML>
+
+<HEAD>
+    <LINK REL="stylesheet" TYPE="text/css" HREF="CSS/MAIN.css" />
+</HEAD>
+
+<BODY>
+    <DIV ID="MAIN-BOARD">
+        <DIV ID="CONFIGURATION">
+            <DIV ID="CONFIGURATION-HEADER">
+                <H1 ID="CONFIGURATION-TITLE">
+                    Configuration
+                </H1>
+                <DIV ID="CONFIGURATION-TABS">
+                    <BUTTON ID="ROLES-TITLE" CLASS="CONFIGURATION-TABS CONFIGURATION-DEFAULT" onclick="CONFIGURATION_TABS_OPEN('CONFIGURATION-CONTENTS-ROLES', this)">
+                        Roles
+                        </H2>
+                        <BUTTON ID="SETTINGS-TITLE" CLASS="CONFIGURATION-TABS" onclick="CONFIGURATION_TABS_OPEN('CONFIGURATION-CONTENTS-SETTINGS', this)">
+                            Settings
+                            </H2>
+                </DIV>
+            </DIV>
+            <DIV ID="CONFIGURATION-CONTENTS">
+                <DIV ID="CONFIGURATION-CONTENTS-ROLES" CLASS="CONFIGURATION-CONTENTS">
+                    <FIELDSET ID="ROLES-FIELDSET">
+                        <FORM ID="ROLES-FORM">
+                        </FORM>
+                    </FIELDSET>
+                </DIV>
+                <DIV ID="CONFIGURATION-CONTENTS-SETTINGS" CLASS="CONFIGURATION-CONTENTS">
+                    <FORM ID="SETTINGS-FORM">
+                    </FORM>
+                </DIV>
+                <BUTTON TYPE="button" CLASS="CONFIGURATION-SEATS" ID="SEATS-SIT" onclick="CONFIGURATION_SEATS_CLICK('SEATS-STAND');">
+                    Sit
+                </BUTTON>
+                <BUTTON TYPE="button" CLASS="CONFIGURATION-SEATS" ID="SEATS-STAND" onclick="CONFIGURATION_SEATS_CLICK('SEATS-SIT');">
+                    Stand
+                </BUTTON>
+                <BUTTON TYPE="button" ID="CONTENTS-BUTTON-ON">
+                    Start Game
+                </BUTTON>
+                <SPAN ID="CONTENTS-BUTTON-OFF">
+                    Not Table Leader
+                </SPAN>
+            </DIV>
+        </DIV>
+        <DIV ID="GAME">
+            <DIV ID="DISPLAY">
+                <DIV ID="DISPLAY-CENTER">
+                    <H1 ID="CENTER-TITLE">
+                        Center Cards
+                    </H1>
+                    <DIV ID="CENTER-CONTENTS">
+                        <BUTTON CLASS="CARD-GRID">
+                            <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
+                            <DIV CLASS="CARD-PLACEHOLDER"></DIV>
+                        </BUTTON>
+                        <BUTTON CLASS="CARD-GRID">
+                            <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
+                            <DIV CLASS="CARD-PLACEHOLDER"></DIV>
+                        </BUTTON>
+                        <BUTTON CLASS="CARD-GRID">
+                            <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
+                            <DIV CLASS="CARD-PLACEHOLDER"></DIV>
+                        </BUTTON>
+                    </DIV>
+                </DIV>
+                <DIV ID="DISPLAY-PLAYERS">
+                    <H1 ID="PLAYERS-TITLE">
+                        Player Seats
+                    </H1>
+                    <DIV ID="PLAYERS-CONTENTS">
+                        <DIV CLASS="PLAYERS-CONTENTS">
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID">
+                                <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
+                                <DIV CLASS="CARD-PLACEHOLDER"></DIV>
+                            </BUTTON>
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID">
+                                <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
+                                <DIV CLASS="CARD-PLACEHOLDER"></DIV>
+                            </BUTTON>
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID">
+                                <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
+                                <DIV CLASS="CARD-PLACEHOLDER"></DIV>
+                            </BUTTON>
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID">
+                                <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
+                                <DIV CLASS="CARD-PLACEHOLDER"></DIV>
+                            </BUTTON>
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID">
+                                <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
+                                <DIV CLASS="CARD-PLACEHOLDER"></DIV>
+                            </BUTTON>
+                        </DIV>
+                        <DIV CLASS="PLAYERS-CONTENTS">
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID">
+                                <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
+                                <DIV CLASS="CARD-PLACEHOLDER"></DIV>
+                            </BUTTON>
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID">
+                                <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
+                                <DIV CLASS="CARD-PLACEHOLDER"></DIV>
+                            </BUTTON>
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID">
+                                <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
+                                <DIV CLASS="CARD-PLACEHOLDER"></DIV>
+                            </BUTTON>
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID">
+                                <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
+                                <DIV CLASS="CARD-PLACEHOLDER"></DIV>
+                            </BUTTON>
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID">
+                                <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
+                                <DIV CLASS="CARD-PLACEHOLDER"></DIV>
+                            </BUTTON>
+                        </DIV>
+                    </DIV>
+                </DIV>
+            </DIV>
+            <DIV ID="STATUS">
+                <SPAN ID="STATUS-TITLE">Current Status Here.</SPAN>
+                <DIV ID="STATUS-HEADER">
+                    <SPAN ID="STATUS-TIME">00:00</SPAN>
+                    <SPAN ID="STATUS-SUBTITLE">Stuff</SPAN>
+                </DIV>
+                <DIV ID="STATUS-CONTENTS">
+                    <SPAN ID="STATUS-DESCRIPTION">
+                        Lorem Ipsum
+                    </SPAN>
+                </DIV>
+            </DIV>
+        </DIV>
+    </DIV>
+    <DIV ID="BOARD2">
+    </DIV>
+    <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/SOCKET.js"></SCRIPT>
+    <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/CONSTANTS.js"></SCRIPT>
+    <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/ROUTING.js"></SCRIPT>
+</BODY>
+
+</HTML>

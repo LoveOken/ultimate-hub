@@ -1,0 +1,399 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0px;
+}
+
+div {
+    overflow: auto;
+}
+
+button::-moz-focus-inner {
+    border: 0;
+}
+
+button:focus {
+    outline: 0;
+}
+
+#MAIN-BOARD {
+    position: absolute;
+    overflow: visible;
+    background-color: #1c1c1c;
+    color: #dedede;
+    width: 800px;
+    top: 0px;
+    bottom: 0px;
+    font-family: 'Roboto Slab', serif;
+}
+
+#MAIN-BOARD * {
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Chrome/Safari/Opera */
+    -khtml-user-select: none;
+    /* Konqueror */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently not supported by any browser */
+}
+
+#CONFIGURATION,
+#DISPLAY {
+    background-color: #1c1c1c;
+}
+
+#CONFIGURATION {
+    clip-path: polygon(0 0%, 0 120%, 100% 120%, 100% 0);
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 240px;
+    overflow: hidden;
+    box-shadow: 0px 1px 20px black;
+}
+
+#CONFIGURATION-TITLE {
+    font-size: 24px;
+    line-height: 24px;
+    vertical-align: middle;
+    display: block;
+    float: left;
+    margin: 0px;
+    padding: 5px 10px;
+    width: 60%;
+    height: 40px;
+}
+
+#CONFIGURATION-TABS {
+    display: block;
+    float: left;
+    width: 40%;
+    height: 40px;
+}
+
+#CONFIGURATION-TABS button {
+    font-family: 'Roboto Slab', serif;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 24px;
+    vertical-align: middle;
+    background-color: #3c3c3c;
+    color: #dedede;
+    text-align: left;
+    display: block;
+    float: left;
+    margin: 0px;
+    border: 0px;
+    padding: 5px 10px;
+    width: 50%;
+    height: 40px;
+    transition: background-color 0.5s;
+}
+
+#ROLES-FIELDSET {
+    display: block;
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+    width: 100%;
+    height: 160px;
+}
+
+#ROLES-FORM,
+#SETTINGS-FORM {
+    display: block;
+    background-color: #dedede;
+    overflow: hidden;
+    width: 100%;
+    height: 160px;
+}
+
+.ROLE-GRID {
+    display: inline-block;
+    text-align: center;
+    padding: 0px 5px;
+    width: 90px;
+    height: 140px;
+}
+
+#ROLES-FORM INPUT[TYPE=checkbox] {
+    display: none;
+}
+
+.CHECKMARK {
+  display: block;
+  margin: 8px auto 3px;
+  height: 15px;
+  width: 15px;
+  background-color: #eeeeee;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.ROLE-GRID:hover INPUT[TYPE=checkbox] ~.CHECKMARK {
+    background-color: #ffffff;    
+}
+
+.ROLE-GRID INPUT[TYPE=checkbox]:checked ~.CHECKMARK {
+    background-color: #4c4c4c;
+}
+
+.CHECKMARK:after {
+    content: "";
+    position: relative;
+    display: none;
+}
+
+.ROLE-GRID INPUT[TYPE=checkbox]:checked ~.CHECKMARK:after {
+    display: block;
+}
+
+.ROLE-GRID .CHECKMARK:after {
+    top: 2px;
+    left: 5px;
+    border: solid white;
+    border-width: 0px 3px 3px 0px;
+    width: 3px;
+    height: 6px;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+#ROLES-FIELDSET[DISABLED=true] .CHECKMARK {
+    background-color: #ff4336; 
+    
+}
+
+.CARD-SPRITE {
+    display: block;
+    border-radius: 5px;
+    border: 3px solid white;
+    width: 80px;
+    height: 108px;
+}
+
+.CONFIGURATION-SEATS {
+    display: block;
+    float: left;
+    font-family: 'Roboto Slab', serif;
+    font-weight: bold;
+    font-size: 15px;
+    line-height: 40px;
+    text-align: center;
+    background-color: #1c1c1c;
+    color: #dedede;
+    border: 0px;
+    padding: 0px;
+    width: 10%;
+    height: 40px;
+}
+
+#SEATS-SIT[disabled="true"] {
+    color: #FF4336;
+}
+
+#CONTENTS-BUTTON-ON {
+    font-family: 'Roboto Slab', serif;
+    font-size: 18px;
+    font-weight: bold;
+    font-style: oblique;
+    line-height: 18px;
+    vertical-align: middle;
+    background-color: #0066ff;
+    color: #dedede;
+    text-align: center;
+    display: none;
+    float: right;
+    margin: 0px;
+    border: 0px;
+    padding: 5px 10px;
+    width: 33%;
+    height: 40px;
+}
+
+#CONTENTS-BUTTON-OFF {
+    font-size: 18px;
+    font-weight: bold;
+    font-style: oblique;
+    line-height: 18px;
+    vertical-align: middle;
+    background-color: #ff4336;
+    color: #dedede;
+    text-align: center;
+    display: none;
+    /* Default is "display: block", use with player variables */
+    float: right;
+    margin: 0px;
+    border: 0px;
+    padding: 11px 10px;
+    width: 33%;
+    height: 40px;
+}
+
+#GAME {
+    overflow: visible;
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    top: 50px;
+}
+
+#DISPLAY {
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    height: 510px;
+    overflow: hidden;
+}
+
+#DISPLAY-CENTER,
+#DISPLAY-PLAYERS {
+    width: 100%;
+    height: 190px;
+}
+
+#DISPLAY-PLAYERS {
+    height: 320px;
+}
+
+#CENTER-TITLE,
+#PLAYERS-TITLE {
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 18px;
+    vertical-align: middle;
+    background-color: #151515;
+    color: #ffbf00;
+    text-align: center;
+    display: block;
+    margin: 0px;
+    padding: 11px 10px;
+    width: 100%;
+    height: 40px;
+}
+
+#PLAYERS-CONTENTS {
+    display: block;
+    height: 280px;
+    padding: 10px 0px;
+}
+
+#CENTER-CONTENTS,
+.PLAYERS-CONTENTS {
+    display: block;
+    padding: 0px 10px;
+    width: 100%;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    height: 130px;
+}
+
+#CENTER-CONTENTS {
+    height: 150px;
+    padding: 10px 0px;
+}
+
+.CARD-GRID {
+    font-family: 'Roboto Slab', serif;
+    background-color: #1c1c1c;
+    color: #dedede;
+    text-align: center;
+    display: inline-block;
+    margin: 0px;
+    border: 0px;
+    padding: 0px 5px;
+    width: 90px;
+    height: 130px;
+}
+
+.PLAYER-GRID {
+    display: none;
+}
+
+.CARD-NAME {
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 14px;
+    text-align: center;
+    letter-spacing: -1px;
+    display: block;
+    height: 14px;
+}
+
+.CARD-PLACEHOLDER {
+    width: 80px;
+    height: 108px;
+    border: 2px solid gray;
+    border-radius: 5px;
+}
+
+#STATUS {
+    clip-path: polygon(0 -20px, 0 100%, 100% 100%, 100% -20px);
+    position: relative;
+    z-index: 1;
+    background-color: #dedede;
+    width: 100%;
+    box-shadow: 0px 1px 20px black;
+}
+
+#STATUS-TITLE,
+#STATUS-TIME,
+#STATUS-SUBTITLE {
+    color: #1c1c1c;
+    font-size: 15px;
+    font-weight: bold;
+    font-style: oblique;
+    text-align: center;
+    line-height: 40px;
+    display: none; /* Block is Default */
+    width: 100%;
+    height: 40px;
+}
+
+#STATUS-TIME {
+    background-color: purple;
+    color: #dedede;
+    float: left;
+    width: 20%;
+}
+
+#STATUS-SUBTITLE {
+    background-color: #151515;
+    color: #dedede;
+    float: left;
+    width: 80%;
+}
+
+#STATUS-CONTENTS {
+    display: none; /* Table is Default */
+    width: 100%;
+    height: 60px;
+}
+
+#STATUS-DESCRIPTION {
+    position: relative;
+    display: table-cell;
+    font-style: oblique;
+    font-weight: bold;
+    text-align: center;
+    font-size: 13px;
+    vertical-align: middle;
+    line-height: 20px;
+    background-color: #1c1c1c;
+    color: #dedede;
+    table-layout: fixed;
+    padding: 0 10px;
+    width: 100%;
+    height: 60px;
+}
