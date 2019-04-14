@@ -72,6 +72,8 @@ function PLAYER(name, tag) {
     this.name = name;
     this.tag = tag;
 
+    this.ready = false;
+
     this.visible = true;
 
     this.player_knowledge = new Array;
@@ -133,6 +135,10 @@ io.sockets.on("connection", function(socket) {
   		game.roles[data.value].active[data.which] = ! game.roles[data.value].active[data.which];
 
   		io.sockets.emit("update-start");
+  	});
+
+  	socket.on("confirm-settings", (data) => {
+  		console.log("game storted");
   	})
 
     socket.on("update-process", () => {

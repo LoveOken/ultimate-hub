@@ -66,10 +66,11 @@ const CONFIGURATION_SEATS_CLICK = (button_to_see) => {
     });
 }
 
-const CONFIGURATION_CONFIRM_SETTINGS {
-    socket.emit("start-game");
+const CONFIGURATION_CONFIRM_SETTINGS = () => {
+    socket.emit("confirm-settings");
 }
 
 document.getElementsByClassName("CONFIGURATION-DEFAULT")[0].click();
 document.getElementById("SEATS-STAND").style.display = "none";
 document.getElementById("SEATS-SIT").style.display = "none";
+document.getElementById("CONTENTS-READY").style.display = "none";

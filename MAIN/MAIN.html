@@ -38,12 +38,17 @@
                 <BUTTON TYPE="button" CLASS="CONFIGURATION-SEATS" ID="SEATS-STAND" onclick="CONFIGURATION_SEATS_CLICK('SEATS-SIT');">
                     Stand
                 </BUTTON>
-                <BUTTON TYPE="button" ID="CONTENTS-BUTTON-ON">
+                <BUTTON TYPE="button" ID="CONTENTS-BUTTON-ON" onclick="CONFIGURATION_CONFIRM_SETTINGS();">
                     Start Game
                 </BUTTON>
                 <SPAN ID="CONTENTS-BUTTON-OFF">
                     Not Table Leader
                 </SPAN>
+                <LABEL ID="CONTENTS-READY" FOR="CONTENTS-READY-CHECKBOX">
+                    Ready?
+                    <INPUT ID="CONTENTS-READY-CHECKBOX" TYPE="checkbox">
+                    <SPAN ID="CONTENTS-READY-CHECKMARK"></SPAN>
+                </LABEL>
             </DIV>
         </DIV>
         <DIV ID="GAME">

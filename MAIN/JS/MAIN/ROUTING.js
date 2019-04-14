@@ -113,6 +113,14 @@ socket.on("update-finish", (data) => {
         document.getElementById("ROLES-FIELDSET").setAttribute("disabled", true);
     }
 
+    /* Hide ready button */
+
+    if (my_player_index != -1) {
+        document.getElementById("CONTENTS-READY").style.display = "initial";
+    } else {
+        document.getElementById("CONTENTS-READY").style.display = "none";
+    }
+
     /* Stage Display Control */
 
     switch (game.stage) {

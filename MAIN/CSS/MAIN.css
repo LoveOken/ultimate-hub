@@ -12,12 +12,20 @@ div {
     overflow: auto;
 }
 
+button {
+    cursor: pointer;
+}
+
 button::-moz-focus-inner {
     border: 0;
 }
 
 button:focus {
     outline: 0;
+}
+
+label {
+    cursor: pointer;
 }
 
 #MAIN-BOARD {
@@ -130,20 +138,21 @@ button:focus {
 }
 
 .CHECKMARK {
-  display: block;
-  margin: 8px auto 3px;
-  height: 15px;
-  width: 15px;
-  background-color: #eeeeee;
+    cursor: pointer;
+    display: block;
+    margin: 8px auto 3px;
+    height: 15px;
+    width: 15px;
+    background-color: #eeeeee;
     border-radius: 3px;
     transition: background-color 0.2s;
 }
 
-.ROLE-GRID:hover INPUT[TYPE=checkbox] ~.CHECKMARK {
-    background-color: #ffffff;    
+.ROLE-GRID:hover INPUT[TYPE=checkbox]~.CHECKMARK {
+    background-color: #ffffff;
 }
 
-.ROLE-GRID INPUT[TYPE=checkbox]:checked ~.CHECKMARK {
+.ROLE-GRID INPUT[TYPE=checkbox]:checked~.CHECKMARK {
     background-color: #4c4c4c;
 }
 
@@ -153,7 +162,7 @@ button:focus {
     display: none;
 }
 
-.ROLE-GRID INPUT[TYPE=checkbox]:checked ~.CHECKMARK:after {
+.ROLE-GRID INPUT[TYPE=checkbox]:checked~.CHECKMARK:after {
     display: block;
 }
 
@@ -170,8 +179,7 @@ button:focus {
 }
 
 #ROLES-FIELDSET[DISABLED=true] .CHECKMARK {
-    background-color: #ff4336; 
-    
+    background-color: #774336;
 }
 
 .CARD-SPRITE {
@@ -200,6 +208,35 @@ button:focus {
 
 #SEATS-SIT[disabled="true"] {
     color: #FF4336;
+}
+
+#CONTENTS-READY {
+    float: right;
+    display: block;
+    font-family: 'Roboto Slab', serif;
+    font-weight: bold;
+    font-size: 15px;
+    line-height: 40px;
+    padding: 0px 18px;
+    color: #dedede;
+    transition: color 0.2s;
+}
+
+#CONTENTS-READY-CHECKBOX {
+    display: none;
+}
+
+#CONTENTS-READY-CHECKMARK {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 75px;
+    background-color: #dedede;
+    transition: background-color 0.2s;
+}
+
+#CONTENTS-READY-CHECKBOX:checked~#CONTENTS-READY-CHECKMARK {
+    background-color: #eeff33;
 }
 
 #CONTENTS-BUTTON-ON {
@@ -356,7 +393,8 @@ button:focus {
     font-style: oblique;
     text-align: center;
     line-height: 40px;
-    display: none; /* Block is Default */
+    display: none;
+    /* Block is Default */
     width: 100%;
     height: 40px;
 }
@@ -376,7 +414,8 @@ button:focus {
 }
 
 #STATUS-CONTENTS {
-    display: none; /* Table is Default */
+    display: none;
+    /* Table is Default */
     width: 100%;
     height: 60px;
 }

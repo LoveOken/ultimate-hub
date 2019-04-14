@@ -80,7 +80,17 @@ const CREATE_ROLE_LIST = () => {
             0
         )
     );
-
+    output.push(
+    	new ROLE(
+            "TROUBLEMAKER",
+            1,
+            "Villager",
+            "Troublemaker switches two other players' cards. " +
+            "Troublemaker does not know the cards that she is switching. " +
+            "Troublemaker is part of the Villager team, and must find the Werewolves to win.",
+            0
+        )
+    )
     return output;
 }
 
