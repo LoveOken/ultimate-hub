@@ -65,6 +65,9 @@ const CONFIGURATION_SEATS_CLICK = (button_to_see) => {
         will_sit: will_sit
     });
 }
+const CONFIGURATION_READY_TO_PLAY = () => {
+    socket.emit("set_ready_to_play");
+}
 
 const CONFIGURATION_CONFIRM_SETTINGS = () => {
     socket.emit("confirm-settings");

@@ -1,4 +1,4 @@
-function ROLE(name, quantity, team, description, action) {
+function ROLE(name, quantity, team, description, action, necessary) {
     this.name = name;
 
     this.quantity = quantity;
@@ -12,6 +12,8 @@ function ROLE(name, quantity, team, description, action) {
     for (let i =  0; quantity > i; i++) {
     	this.active.push(false);
     }
+
+    this.necessary = necessary;
 }
 
 const CREATE_ROLE_LIST = () => {
@@ -24,7 +26,8 @@ const CREATE_ROLE_LIST = () => {
             "Doppelganger looks at another player's card and copies its role. " +
             "Doppelganger then performs the action of said role. " +
             "Doppelganger is now that role's team and must complete their goal.",
-            0
+            0,
+            false
         )
     );
     output.push(
@@ -35,7 +38,8 @@ const CREATE_ROLE_LIST = () => {
             "Werewolves recognize each other. " +
             "If active, a Lone Wolf can look at a center card. " +
             "The Werewolves' goal is to survive and not be lynched",
-            0
+            0,
+            true
         )
     );
     output.push(
@@ -46,7 +50,8 @@ const CREATE_ROLE_LIST = () => {
             "Minion knows which players are Werewolves. " +
             "The Werewolves dont know who the Minion is. " +
             "The Minion's goal is to protect Werewolves from accussations.",
-            0
+            0,
+            false
         )
     );
     output.push(
@@ -56,7 +61,8 @@ const CREATE_ROLE_LIST = () => {
             "Villager",
             "Masons recognize each other. " +
             "Masons are part of the Villager team, and must find the Werewolves to win.",
-            0
+            0,
+            false
         )
     );
     output.push(
@@ -66,7 +72,8 @@ const CREATE_ROLE_LIST = () => {
             "Villager",
             "Seer can view another player's card, or two of the center cards. " +
             "Seer is part of the Villager team, and must find the Werewolves to win.",
-            0
+            0,
+            false
         )
     );
     output.push(
@@ -77,7 +84,8 @@ const CREATE_ROLE_LIST = () => {
             "Robber switches cards with one player. " +
             "Robber is now that role. Robber has now the goal of the stolen card. " +
             "Robber is part of the Villager team, and must find the Werewolves to win.",
-            0
+            0,
+            false
         )
     );
     output.push(
@@ -88,7 +96,8 @@ const CREATE_ROLE_LIST = () => {
             "Troublemaker switches two other players' cards. " +
             "Troublemaker does not know the cards that she is switching. " +
             "Troublemaker is part of the Villager team, and must find the Werewolves to win.",
-            0
+            0,
+            false
         )
     )
     return output;

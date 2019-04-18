@@ -179,7 +179,7 @@ label {
 }
 
 #ROLES-FIELDSET[DISABLED=true] .CHECKMARK {
-    background-color: #774336;
+    background-color: #ff4336;
 }
 
 .CARD-SPRITE {
@@ -256,7 +256,14 @@ label {
     padding: 5px 10px;
     width: 33%;
     height: 40px;
+    transition: background-color 0.5s, color 0.5s;
 }
+
+#CONTENTS-BUTTON-ON[DISABLED=true] {
+    background-color: #444;
+    color: #888;
+}
+
 
 #CONTENTS-BUTTON-OFF {
     font-size: 18px;

@@ -113,12 +113,21 @@ socket.on("update-finish", (data) => {
         document.getElementById("ROLES-FIELDSET").setAttribute("disabled", true);
     }
 
-    /* Hide ready button */
+    /* Ready button */
 
     if (my_player_index != -1) {
         document.getElementById("CONTENTS-READY").style.display = "initial";
+        document.getElementById("CONTENTS-READY-CHECKBOX").checked = game.player_list[my_player_index].ready;
     } else {
         document.getElementById("CONTENTS-READY").style.display = "none";
+    }
+
+    /* Ready to start */
+
+    if (game.ready) {
+        document.getElementById("CONTENTS-BUTTON-ON").removeAttribute("disabled");
+    } else {
+        document.getElementById("CONTENTS-BUTTON-ON").setAttribute("disabled", true);
     }
 
     /* Stage Display Control */
