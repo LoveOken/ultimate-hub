@@ -80,7 +80,7 @@ function PLAYER(name, tag) {
 
     this.player_knowledge = new Array;
     this.center_knowledge = new Array;
-    
+
     this.actual_role = -1;
     this.original_role = -1;
 
@@ -98,9 +98,9 @@ const GAME_READY_TO_START = () => {
 
     roles.filter(role => role.active.includes(true)).forEach(
         function(role) {
-        	role.active.forEach(function(active) {
-        		if (active == true) amount_of_cards_picked += 1;
-        	})
+            role.active.forEach(function(active) {
+                if (active == true) amount_of_cards_picked += 1;
+            })
         }
     );
 
@@ -122,42 +122,75 @@ const GAME_READY_TO_START = () => {
 }
 
 const SHUFFLE_ROLES = () => {
-	let roles_to_pick_from;
+    let roles_to_pick_from;
 
-	roles_to_pick_from = "";
+    roles_to_pick_from = "";
 
-	game.roles.forEach(
-		function(role, index) {
-			console.log(index);
-			let string_index;
-			string_index = Math.floor(index / 10).toString() + (index % 10).toString(); 
+    game.roles.forEach(
+        function(role, index) {
+            console.log(index);
+            let string_index;
+            string_index = Math.floor(index / 10).toString() + (index % 10).toString();
 
-        	role.active.forEach(function(active) {
-        		if (active == true) roles_to_pick_from += string_index;
-        	})
+            role.active.forEach(function(active) {
+                if (active == true) roles_to_pick_from += string_index;
+            })
         }
-	);
+    );
 
-	console.log(roles_to_pick_from);
+    game.player_list.forEach(
+        function(player) {
+            let random_factor, random_role, role_index;
+            random_factor = Math.floor(Math.random() * roles_to_pick_from.length / 2);
+            random_role = roles_to_pick_from.slice(2 * random_factor, 2 * random_factor + 2);
+
+            roles_to_pick_from = roles_to_pick_from.replace(random_role, '');
+
+            role_index = eval(random_role);
+
+            player.actual_role = role_index;
+            player.original_role = role_index;
+        }
+    )
+
+    for (let i = 0; 3 > i; i++) {
+        let random_factor, random_role, role_index;
+        random_factor = Math.floor(Math.random() * roles_to_pick_from.length / 2);
+        random_role = roles_to_pick_from.slice(2 * random_factor, 2 * random_factor + 2);
+
+        roles_to_pick_from = roles_to_pick_from.replace(random_role, '');
+
+        role_index = eval(random_role);
+
+        game.center_cards.push(role_index);
+    }
+}
+
+const INITIALIZE_PLAYER_KNOWLEDGE = () => {
+	let initial_player_knowledge, initial_center_knowledge;
+	initial_player_knowledge = new Array;
+	initial_center_knowledge = new Array;
+
+	game.player_list.forEach(
+		function() {
+			initial_player_knowledge.push(-1);
+		}
+	)
+
+	game.center_cards.forEach(
+		function() {
+			initial_center_knowledge.push(-1);
+		}
+	)
 
 	game.player_list.forEach(
 		function(player) {
-			let random_factor, random_role, role_index;
-			random_factor = Math.floor(Math.random() * roles_to_pick_from.length / 2);
-			random_role = roles_to_pick_from.slice(2 * random_factor, 2 * random_factor + 2);
-			
-			roles_to_pick_from = roles_to_pick_from.replace(random_role, '');
-
-			role_index = eval(random_role);
-
-			player.actual_role = role_index;
-			player.original_role = role_index;
+			player.player_knowledge = initial_player_knowledge.slice();
+			player.center_knowledge = initial_center_knowledge.slice();
 
 			console.log(player);
 		}
 	)
-
-	console.log(roles_to_pick_from);
 }
 
 var game = new GAME();
@@ -245,27 +278,28 @@ io.sockets.on("connection", function(socket) {
     })
 
     socket.on("confirm-settings", (data) => {
-    	let me = game.player_list.findIndex(player => player.tag === session.tag);
+        let me = game.player_list.findIndex(player => player.tag === session.tag);
 
         try {
-        	if (me != 0) {
-        		throw (Error("The player who confirmed the game settings is not table leader. (Modified Client)"));
-        	}
-        	if (!game.ready){
-        		throw (Error("The game is not ready to start yet the button to start is unlocked. (Modified Client)"));
-        	}
+            if (me != 0) {
+                throw (Error("The player who confirmed the game settings is not table leader. (Modified Client)"));
+            }
+            if (!game.ready) {
+                throw (Error("The game is not ready to start yet the button to start is unlocked. (Modified Client)"));
+            }
         } catch (e) {
             console.log(e);
             return;
         }
 
-       	console.log("Confirm!");
+        console.log("Confirm!");
 
-       	game.stage = 1;
+        game.stage = 1;
 
-       	SHUFFLE_ROLES();
+        SHUFFLE_ROLES();
+        INITIALIZE_PLAYER_KNOWLEDGE();
 
-       	io.sockets.emit("update-start");
+        io.sockets.emit("update-start");
     })
 
     socket.on("update-process", () => {
@@ -273,7 +307,7 @@ io.sockets.on("connection", function(socket) {
 
         let me = output.player_list.findIndex(player => player.tag === session.tag);
         if (me != -1) {
-        	delete output.player_list[me].actual_role;
+            delete output.player_list[me].actual_role;
         }
 
         let other_players = output.player_list.filter(player => player.tag != session.tag);
@@ -305,9 +339,9 @@ io.sockets.on("connection", function(socket) {
     })
 
     socket.on("disconnect", () => {
-    	let me = game.player_list.findIndex(player => player.tag === session.tag);
+        let me = game.player_list.findIndex(player => player.tag === session.tag);
 
-        if (me != -1) {
+        if (me != -1 && game.stage == 0) {
             game.player_list.splice(me, 1)
         }
 
