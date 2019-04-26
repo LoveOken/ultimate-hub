@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 
+*[DISABLED="true"] {
+    pointer-events: none;
+}
+
 body {
     margin: 0px;
 }
@@ -26,6 +30,30 @@ button:focus {
 
 label {
     cursor: pointer;
+}
+
+.LOADER {
+    position: absolute;
+    border: 5px solid transparent;
+    border-top: 5px solid #0066ff;
+    border-left: 5px solid #0066ff;
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 #MAIN-BOARD {
@@ -107,8 +135,16 @@ label {
     transition: background-color 0.5s;
 }
 
-#ROLES-FIELDSET {
+#ROLES,
+#ROLES-FIELDSET,
+#SETTINGS,
+#SETTINGS-FIELDSET {
+    background-color: #dedede;
+    position: relative;
     display: block;
+    overflow: hidden;
+    table-layout: fixed;
+    white-space: nowrap;
     margin: 0px;
     border: 0px;
     padding: 0px;
@@ -118,11 +154,41 @@ label {
 
 #ROLES-FORM,
 #SETTINGS-FORM {
-    display: block;
+    position: absolute;
+    display: inline-block;
     background-color: #dedede;
-    overflow: hidden;
-    width: 100%;
+    padding: 5px;
     height: 160px;
+}
+
+#SETTINGS-FORM {
+    display: block;
+    position: relative;
+    width: 100%;
+}
+
+#ROLES-SCROLLRAIL {
+    overflow: hidden;
+    position: absolute;
+    height: 16px;
+    width: 100%;
+    bottom: 0;
+}
+
+#ROLES-SCROLLBAR {
+    position: absolute;
+    width: 300px;
+    height: 16px;
+}
+
+#ROLES-SCROLLBAR-VISIBLE {
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    position: absolute;
+    background-color: #1c1c1c;
+    border-radius: 15px;
 }
 
 .ROLE-GRID {

@@ -23,14 +23,26 @@
             </DIV>
             <DIV ID="CONFIGURATION-CONTENTS">
                 <DIV ID="CONFIGURATION-CONTENTS-ROLES" CLASS="CONFIGURATION-CONTENTS">
-                    <FIELDSET ID="ROLES-FIELDSET">
-                        <FORM ID="ROLES-FORM">
-                        </FORM>
-                    </FIELDSET>
+                    <DIV ID="ROLES">
+                        <FIELDSET ID="ROLES-FIELDSET">
+                            <FORM ID="ROLES-FORM">
+                            </FORM>
+                        </FIELDSET>
+                        <DIV ID="ROLES-SCROLLRAIL">
+                            <DIV ID="ROLES-SCROLLBAR">
+                                <DIV ID="ROLES-SCROLLBAR-VISIBLE">
+                                </DIV>
+                            </DIV>
+                        </DIV>
+                    </DIV>
                 </DIV>
                 <DIV ID="CONFIGURATION-CONTENTS-SETTINGS" CLASS="CONFIGURATION-CONTENTS">
-                    <FORM ID="SETTINGS-FORM">
-                    </FORM>
+                    <DIV ID="SETTINGS">
+                        <FIELDSET ID="SETTINGS-FIELDSET">
+                            <FORM ID="SETTINGS-FORM">
+                            </FORM>
+                        </FIELDSET>
+                    </DIV>
                 </DIV>
                 <BUTTON TYPE="button" CLASS="CONFIGURATION-SEATS" ID="SEATS-SIT" onclick="CONFIGURATION_SEATS_CLICK('SEATS-STAND');">
                     Sit
@@ -136,6 +148,8 @@
                     </SPAN>
                 </DIV>
             </DIV>
+        </DIV>
+        <DIV CLASS="LOADER">
         </DIV>
     </DIV>
     <DIV ID="BOARD2">

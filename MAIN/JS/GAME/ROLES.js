@@ -81,7 +81,7 @@ const CREATE_ROLE_LIST = () => {
             "ROBBER",
             1,
             "Villager",
-            "Robber switches cards with one player. " +
+            "Robber swaps cards with one player. " +
             "Robber is now that role. Robber has now the goal of the stolen card. " +
             "Robber is part of the Villager team, and must find the Werewolves to win.",
             0,
@@ -93,13 +93,71 @@ const CREATE_ROLE_LIST = () => {
             "TROUBLEMAKER",
             1,
             "Villager",
-            "Troublemaker switches two other players' cards. " +
-            "Troublemaker does not know the cards that she is switching. " +
+            "Troublemaker swaps two other players' cards. " +
+            "Troublemaker does not know the cards that she is swapping. " +
             "Troublemaker is part of the Villager team, and must find the Werewolves to win.",
             0,
             false
         )
-    )
+    );
+    output.push(
+        new ROLE(
+            "DRUNK",
+            1,
+            "Villager",
+            "Drunk swaps cards with one card of the center. " +
+            "Drunk does not know the role of the card swapped. " +
+            "Drunk is part of the Villager team, and must find the Werewolves to win.",
+            0,
+            false
+        )
+    );
+    output.push(
+        new ROLE(
+            "INSOMNIAC",
+            1,
+            "Villager",
+            "Insomniac cant sleep at night. " +
+            "Insomniac looks at her card, to see if it has been swapped. " +
+            "Insomniac is part of the Villager team, and must find the Werewolves to win.",
+            0,
+            false
+        )
+    );
+    output.push(
+        new ROLE(
+            "HUNTER",
+            1,
+            "Villager",
+            "Hunter doesn't wake up at night. " +
+            "If the Hunter dies, the person that got voted by the Hunter also dies. " +
+            "Hunter is part of the Villager team, and must find the Werewolves to win.",
+            0,
+            false
+        )
+    );
+    output.push(
+        new ROLE(
+            "VILLAGER",
+            3,
+            "Villager",
+            "Villager doesn't wake up at night. " +
+            "Villager is part of the Villager team, and must find the Werewolves to win.",
+            0,
+            false
+        )
+    );
+    output.push(
+        new ROLE(
+            "TANNER",
+            1,
+            "Tanner",
+            "Tanner doesn't wake up at night. " +
+            "If Tanner gets lynched, he wins.",
+            0,
+            false
+        )
+    );
     return output;
 }
 

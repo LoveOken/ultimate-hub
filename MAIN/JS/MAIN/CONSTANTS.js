@@ -1,3 +1,7 @@
+Number.prototype.clamp = function(min, max) {
+  return Math.min(Math.max(this, min), max);
+};
+
 const CONFIGURATION_TABS_OPEN = (content_to_see, tab_to_see) => {
     try {
         if (!tab_to_see.classList.contains('CONFIGURATION-TABS')) { 
@@ -74,6 +78,10 @@ const CONFIGURATION_CONFIRM_SETTINGS = () => {
 }
 
 document.getElementsByClassName("CONFIGURATION-DEFAULT")[0].click();
+
 document.getElementById("SEATS-STAND").style.display = "none";
 document.getElementById("SEATS-SIT").style.display = "none";
 document.getElementById("CONTENTS-READY").style.display = "none";
+
+document.getElementById("CONFIGURATION").style.visibility = "hidden";
+document.getElementById("GAME").style.visibility = "hidden";

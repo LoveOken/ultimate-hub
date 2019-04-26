@@ -66,6 +66,7 @@ function GAME() {
     this.roles = CREATE_ROLE_LIST();
 
     this.stage = 0;
+    this.stage_clock = 0;
 
     this.ready = false;
 }
@@ -87,16 +88,80 @@ function PLAYER(name, tag) {
     this.action_state = 0;
 }
 
-const GAME_READY_TO_START = () => {
-    let roles, players, amount_of_cards_picked;
-    let not_everyone_is_ready, not_enough_players, no_necessary_roles_active, cards_dont_align;
+GAME.prototype.seatRequest = function(name, tag, seating) {
+    try {
+        if (this.player_list.length == this.player_max && seating) {
+            throw (Error("The player list is full. (Modified Client)"));
+        };
+        if (this.player_list.findIndex(player => player.tag === tag) != -1 && seating) {
+            throw (Error("The client is already seated on the game. (Modified Client)"));
+        }
+        if (this.player_list.findIndex(player => player.tag === tag) == -1 && !seating) {
+            throw (Error("The client has not seated yet wants to stand. (Modified Client)"));
+        }
+    } catch (e) {
+        console.log(e);
+        return;
+    }
 
-    roles = game.roles;
-    players = game.player_list;
+    if (seating) {
+        this.player_list.push(new PLAYER(name, tag));
+    } else {
+        this.player_list.splice(this.player_list.findIndex(player => player.tag === tag), 1);
+    }
+
+    this.setReady();
+}
+
+GAME.prototype.toggleRole = function(tag, value, which) {
+    from = this.player_list.findIndex(player => player.tag === tag);
+
+    try {
+        if (from != 0) {
+            throw (Error("The player selecting roles is not table leader. (Modified Client)"));
+        }
+        if (this.roles[value] == null) {
+            throw (Error("Invalid index. (Modified Client)"));
+        }
+        if (this.roles[value].active[which] == null) {
+            throw (Error("Invalid subindex. (Modified Client)"));
+
+
+        }
+    } catch (e) {
+        console.log(e);
+        return;
+    }
+
+    this.roles[value].active[which] = !this.roles[value].active[which];
+
+    this.setReady();
+}
+
+GAME.prototype.togglePlayerReady = function(tag) {
+    from = this.player_list.findIndex(player => player.tag === tag);
+
+    try {
+        if (from == -1) {
+            throw (Error("The player is not seated. (Modified Client)"));
+        }
+    } catch (e) {
+        console.log(e);
+        return;
+    }
+
+    this.player_list[from].ready = !this.player_list[from].ready;
+
+    this.setReady();
+}
+
+GAME.prototype.setReady = function() {
+    let amount_of_cards_picked;
+    let not_everyone_is_ready, not_enough_players, no_necessary_roles_active, cards_dont_align;
 
     amount_of_cards_picked = 0;
 
-    roles.filter(role => role.active.includes(true)).forEach(
+    this.roles.filter(role => role.active.includes(true)).forEach(
         function(role) {
             role.active.forEach(function(active) {
                 if (active == true) amount_of_cards_picked += 1;
@@ -104,10 +169,10 @@ const GAME_READY_TO_START = () => {
         }
     );
 
-    not_everyone_is_ready = (players.filter(player => player.ready === false).length > 0);
-    not_enough_players = (players.length < 3);
-    no_necessary_roles_active = (roles.filter(role => role.necessary === true && role.active.includes(true)).length == 0);
-    cards_dont_align = (amount_of_cards_picked != players.length + 3);
+    not_everyone_is_ready = (this.player_list.filter(player => player.ready === false).length > 0);
+    not_enough_players = (this.player_list.length < 3);
+    no_necessary_roles_active = (this.roles.filter(role => role.necessary === true && role.active.includes(true)).length == 0);
+    cards_dont_align = (amount_of_cards_picked != this.player_list.length + 3);
 
     if (
         not_everyone_is_ready ||
@@ -115,20 +180,19 @@ const GAME_READY_TO_START = () => {
         no_necessary_roles_active ||
         cards_dont_align
     ) {
-        return false;
+        this.ready = false;
     } else {
-        return true;
+        this.ready = true;
     }
 }
 
-const SHUFFLE_ROLES = () => {
+GAME.prototype.shuffleRoles = function() {
     let roles_to_pick_from;
 
     roles_to_pick_from = "";
 
-    game.roles.forEach(
+    this.roles.forEach(
         function(role, index) {
-            console.log(index);
             let string_index;
             string_index = Math.floor(index / 10).toString() + (index % 10).toString();
 
@@ -138,7 +202,7 @@ const SHUFFLE_ROLES = () => {
         }
     );
 
-    game.player_list.forEach(
+    this.player_list.forEach(
         function(player) {
             let random_factor, random_role, role_index;
             random_factor = Math.floor(Math.random() * roles_to_pick_from.length / 2);
@@ -162,44 +226,80 @@ const SHUFFLE_ROLES = () => {
 
         role_index = eval(random_role);
 
-        game.center_cards.push(role_index);
+        this.center_cards.push(role_index);
     }
 }
 
-const INITIALIZE_PLAYER_KNOWLEDGE = () => {
-	let initial_player_knowledge, initial_center_knowledge;
-	initial_player_knowledge = new Array;
-	initial_center_knowledge = new Array;
+GAME.prototype.initializeKnowledge = function() {
+    let initial_player_knowledge, initial_center_knowledge;
+    initial_player_knowledge = new Array;
+    initial_center_knowledge = new Array;
 
-	game.player_list.forEach(
-		function() {
-			initial_player_knowledge.push(-1);
-		}
-	)
+    this.player_list.forEach(
+        function() {
+            initial_player_knowledge.push(-1);
+        }
+    )
 
-	game.center_cards.forEach(
-		function() {
-			initial_center_knowledge.push(-1);
-		}
-	)
+    this.center_cards.forEach(
+        function() {
+            initial_center_knowledge.push(-1);
+        }
+    )
 
-	game.player_list.forEach(
-		function(player) {
-			player.player_knowledge = initial_player_knowledge.slice();
-			player.center_knowledge = initial_center_knowledge.slice();
+    this.player_list.forEach(
+        function(player) {
+            player.player_knowledge = initial_player_knowledge.slice();
+            player.center_knowledge = initial_center_knowledge.slice();
+        }
+    )
+}
 
-			console.log(player);
-		}
-	)
+GAME.prototype.clockStart = function(end_function) {
+    io.sockets.emit("update-start");
+
+    if (this.stage_clock > 0) {
+        setTimeout(
+            () => {
+                this.stage_clock--;
+                this.clockStart(end_function);
+            }, 1000);
+    } else {
+        end_function();
+    }
+}
+
+GAME.prototype.prepare = function(tag) {
+    let from = this.player_list.findIndex(player => player.tag === tag);
+
+    try {
+        if (from != 0) {
+            throw (Error("The player who confirmed the game settings is not table leader. (Modified Client)"));
+        }
+        if (!this.ready) {
+            throw (Error("The game is not ready to start yet the button to start is unlocked. (Modified Client)"));
+        }
+    } catch (e) {
+        console.log(e);
+        return;
+    }
+
+    this.stage = 1;
+    this.stage_clock = 5;
+
+    this.shuffleRoles();
+    this.initializeKnowledge();
+    this.clockStart(
+        function() {
+            console.log("Finished");
+        }
+    )
+}
+
+GAME.prototype.playersRecognitionByCondition = function() {
 }
 
 var game = new GAME();
-
-game.player_list.push(new PLAYER("Test", -2));
-game.player_list.push(new PLAYER("Test 2", -2));
-
-game.player_list[0].ready = true;
-game.player_list[1].ready = true;
 
 /* Socket.io Routing */
 
@@ -222,84 +322,33 @@ io.sockets.on("connection", function(socket) {
         SOCKET_LIST[session.tag] = socket;
     }
 
+    socket.on("debug-player", () => {
+        dummy = new PLAYER("Dummy", -1);
+        dummy.ready = true;
+        game.player_list.push(dummy);
+
+        game.setReady();
+
+        io.sockets.emit("update-start");
+    })
+
     socket.on("seat-request", (data) => {
-        try {
-            if (game.player_list.length == game.player_max && data.will_sit) {
-                throw (Error("The player list is full. (Modified Client)"));
-            };
-            if (game.player_list.findIndex(player => player.tag === session.tag) != -1 && data.will_sit) {
-                throw (Error("The client is already seated on the game. (Modified Client)"));
-            }
-            if (game.player_list.findIndex(player => player.tag === session.tag) == -1 && !data.will_sit) {
-                throw (Error("The client has not seated yet wants to stand. (Modified Client)"));
-            }
-        } catch (e) {
-            console.log(e);
-            return;
-        }
-
-        if (data.will_sit) {
-            game.player_list.unshift(new PLAYER(session.username, session.tag));
-        } else {
-            game.player_list.splice(game.player_list.findIndex(player => player.tag === session.tag), 1);
-        }
-
-        game.ready = GAME_READY_TO_START();
-
+        game.seatRequest(session.username, session.tag, data.will_sit);
         io.sockets.emit("update-start");
     })
 
     socket.on("toggle-role-activity", (data) => {
-        let me = game.player_list.findIndex(player => player.tag === session.tag);
-
-        try {
-            if (me != 0) {
-                throw (Error("The player selecting roles is not table leader. (Modified Client)"));
-            }
-        } catch (e) {
-            console.log(e);
-            return;
-        }
-
-        game.roles[data.value].active[data.which] = !game.roles[data.value].active[data.which];
-
-        game.ready = GAME_READY_TO_START();
-
+        game.toggleRole(session.tag, data.value, data.which);
         io.sockets.emit("update-start");
     });
 
     socket.on("set_ready_to_play", (data) => {
-        let me = game.player_list.findIndex(player => player.tag === session.tag);
-        game.player_list[me].ready = !game.player_list[me].ready;
-
-        game.ready = GAME_READY_TO_START();
-
+        game.togglePlayerReady(session.tag);
         io.sockets.emit("update-start");
     })
 
     socket.on("confirm-settings", (data) => {
-        let me = game.player_list.findIndex(player => player.tag === session.tag);
-
-        try {
-            if (me != 0) {
-                throw (Error("The player who confirmed the game settings is not table leader. (Modified Client)"));
-            }
-            if (!game.ready) {
-                throw (Error("The game is not ready to start yet the button to start is unlocked. (Modified Client)"));
-            }
-        } catch (e) {
-            console.log(e);
-            return;
-        }
-
-        console.log("Confirm!");
-
-        game.stage = 1;
-
-        SHUFFLE_ROLES();
-        INITIALIZE_PLAYER_KNOWLEDGE();
-
-        io.sockets.emit("update-start");
+        game.prepare(session.tag);
     })
 
     socket.on("update-process", () => {
@@ -319,6 +368,8 @@ io.sockets.on("connection", function(socket) {
 
             delete player.actual_role;
             delete player.original_role;
+
+            delete player.action_state;
         });
 
         delete output.center_cards;
@@ -342,7 +393,7 @@ io.sockets.on("connection", function(socket) {
         let me = game.player_list.findIndex(player => player.tag === session.tag);
 
         if (me != -1 && game.stage == 0) {
-            game.player_list.splice(me, 1)
+            game.player_list.splice(me, 1);
         }
 
         io.sockets.emit("update-start");
