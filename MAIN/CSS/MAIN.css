@@ -256,6 +256,62 @@ label {
     height: 108px;
 }
 
+.CARD-SPRITE.DOPPELGANGER {
+    background: url(../IMG/MAIN/SPRITES.png) 0 0;
+}
+
+.CARD-SPRITE.WEREWOLF {
+    background: url(../IMG/MAIN/SPRITES.png) -74px 0;
+}
+
+.CARD-SPRITE.MINION {
+    background: url(../IMG/MAIN/SPRITES.png) -148px 0;
+}
+
+.CARD-SPRITE.MASON {
+    background: url(../IMG/MAIN/SPRITES.png) -222px 0;
+}
+
+.CARD-SPRITE.SEER {
+    background: url(../IMG/MAIN/SPRITES.png) -296px 0;
+}
+
+.CARD-SPRITE.ROBBER {
+    background: url(../IMG/MAIN/SPRITES.png) -370px 0;
+}
+
+.CARD-SPRITE.TROUBLEMAKER {
+    background: url(../IMG/MAIN/SPRITES.png) -444px 0;
+}
+
+.CARD-SPRITE.DRUNK {
+    background: url(../IMG/MAIN/SPRITES.png) -518px 0;
+}
+
+.CARD-SPRITE.INSOMNIAC {
+    background: url(../IMG/MAIN/SPRITES.png) -592px 0;
+}
+
+.CARD-SPRITE.VILLAGER {
+    background: url(../IMG/MAIN/SPRITES.png) -666px 0;
+}
+
+.CARD-SPRITE.HUNTER {
+    background: url(../IMG/MAIN/SPRITES.png) -740px 0;
+}
+
+.CARD-SPRITE.TANNER {
+    background: url(../IMG/MAIN/SPRITES.png) -814px 0;
+}
+
+.CARD-SPRITE.UNDEFINED {
+    background: url(../IMG/MAIN/SPRITES.png) -888px 0;
+}
+
+.CARD-SPRITE.INACTIVE {
+    background: url(../IMG/MAIN/SPRITES.png) -962px 0;
+}
+
 .CONFIGURATION-SEATS {
     display: block;
     float: left;

@@ -9,15 +9,15 @@ function ROLE(name, quantity, team, description, action, necessary) {
     this.action = action;
 
     this.active = new Array;
-    for (let i =  0; quantity > i; i++) {
-    	this.active.push(false);
+    for (let i = 0; quantity > i; i++) {
+        this.active.push(false);
     }
 
     this.necessary = necessary;
 }
 
-const CREATE_ROLE_LIST = () => {
-	let output = new Array;
+const CREATE_ROLE_LIST = (game) => {
+    let output = new Array;
     output.push(
         new ROLE(
             "DOPPELGANGER",
@@ -26,7 +26,15 @@ const CREATE_ROLE_LIST = () => {
             "Doppelganger looks at another player's card and copies its role. " +
             "Doppelganger then performs the action of said role. " +
             "Doppelganger is now that role's team and must complete their goal.",
-            0,
+            (player) => {
+                player.action = () => {
+                    console.log("Once");
+
+                    player.action = () => {
+                        console.log("Twice");
+                    }
+                }
+            },
             false
         )
     );
@@ -38,7 +46,15 @@ const CREATE_ROLE_LIST = () => {
             "Werewolves recognize each other. " +
             "If active, a Lone Wolf can look at a center card. " +
             "The Werewolves' goal is to survive and not be lynched",
-            0,
+            (player) => {
+                player.action = () => {
+                    console.log("Once");
+
+                    player.action = () => {
+                        console.log("Twice");
+                    }
+                }
+            },
             true
         )
     );
@@ -50,7 +66,15 @@ const CREATE_ROLE_LIST = () => {
             "Minion knows which players are Werewolves. " +
             "The Werewolves dont know who the Minion is. " +
             "The Minion's goal is to protect Werewolves from accussations.",
-            0,
+            (player) => {
+                player.action = () => {
+                    console.log("Once");
+
+                    player.action = () => {
+                        console.log("Twice");
+                    }
+                }
+            },
             false
         )
     );
@@ -61,7 +85,15 @@ const CREATE_ROLE_LIST = () => {
             "Villager",
             "Masons recognize each other. " +
             "Masons are part of the Villager team, and must find the Werewolves to win.",
-            0,
+            (player) => {
+                player.action = () => {
+                    console.log("Once");
+
+                    player.action = () => {
+                        console.log("Twice");
+                    }
+                }
+            },
             false
         )
     );
@@ -72,7 +104,15 @@ const CREATE_ROLE_LIST = () => {
             "Villager",
             "Seer can view another player's card, or two of the center cards. " +
             "Seer is part of the Villager team, and must find the Werewolves to win.",
-            0,
+            (player) => {
+                player.action = () => {
+                    console.log("Once");
+
+                    player.action = () => {
+                        console.log("Twice");
+                    }
+                }
+            },
             false
         )
     );
@@ -84,19 +124,35 @@ const CREATE_ROLE_LIST = () => {
             "Robber swaps cards with one player. " +
             "Robber is now that role. Robber has now the goal of the stolen card. " +
             "Robber is part of the Villager team, and must find the Werewolves to win.",
-            0,
+            (player) => {
+                player.action = () => {
+                    console.log("Once");
+
+                    player.action = () => {
+                        console.log("Twice");
+                    }
+                }
+            },
             false
         )
     );
     output.push(
-    	new ROLE(
+        new ROLE(
             "TROUBLEMAKER",
             1,
             "Villager",
             "Troublemaker swaps two other players' cards. " +
             "Troublemaker does not know the cards that she is swapping. " +
             "Troublemaker is part of the Villager team, and must find the Werewolves to win.",
-            0,
+            (player) => {
+                player.action = () => {
+                    console.log("Once");
+
+                    player.action = () => {
+                        console.log("Twice");
+                    }
+                }
+            },
             false
         )
     );
@@ -108,7 +164,15 @@ const CREATE_ROLE_LIST = () => {
             "Drunk swaps cards with one card of the center. " +
             "Drunk does not know the role of the card swapped. " +
             "Drunk is part of the Villager team, and must find the Werewolves to win.",
-            0,
+            (player) => {
+                player.action = () => {
+                    console.log("Once");
+
+                    player.action = () => {
+                        console.log("Twice");
+                    }
+                }
+            },
             false
         )
     );
@@ -120,7 +184,15 @@ const CREATE_ROLE_LIST = () => {
             "Insomniac cant sleep at night. " +
             "Insomniac looks at her card, to see if it has been swapped. " +
             "Insomniac is part of the Villager team, and must find the Werewolves to win.",
-            0,
+            (player) => {
+                player.action = () => {
+                    console.log("Once");
+
+                    player.action = () => {
+                        console.log("Twice");
+                    }
+                }
+            },
             false
         )
     );
@@ -132,7 +204,15 @@ const CREATE_ROLE_LIST = () => {
             "Hunter doesn't wake up at night. " +
             "If the Hunter dies, the person that got voted by the Hunter also dies. " +
             "Hunter is part of the Villager team, and must find the Werewolves to win.",
-            0,
+            (player) => {
+                player.action = () => {
+                    console.log("Once");
+
+                    player.action = () => {
+                        console.log("Twice");
+                    }
+                }
+            },
             false
         )
     );
@@ -143,7 +223,15 @@ const CREATE_ROLE_LIST = () => {
             "Villager",
             "Villager doesn't wake up at night. " +
             "Villager is part of the Villager team, and must find the Werewolves to win.",
-            0,
+            (player) => {
+                player.action = () => {
+                    console.log("Once");
+
+                    player.action = () => {
+                        console.log("Twice");
+                    }
+                }
+            },
             false
         )
     );
@@ -154,7 +242,15 @@ const CREATE_ROLE_LIST = () => {
             "Tanner",
             "Tanner doesn't wake up at night. " +
             "If Tanner gets lynched, he wins.",
-            0,
+            (player) => {
+                player.action = () => {
+                    console.log("Once");
+
+                    player.action = () => {
+                        console.log("Twice");
+                    }
+                }
+            },
             false
         )
     );

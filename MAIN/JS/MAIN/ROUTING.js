@@ -10,23 +10,24 @@ socket.on("update-finish", (data) => {
     let game = data.game;
     let already_connected = data.already_connected;
 
-    let my_player_index, player_seats, length_to_use, clock, title, status_messages;
+    let my_player_index, player_seats, length_to_use, clock, title, status_messages, my_player;
 
     my_player_index = game.player_list.findIndex(player => player.visible === true);
+    if (my_player_index != -1) {
+        my_player = game.player_list[my_player_index];
+    }
 
     /* Once Connected */
 
     if (!already_connected) {
-        let loaders = document.getElementsByClassName("LOADER");
-        let length_to_use = loaders.length;
-        for (let i = 0; length_to_use > i; i++) {
-            loaders[i].style.display = "none";
-        }
+        document.getElementsByClassName("LOADER").forEach(
+            function(element) {
+                element.style.display = "none";
+            }
+        );
 
         document.getElementById("CONFIGURATION").style.visibility = "visible";
         document.getElementById("GAME").style.visibility = "visible";
-
-        document.getElementById("SEATS-SIT").style.display = "initial";
 
         socket.emit("validate-connection");
     }
@@ -174,31 +175,45 @@ socket.on("update-finish", (data) => {
         scrollbar.onmouseout = activate_rail;
         container.onwheel = wheel_the_scrollbar;
     } else {
-        game.roles.forEach(function(role, index) {
-            let length_to_use;
-            length_to_use = role.quantity;
+        game.roles.forEach(
+            function(role, index) {
+                let length_to_use;
+                length_to_use = role.quantity;
 
-            for (let i = 0; length_to_use > i; i++) {
-                document.getElementById(role.name + i).checked = role.active[i];
+                for (let i = 0; length_to_use > i; i++) {
+                    document.getElementById(role.name + i).checked = role.active[i];
+                }
             }
-        });
+        );
     }
 
     /* Seating Display and Seat Button Control */
 
-    document.getElementById("SEATS-SIT").removeAttribute("disabled");
-    player_seats = document.getElementsByClassName("PLAYER-GRID");
-    length_to_use = player_seats.length;
-    for (i = 0; length_to_use > i; i++) {
-        player_seats[i].style.display = "none";
+    if (my_player_index != -1) {
+        document.getElementById("SEATS-STAND").style.display = "initial";
+    } else {
+        document.getElementById("SEATS-SIT").style.display = "initial";
     }
-    game.player_list.forEach(function(player, index) {
-        player_seats[index].style.display = "inline-block";
-        player_seats[index].children[0].innerText = player.name;
-        if (index + 1 == game.player_max) {
-            document.getElementById("SEATS-SIT").setAttribute("disabled", true);
+
+    document.getElementById("SEATS-SIT").removeAttribute("disabled");
+
+    player_seats = document.getElementsByClassName("PLAYER-GRID");
+    player_seats.forEach(
+        function(element) {
+            element.style.display = "none";
         }
-    })
+    );
+
+    game.player_list.forEach(
+        function(player, index) {
+            player_seats[index].style.display = "inline-block";
+            player_seats[index].children[0].innerText = player.name;
+
+            if (index + 1 == game.player_max) {
+                document.getElementById("SEATS-SIT").setAttribute("disabled", true);
+            }
+        }
+    );
 
     /* Define Table Leadership */
 
@@ -256,10 +271,27 @@ socket.on("update-finish", (data) => {
 
     title = document.getElementById("STATUS-TITLE");
     status_messages = [
-        "Game hasn't started yet. Get ready on your seats!",
-        "Game is about to start!",
-    ]
+        "Game hasn't started yet.",
+        "Game is about to start.",
+        "Game has started. Night Phase.",
+    ];
     title.innerText = status_messages[game.stage];
+
+    subtitle = document.getElementById("STATUS-SUBTITLE");
+    status_messages = [
+        "",
+        "Preparation phase",
+        game.roles[game.role_on_play].name + " is awake!",
+    ];
+    subtitle.innerText = status_messages[game.stage];
+
+    description = document.getElementById("STATUS-DESCRIPTION");
+    status_messages = [
+        "",
+        "Cards are being shuffled and dealt.",
+        game.roles[game.role_on_play].description,
+    ];
+    description.innerText = status_messages[game.stage];
 
     /* Display Clock */
 

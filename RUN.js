@@ -63,7 +63,8 @@ function GAME() {
 
     this.center_cards = new Array;
 
-    this.roles = CREATE_ROLE_LIST();
+    this.roles = CREATE_ROLE_LIST(this);
+    this.role_on_play = 0;
 
     this.stage = 0;
     this.stage_clock = 0;
@@ -82,10 +83,19 @@ function PLAYER(name, tag) {
     this.player_knowledge = new Array;
     this.center_knowledge = new Array;
 
-    this.actual_role = -1;
-    this.original_role = -1;
+    this.actual_role = "UNDEFINED";
+    this.original_role = "UNDEFINED";
 
+    this.team = "Undefined";
+
+    this.action = null;
     this.action_state = 0;
+}
+
+function CENTER(role) {
+	this.actual_role = role.name;
+
+	this.team = role.team;
 }
 
 GAME.prototype.seatRequest = function(name, tag, seating) {
@@ -187,11 +197,12 @@ GAME.prototype.setReady = function() {
 }
 
 GAME.prototype.shuffleRoles = function() {
-    let roles_to_pick_from;
+    let roles_to_pick_from, roles;
 
+    roles = this.roles;
     roles_to_pick_from = "";
 
-    this.roles.forEach(
+    roles.forEach(
         function(role, index) {
             let string_index;
             string_index = Math.floor(index / 10).toString() + (index % 10).toString();
@@ -212,8 +223,12 @@ GAME.prototype.shuffleRoles = function() {
 
             role_index = eval(random_role);
 
-            player.actual_role = role_index;
-            player.original_role = role_index;
+            player.actual_role = roles[role_index].name;
+            player.original_role = roles[role_index].name;
+
+            player.team = roles[role_index].team;
+
+            roles[role_index].action(player);
         }
     )
 
@@ -226,7 +241,7 @@ GAME.prototype.shuffleRoles = function() {
 
         role_index = eval(random_role);
 
-        this.center_cards.push(role_index);
+        this.center_cards.push(new CENTER(roles[role_index]));
     }
 }
 
@@ -237,20 +252,22 @@ GAME.prototype.initializeKnowledge = function() {
 
     this.player_list.forEach(
         function() {
-            initial_player_knowledge.push(-1);
+            initial_player_knowledge.push("UNDEFINED");
         }
     )
 
     this.center_cards.forEach(
         function() {
-            initial_center_knowledge.push(-1);
+            initial_center_knowledge.push("UNDEFINED");
         }
     )
 
     this.player_list.forEach(
-        function(player) {
+        function(player, index) {
             player.player_knowledge = initial_player_knowledge.slice();
             player.center_knowledge = initial_center_knowledge.slice();
+
+            player.player_knowledge[index] = player.original_role;
         }
     )
 }
@@ -269,7 +286,7 @@ GAME.prototype.clockStart = function(end_function) {
     }
 }
 
-GAME.prototype.prepare = function(tag) {
+GAME.prototype.preparationPhase = function(tag) {
     let from = this.player_list.findIndex(player => player.tag === tag);
 
     try {
@@ -284,19 +301,46 @@ GAME.prototype.prepare = function(tag) {
         return;
     }
 
-    this.stage = 1;
+    this.stage += 1;
     this.stage_clock = 5;
 
     this.shuffleRoles();
     this.initializeKnowledge();
     this.clockStart(
-        function() {
-            console.log("Finished");
+        () => {
+        	this.stage += 1;
+            this.nightPhase(0);
         }
     )
 }
 
-GAME.prototype.playersRecognitionByCondition = function() {
+GAME.prototype.nightPhase = function(i) {
+	this.role_on_play = i;
+    this.stage_clock = 20;
+
+	let roles = this.roles.filter(role => role.active.includes(true));
+	let players = this.player_list.filter(player => player.original_role === roles[i].name);
+
+	let currentAction = () => {
+		players.forEach(
+			function(player) {
+				player.action();
+			}
+		);
+	}
+
+	currentAction();
+
+	this.clockStart(
+		() => {
+			currentAction();
+			this.nightPhase(i + 1);
+		}
+	)
+}
+
+GAME.prototype.recognizeByCondition = function(condition) {
+
 }
 
 var game = new GAME();
@@ -348,7 +392,7 @@ io.sockets.on("connection", function(socket) {
     })
 
     socket.on("confirm-settings", (data) => {
-        game.prepare(session.tag);
+        game.preparationPhase(session.tag);
     })
 
     socket.on("update-process", () => {
@@ -369,6 +413,7 @@ io.sockets.on("connection", function(socket) {
             delete player.actual_role;
             delete player.original_role;
 
+            delete player.action;
             delete player.action_state;
         });
 
@@ -381,7 +426,7 @@ io.sockets.on("connection", function(socket) {
 
         socket.emit("update-finish", {
             game: output,
-            already_connected: socket.already_connected
+            already_connected: socket.already_connected,
         });
     });
 
