@@ -1,12 +1,121 @@
-Number.prototype.clamp = function(min, max) {
-    return Math.min(Math.max(this, min), max);
-};
+const CREATE_HORIZONTAL_SCROLLBAR = (scrollbar, scrollrail, field, container, content) => {
+    scrollbar.style.width = (100 * container.offsetWidth / content.offsetWidth) + "%";
 
-HTMLCollection.prototype.forEach = function(todo) {
-    let length_to_use = this.length;
-    for (i = 0; length_to_use > i; i++) {
-        todo(this[i], i);
+    let pos1 = 0;
+    let pos2 = 0;
+
+    let deactivate_rail = (e) => {
+        e = e || window.event;
+        e.preventDefault();
+
+        scrollrail.onmousedown = null;
     }
+
+    let activate_rail = (e) => {
+        e = e || window.event;
+        e.preventDefault();
+
+        scrollrail.onmousedown = attract_the_scrollbar;
+    }
+
+    let start_dragging = (e) => {
+        e = e || window.event;
+        e.preventDefault();
+
+        pos2 = e.clientX;
+
+        document.onmouseup = stop_dragging;
+        document.onmousemove = drag_the_scrollbar;
+    }
+
+    let drag_the_scrollbar = (e) => {
+        e = e || window.event;
+        e.preventDefault();
+
+        pos1 = pos2 - e.clientX;
+        pos2 = e.clientX;
+
+        scrollbar.style.left =
+            (scrollbar.offsetLeft - pos1).clamp(0, scrollrail.offsetWidth - scrollbar.offsetWidth) + "px";
+
+        content.style.left =
+            (-scrollbar.offsetLeft * container.offsetWidth / scrollbar.offsetWidth).clamp(-container.offsetWidth, 0) + "px";
+    }
+
+    let wheel_the_scrollbar = (e) => {
+        e = e || window.event;
+        e.preventDefault();
+
+        delta = e.deltaY.clamp(-1, 1);
+
+        scrollbar.style.left =
+            (scrollbar.offsetLeft + delta * 20).clamp(0, scrollrail.offsetWidth - scrollbar.offsetWidth) + "px";
+
+        content.style.left =
+            (-scrollbar.offsetLeft * container.offsetWidth / scrollbar.offsetWidth).clamp(-container.offsetWidth, 0) + "px";
+    }
+
+    let attract_the_scrollbar = (e) => {
+        e = e || window.event;
+        e.preventDefault();
+
+        let pos = e.clientX;
+
+        scrollbar.style.left =
+            (pos - scrollrail.offsetLeft - scrollbar.offsetWidth / 2).clamp(0, scrollrail.offsetWidth - scrollbar.offsetWidth) + "px";
+
+        content.style.left =
+            (-scrollbar.offsetLeft * container.offsetWidth / scrollbar.offsetWidth).clamp(-container.offsetWidth, 0) + "px";
+
+        scrollbar.onmousedown();
+    }
+
+    let stop_dragging = (e) => {
+        e = e || window.event;
+        e.preventDefault();
+
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
+
+    scrollbar.onmousedown = start_dragging;
+    scrollbar.onmouseover = deactivate_rail;
+    scrollbar.onmouseout = activate_rail;
+    field.onwheel = wheel_the_scrollbar;
+}
+
+const CREATE_SELECTABLE_ROLE = (form, role, index, active, subindex, onclick) => {
+    let grid, checkbox, label, card;
+
+    grid = document.createElement("DIV");
+    checkbox = document.createElement("INPUT");
+    checkmark = document.createElement("SPAN");
+    label = document.createElement("LABEL");
+    card = document.createElement("DIV");
+
+    grid.classList.add("ROLE-GRID");
+
+    checkbox.id = role.name + subindex;
+    checkbox.type = "checkbox";
+    checkbox.value = index;
+    checkbox.checked = active;
+    checkbox.onclick = onclick;
+
+    checkmark.classList.add("CHECKMARK");
+    checkmark.onclick = function() {
+        checkbox.click();
+    }
+
+    label.htmlFor = checkbox.id;
+
+    card.classList.add("CARD-SPRITE");
+    card.classList.add(role.name);
+
+    label.appendChild(card);
+    grid.appendChild(checkbox);
+    grid.appendChild(checkmark);
+    grid.appendChild(label);
+    form.appendChild(grid);
 }
 
 const CONFIGURATION_TABS_OPEN = (content_to_see, tab_to_see) => {

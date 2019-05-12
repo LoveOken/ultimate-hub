@@ -8,10 +8,7 @@ function ROLE(name, quantity, team, description, action, necessary) {
 
     this.action = action;
 
-    this.active = new Array;
-    for (let i = 0; quantity > i; i++) {
-        this.active.push(false);
-    }
+    this.active = Array(quantity).fill(false);
 
     this.necessary = necessary;
 }
@@ -254,6 +251,7 @@ const CREATE_ROLE_LIST = (game) => {
             false
         )
     );
+    
     return output;
 }
 

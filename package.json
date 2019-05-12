@@ -4,7 +4,7 @@
   "description": "Quirky werewolf game",
   "main": "RUN.js",
   "scripts": {
-    "test": "node RUN.js"
+    "start": "nodemon RUN.js"
   },
   "author": "Oken",
   "license": "MIT",

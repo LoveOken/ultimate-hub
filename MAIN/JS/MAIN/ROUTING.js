@@ -7,12 +7,13 @@ socket.on("update-start", () => {
 });
 
 socket.on("update-finish", (data) => {
-    let game = data.game;
-    let already_connected = data.already_connected;
+    let game, already_connected, my_player_index, my_player, player_seats, title, subtitle, description, clock;
 
-    let my_player_index, player_seats, length_to_use, clock, title, status_messages, my_player;
+    game = data.game;
+    already_connected = data.already_connected;
 
     my_player_index = game.player_list.findIndex(player => player.visible === true);
+
     if (my_player_index != -1) {
         my_player = game.player_list[my_player_index];
     }
@@ -35,154 +36,48 @@ socket.on("update-finish", (data) => {
     /* Role display */
 
     if (document.getElementById("ROLES-FORM").children.length == 0) {
-        let form, fieldset, container;
+        let container, form, fieldset, scrollbar, scrollrail;
 
+        container = document.getElementById("ROLES");
         form = document.getElementById("ROLES-FORM");
         fieldset = document.getElementById("ROLES-FIELDSET");
 
-        game.roles.forEach(function(role, index) {
-            let length_to_use;
-            length_to_use = role.quantity;
-
-            for (let i = 0; length_to_use > i; i++) {
-                let grid, checkbox, label, card;
-
-                grid = document.createElement("DIV");
-                checkbox = document.createElement("INPUT");
-                checkmark = document.createElement("SPAN");
-                label = document.createElement("LABEL");
-                card = document.createElement("DIV");
-
-                grid.classList.add("ROLE-GRID");
-
-                checkbox.id = role.name + i;
-                checkbox.type = "checkbox";
-                checkbox.value = index;
-                checkbox.checked = role.active[i];
-                checkbox.onclick = function() {
-                    socket.emit("toggle-role-activity", {
-                        value: index,
-                        which: i
-                    });
-
-                    return false;
-                };
-
-                checkmark.classList.add("CHECKMARK");
-                checkmark.onclick = function() {
-                    checkbox.click();
-                }
-
-                label.htmlFor = role.name + i;
-
-                card.classList.add("CARD-SPRITE");
-                card.classList.add(role.name);
-
-                label.appendChild(card);
-                grid.appendChild(checkbox);
-                grid.appendChild(checkmark);
-                grid.appendChild(label);
-                form.appendChild(grid);
-            }
-        });
-
-        let scrollbar, scrollrail;
         scrollbar = document.getElementById("ROLES-SCROLLBAR");
         scrollrail = document.getElementById("ROLES-SCROLLRAIL");
-        container = document.getElementById("ROLES");
 
-        scrollbar.style.width = (100 * fieldset.offsetWidth / form.offsetWidth) + "%";
-
-        let pos1 = 0;
-        let pos2 = 0;
-
-        let deactivate_rail = (e) => {
-            e = e || window.event;
-            e.preventDefault();
-
-            scrollrail.onmousedown = null;
-        }
-
-        let activate_rail = (e) => {
-            e = e || window.event;
-            e.preventDefault();
-
-            scrollrail.onmousedown = attract_the_scrollbar;
-        }
-
-        let start_dragging = (e) => {
-            e = e || window.event;
-            e.preventDefault();
-
-            pos2 = e.clientX;
-
-            document.onmouseup = stop_dragging;
-            document.onmousemove = drag_the_scrollbar;
-        }
-
-        let drag_the_scrollbar = (e) => {
-            e = e || window.event;
-            e.preventDefault();
-
-            pos1 = pos2 - e.clientX;
-            pos2 = e.clientX;
-
-            scrollbar.style.left =
-                (scrollbar.offsetLeft - pos1).clamp(0, scrollrail.offsetWidth - scrollbar.offsetWidth) + "px";
-
-            form.style.left =
-                (-scrollbar.offsetLeft * fieldset.offsetWidth / scrollbar.offsetWidth).clamp(-fieldset.offsetWidth, 0) + "px";
-        }
-
-        let wheel_the_scrollbar = (e) => {
-            e = e || window.event;
-            e.preventDefault();
-
-            delta = e.deltaY.clamp(-1, 1);
-
-            scrollbar.style.left =
-                (scrollbar.offsetLeft + delta * 20).clamp(0, scrollrail.offsetWidth - scrollbar.offsetWidth) + "px";
-
-            form.style.left =
-                (-scrollbar.offsetLeft * fieldset.offsetWidth / scrollbar.offsetWidth).clamp(-fieldset.offsetWidth, 0) + "px";
-        }
-
-        let attract_the_scrollbar = (e) => {
-            e = e || window.event;
-            e.preventDefault();
-
-            let pos = e.clientX;
-
-            scrollbar.style.left =
-                (pos - scrollrail.offsetLeft - scrollbar.offsetWidth / 2).clamp(0, scrollrail.offsetWidth - scrollbar.offsetWidth) + "px";
-
-            form.style.left =
-                (-scrollbar.offsetLeft * fieldset.offsetWidth / scrollbar.offsetWidth).clamp(-fieldset.offsetWidth, 0) + "px";
-
-            scrollbar.onmousedown();
-        }
-
-        let stop_dragging = (e) => {
-            e = e || window.event;
-            e.preventDefault();
-
-            document.onmouseup = null;
-            document.onmousemove = null;
-        }
-
-        scrollbar.onmousedown = start_dragging;
-        scrollbar.onmouseover = deactivate_rail;
-        scrollbar.onmouseout = activate_rail;
-        container.onwheel = wheel_the_scrollbar;
-    } else {
         game.roles.forEach(
             function(role, index) {
-                let length_to_use;
-                length_to_use = role.quantity;
+                role.active.forEach(
+                    function(active, subindex) {
+                        CREATE_SELECTABLE_ROLE(
+                            form,
+                            role,
+                            index,
+                            active,
+                            subindex,
+                            () => {
+                                socket.emit("toggle-role-activity", {
+                                    value: index,
+                                    which: subindex
+                                });
 
-                for (let i = 0; length_to_use > i; i++) {
-                    document.getElementById(role.name + i).checked = role.active[i];
-                }
+                                return false;
+                            }
+                        );
+                    }
+                );
+            }
+        );
+
+        CREATE_HORIZONTAL_SCROLLBAR(scrollbar, scrollrail, container, fieldset, form);
+    } else {
+        game.roles.forEach(
+            function(role) {
+                role.active.forEach(
+                    function(active, subindex) {
+                        document.getElementById(role.name + subindex).checked = active
+                    }
+                )
             }
         );
     }
@@ -251,18 +146,18 @@ socket.on("update-finish", (data) => {
     switch (game.stage) {
         case 0:
             {
-                document.getElementById("STATUS-TITLE").style.display = "block";
+                document.getElementById("GAME").style.top = "";
+                document.getElementById("CONFIGURATION").style.display = "";
+                document.getElementById("STATUS-HEADER").style.display = "none";
+                document.getElementById("STATUS-CONTENTS").style.display = "none"
                 break;
             }
         default:
             {
                 document.getElementById("GAME").style.top = "0px";
                 document.getElementById("CONFIGURATION").style.display = "none";
-                document.getElementById("STATUS-TITLE").style.display = "block";
-                document.getElementById("STATUS-HEADER").style.display = "block";
-                document.getElementById("STATUS-TIME").style.display = "block";
-                document.getElementById("STATUS-SUBTITLE").style.display = "block";
-                document.getElementById("STATUS-CONTENTS").style.display = "table";
+                document.getElementById("STATUS-HEADER").style.display = "";
+                document.getElementById("STATUS-CONTENTS").style.display = "";
                 break;
             }
     }
@@ -270,33 +165,30 @@ socket.on("update-finish", (data) => {
     /* Display title and subtitle */
 
     title = document.getElementById("STATUS-TITLE");
-    status_messages = [
+    subtitle = document.getElementById("STATUS-SUBTITLE");
+    description = document.getElementById("STATUS-DESCRIPTION");
+
+    title.innerText = [
         "Game hasn't started yet.",
         "Game is about to start.",
         "Game has started. Night Phase.",
-    ];
-    title.innerText = status_messages[game.stage];
+    ][game.stage];
 
-    subtitle = document.getElementById("STATUS-SUBTITLE");
-    status_messages = [
+    subtitle.innerText = [
         "",
         "Preparation phase",
         game.roles[game.role_on_play].name + " is awake!",
-    ];
-    subtitle.innerText = status_messages[game.stage];
+    ][game.stage];
 
-    description = document.getElementById("STATUS-DESCRIPTION");
-    status_messages = [
+    description.innerText = [
         "",
         "Cards are being shuffled and dealt.",
         game.roles[game.role_on_play].description,
-    ];
-    description.innerText = status_messages[game.stage];
+    ][game.stage];
 
     /* Display Clock */
 
     clock = document.getElementById("STATUS-TIME");
-    clock.innerText =
-        Math.floor(Math.floor(game.stage_clock / 60) / 10).toString() + (Math.floor(game.stage_clock / 60) % 10).toString() + ":" +
-        Math.floor((game.stage_clock % 60) / 10).toString() + ((game.stage_clock % 60) % 10).toString();
+    clock.innerText = game.stage_clock.secondsToMinutesAndSeconds();
+
 })
