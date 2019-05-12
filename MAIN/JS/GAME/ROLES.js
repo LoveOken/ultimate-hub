@@ -1,7 +1,6 @@
 function ROLE(name, quantity, team, description, action, necessary) {
     this.name = name;
-
-    this.quantity = quantity;
+    
     this.team = team;
 
     this.description = description;
@@ -251,7 +250,7 @@ const CREATE_ROLE_LIST = (game) => {
             false
         )
     );
-    
+
     return output;
 }
 
