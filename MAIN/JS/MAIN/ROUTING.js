@@ -27,6 +27,8 @@ socket.on("update-finish", (data) => {
             }
         );
 
+        document.getElementsByClassName("CONFIGURATION-DEFAULT")[0].click();
+
         document.getElementById("CONFIGURATION").style.visibility = "visible";
         document.getElementById("GAME").style.visibility = "visible";
 
@@ -93,6 +95,15 @@ socket.on("update-finish", (data) => {
     document.getElementById("SEATS-SIT").removeAttribute("disabled");
 
     player_seats = document.getElementsByClassName("PLAYER-GRID");
+    cards = document.getElementsByClassName("CARD");
+
+    cards.forEach(
+        function(element) {
+            if (element.getAttribute("DATA-ANIMATING") == "TRUE") return;
+            element.style.display = "none";
+        }
+    );
+
     player_seats.forEach(
         function(element) {
             element.style.display = "none";
@@ -101,14 +112,29 @@ socket.on("update-finish", (data) => {
 
     game.player_list.forEach(
         function(player, index) {
-            player_seats[index].style.display = "inline-block";
-            player_seats[index].children[0].innerText = player.name;
+            let seat = player_seats[index];
+
+            seat.style.display = "";
+            seat.children[0].innerText = player.name;
 
             if (index + 1 == game.player_max) {
                 document.getElementById("SEATS-SIT").setAttribute("disabled", true);
             }
         }
     );
+
+    game.player_list.forEach(
+        function(player, index) {
+            let seat = player_seats[index];
+            let card = cards[index];
+
+            if (card.getAttribute("DATA-ANIMATING") == "TRUE") return;
+
+            card.style.display = "";
+            card.style.left = seat.offsetLeft + "px";
+            card.style.top = seat.offsetTop + "px";
+        }
+    )
 
     /* Define Table Leadership */
 

@@ -104,10 +104,14 @@ io.sockets.on("connection", function(socket) {
         });
     });
 
+    socket.on("player-interaction", (data) => {
+        console.log("HEY!!!!");
+    })
+
     socket.on("disconnect", () => {
         game.disconnectPlayer(session.tag);
         io.sockets.emit("update-start");
-    });
+    }); 
 
     socket.on("update-process", () => {
         let output = game.parseForUpdate(session.tag);

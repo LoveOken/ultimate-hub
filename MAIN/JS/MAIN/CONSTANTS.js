@@ -26,6 +26,7 @@ const CREATE_HORIZONTAL_SCROLLBAR = (scrollbar, scrollrail, field, container, co
 
         document.onmouseup = stop_dragging;
         document.onmousemove = drag_the_scrollbar;
+        field.onwheel = null;
     }
 
     let drag_the_scrollbar = (e) => {
@@ -76,6 +77,7 @@ const CREATE_HORIZONTAL_SCROLLBAR = (scrollbar, scrollrail, field, container, co
 
         document.onmouseup = null;
         document.onmousemove = null;
+        field.onwheel = wheel_the_scrollbar;
     }
 
     scrollbar.onmousedown = start_dragging;
@@ -116,6 +118,44 @@ const CREATE_SELECTABLE_ROLE = (form, role, index, active, subindex, onclick) =>
     grid.appendChild(checkmark);
     grid.appendChild(label);
     form.appendChild(grid);
+}
+
+const CREATE_CARDS = () => {
+    document.getElementsByClassName("CARD-GRID").forEach(
+        function() {
+            card = document.createElement("div");
+            card_contents = document.createElement("div");
+            card_front = document.createElement("div");
+            card_back = document.createElement("div");
+
+            card.setAttribute("DATA-FLIP", "FRONT");
+            card.setAttribute("DATA-ANIMATING", "FALSE");
+
+            card.classList.add("CARD");
+            card_contents.classList.add("CARD-CONTENTS");
+            card_front.classList.add("CARD-FRONT");
+            card_back.classList.add("CARD-BACK");
+
+            card_sprite_front = document.createElement("div");
+            card_sprite_back = document.createElement("div");
+
+            card_sprite_front.classList.add("CARD-SPRITE");
+            card_sprite_front.classList.add("UNDEFINED");
+            card_sprite_back.classList.add("CARD-SPRITE");
+            card_sprite_back.classList.add("UNDEFINED");
+
+
+            card_front.appendChild(card_sprite_front);
+            card_back.appendChild(card_sprite_back);
+            card_contents.appendChild(card_front);
+            card_contents.appendChild(card_back);
+            card.appendChild(card_contents);
+
+            card.style.display = "none";
+
+            document.getElementById("GAME").append(card);
+        }
+    );
 }
 
 const CONFIGURATION_TABS_OPEN = (content_to_see, tab_to_see) => {
@@ -190,4 +230,10 @@ const CONFIGURATION_CONFIRM_SETTINGS = () => {
     socket.emit("confirm-settings");
 }
 
-document.getElementsByClassName("CONFIGURATION-DEFAULT")[0].click();
+const PLAYER_TO_GAME_INTERACTION = (element) => {
+    console.log(element);
+
+    socket.emit("player-interaction");
+}
+
+CREATE_CARDS();
