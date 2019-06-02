@@ -230,10 +230,11 @@ const CONFIGURATION_CONFIRM_SETTINGS = () => {
     socket.emit("confirm-settings");
 }
 
-const PLAYER_TO_GAME_INTERACTION = (element) => {
-    console.log(element);
-
-    socket.emit("player-interaction");
+const PLAYER_TO_GAME_INTERACTION = (type_of_interaction, interacted_with) => {
+    socket.emit("player-interaction", {
+        type: type_of_interaction,
+        whom: interacted_with
+    });
 }
 
 CREATE_CARDS();

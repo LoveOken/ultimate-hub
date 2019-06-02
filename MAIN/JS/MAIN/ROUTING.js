@@ -12,6 +12,7 @@ socket.on("update-finish", (data) => {
     game = data.game;
     already_connected = data.already_connected;
 
+    my_player = null;
     my_player_index = game.player_list.findIndex(player => player.visible === true);
 
     if (my_player_index != -1) {
@@ -96,6 +97,7 @@ socket.on("update-finish", (data) => {
 
     player_seats = document.getElementsByClassName("PLAYER-GRID");
     cards = document.getElementsByClassName("CARD");
+    card_sprites = document.getElementsByClassName("CARD-FRONT");
 
     cards.forEach(
         function(element) {
@@ -133,6 +135,24 @@ socket.on("update-finish", (data) => {
             card.style.display = "";
             card.style.left = seat.offsetLeft + "px";
             card.style.top = seat.offsetTop + "px";
+
+            if (game.stage > 0) {
+                let sprite = card_sprites[index].children[0];
+                let old_sprite_name = sprite.classList.item(1);
+
+                let new_sprite_name;
+
+                if (my_player == null) {
+                    new_sprite_name = "UNKNOWN";
+                } else {
+                    new_sprite_name = my_player.player_knowledge[index];
+                }
+
+                if (old_sprite_name != new_sprite_name) {
+                    sprite.classList.remove(old_sprite_name);
+                    sprite.classList.add(new_sprite_name);
+                }
+            }
         }
     )
 

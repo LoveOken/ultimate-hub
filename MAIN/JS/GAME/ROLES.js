@@ -24,10 +24,12 @@ const CREATE_ROLE_LIST = (game) => {
             "Doppelganger is now that role's team and must complete their goal.",
             (player) => {
                 player.action = () => {
-                    console.log("Once");
+                    player.action_state += 1;
 
-                    player.action = () => {
-                        console.log("Twice");
+                    player.action = (target) => {
+                        if (target == undefined) return;
+
+                        game.copyPlayer(player, target);
                     }
                 }
             },
@@ -37,17 +39,23 @@ const CREATE_ROLE_LIST = (game) => {
     output.push(
         new ROLE(
             "WEREWOLF",
-            2,
+            6,
             "Werewolf",
             "Werewolves recognize each other. " +
             "If active, a Lone Wolf can look at a center card. " +
             "The Werewolves' goal is to survive and not be lynched",
             (player) => {
                 player.action = () => {
-                    console.log("Once");
+                    player.action_state += 1;
+
+                    game.recognizePlayers(
+                        player,
+                        "WEREWOLF",
+                        p => p.original_role != "MINION" && p.original_team == "Werewolf"
+                    )
 
                     player.action = () => {
-                        console.log("Twice");
+                        console.log("No more actions for WEREWOLF");
                     }
                 }
             },
@@ -64,10 +72,16 @@ const CREATE_ROLE_LIST = (game) => {
             "The Minion's goal is to protect Werewolves from accussations.",
             (player) => {
                 player.action = () => {
-                    console.log("Once");
+                    player.action_state += 1;
+
+                    game.recognizePlayers(
+                        player,
+                        "WEREWOLF",
+                        p => p.original_role != "MINION" && p.original_team == "Werewolf"
+                    )
 
                     player.action = () => {
-                        console.log("Twice");
+                        console.log("No more actions for MINION");
                     }
                 }
             },
@@ -83,10 +97,16 @@ const CREATE_ROLE_LIST = (game) => {
             "Masons are part of the Villager team, and must find the Werewolves to win.",
             (player) => {
                 player.action = () => {
-                    console.log("Once");
+                    player.action_state += 1;
+
+                    game.recognizePlayers(
+                        player,
+                        "MASON",
+                        p => p.original_role == "MASON"
+                    )
 
                     player.action = () => {
-                        console.log("Twice");
+                        console.log("No more actions for MASON");
                     }
                 }
             },
@@ -102,10 +122,10 @@ const CREATE_ROLE_LIST = (game) => {
             "Seer is part of the Villager team, and must find the Werewolves to win.",
             (player) => {
                 player.action = () => {
-                    console.log("Once");
+                    player.action_state += 1;
 
                     player.action = () => {
-                        console.log("Twice");
+                        console.log("No more actions for SEER");
                     }
                 }
             },

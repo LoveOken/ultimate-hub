@@ -305,7 +305,7 @@ label {
     background: url(../IMG/MAIN/SPRITES.png) -814px 0;
 }
 
-.CARD-SPRITE.INACTIVE {
+.CARD-SPRITE.UNKNOWN {
     background: url(../IMG/MAIN/SPRITES.png) -888px 0;
 }
 

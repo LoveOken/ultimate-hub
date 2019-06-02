@@ -31,7 +31,8 @@ function PLAYER(name, tag) {
     this.actual_role = "UNDEFINED";
     this.original_role = "UNDEFINED";
 
-    this.team = "Undefined";
+    this.actual_team = "Undefined";
+    this.original_team = "Undefined";
 
     this.action = null;
     this.action_state = 0;
@@ -71,6 +72,9 @@ GAME.prototype.seatRequest = function(name, tag, seating) {
         }
         if (this.player_list.findIndex(player => player.tag === tag) == -1 && !seating) {
             throw (Error("The client has not seated yet wants to stand. (Modified Client)"));
+        }
+        if (seating != true && seating != false) {
+            throw (Error("Seating is not defined."))
         }
     } catch (e) {
         console.log(e);
@@ -189,7 +193,8 @@ GAME.prototype.shuffleRoles = function() {
             player.actual_role = roles[role_index].name;
             player.original_role = roles[role_index].name;
 
-            player.team = roles[role_index].team;
+            player.actual_team = roles[role_index].team;
+            player.original_team = roles[role_index].team;
 
             roles[role_index].action(player);
         }
@@ -215,13 +220,13 @@ GAME.prototype.initializeKnowledge = function() {
 
     this.player_list.forEach(
         function() {
-            initial_player_knowledge.push("UNDEFINED");
+            initial_player_knowledge.push("UNKNOWN");
         }
     )
 
     this.center_cards.forEach(
         function() {
-            initial_center_knowledge.push("UNDEFINED");
+            initial_center_knowledge.push("UNKNOWN");
         }
     )
 
@@ -264,11 +269,11 @@ GAME.prototype.preparationPhase = function(tag, update_function) {
         return;
     }
 
-    this.stage += 1;
+    this.stage = 1;
     this.stage_clock = 5;
 
     let end_function = () => {
-        this.stage += 1;
+        this.stage = 2;
         this.nightPhase(update_function, 0);
     }
 
@@ -281,11 +286,11 @@ GAME.prototype.preparationPhase = function(tag, update_function) {
 }
 
 GAME.prototype.nightPhase = function(update_function, i) {
-    this.role_on_play = i;
-    this.stage_clock = 20;
-
     let roles = this.roles.filter(role => role.active.includes(true));
     let players = this.player_list.filter(player => player.original_role === roles[i].name);
+
+    this.role_on_play = this.roles.findIndex(role => role.name === roles[i].name);
+    this.stage_clock = 20;
 
     let currentAction = () => {
         players.forEach(
@@ -308,8 +313,77 @@ GAME.prototype.nightPhase = function(update_function, i) {
     )
 }
 
-GAME.prototype.recognizeByCondition = function(condition) {
+GAME.prototype.playerInteraction = function(tag, type, whom, update_function) {
+    let from = this.player_list.find(player => player.tag === tag);
+    let to = (type) ? this.center_cards[whom] : this.player_list[whom];
 
+    try {
+        if (from === undefined || to === undefined) {
+            throw (Error("Both target and sender must be defined."));
+        }
+        if (this.stage != 2) {
+            throw (Error("Interaction not in time."));
+        }
+        if (from.original_role != this.roles[this.role_on_play].name) {
+            throw (Error("Role invalid for interaction."));
+        }
+    } catch (err) {
+        console.log(err);
+        return;
+    }
+
+    from.action(to);
+
+    update_function();
+}
+
+GAME.prototype.copyPlayer = function(player_copying, target_player) {
+    let own_index = this.player_list.findIndex(player => player === player_copying);
+    let target_index = this.player_list.findIndex(player => player === target_player);
+
+    if (own_index == -1 || target_index == -1) return false;
+
+    player_copying.player_knowledge[own_index] = target_player.actual_role;
+    player_copying.player_knowledge[target_index] = target_player.actual_role;
+
+    player_copying.actual_team = target_player.actual_team;
+
+    let new_role = this.roles.find(role => role.name === target_player.original_role);
+
+    new_role.action(player_copying);
+    player_copying.action();
+
+    return true;
+}
+
+GAME.prototype.recognizePlayers = function(player_recognizing, role_to_recognize_as, condition_of_recognition) {
+    let output = false;
+    let own_index = this.player_list.findIndex(player => player === player_peeking);
+
+    if (own_index == -1) return output;
+
+    this.player_list.forEach(
+        (p, i) => {
+            if (condition_of_recognition(p)) {
+                player_recognizing.player_knowledge[i] = role_to_recognize_as;
+
+                output = true;
+            }
+        }
+    );
+
+    return output;
+}
+
+GAME.prototype.peekOnPlayer = function(player_peeking, target_player) {
+    let own_index = this.player_list.findIndex(player => player === player_peeking);
+    let target_index = this.player_list.findIndex(player => player === target_player);
+
+    if (own_index == -1 || target_index == -1) return false;
+
+    player_peeking.player_knowledge[target_index] = target_player.actual_role;
+
+    return true;
 }
 
 GAME.prototype.parseForUpdate = function(tag) {
@@ -331,6 +405,9 @@ GAME.prototype.parseForUpdate = function(tag) {
 
             delete player.actual_role;
             delete player.original_role;
+
+            delete player.actual_team;
+            delete player.original_team;
 
             delete player.action;
             delete player.action_state;

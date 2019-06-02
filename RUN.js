@@ -105,7 +105,9 @@ io.sockets.on("connection", function(socket) {
     });
 
     socket.on("player-interaction", (data) => {
-        console.log("HEY!!!!");
+        game.playerInteraction(session.tag, data.type, data.whom, () => {
+            socket.emit("update-start");
+        });
     })
 
     socket.on("disconnect", () => {
