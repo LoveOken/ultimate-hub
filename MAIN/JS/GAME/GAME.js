@@ -15,6 +15,8 @@ function GAME() {
     this.stage_clock = 0;
 
     this.ready = false;
+
+    this.lone_wolf = false;
 }
 
 function PLAYER(name, tag) {
@@ -41,7 +43,7 @@ function PLAYER(name, tag) {
 function CENTER(role) {
     this.actual_role = role.name;
 
-    this.team = role.team;
+    this.actual_team = role.team;
 }
 
 GAME.prototype.createDebugPlayer = function() {
@@ -102,8 +104,6 @@ GAME.prototype.toggleRole = function(tag, value, which) {
         }
         if (this.roles[value].active[which] == null) {
             throw (Error("Invalid subindex. (Modified Client)"));
-
-
         }
     } catch (e) {
         console.log(e);
@@ -348,7 +348,7 @@ GAME.prototype.copyPlayer = function(player_copying, target_player) {
 
     player_copying.actual_team = target_player.actual_team;
 
-    let new_role = this.roles.find(role => role.name === target_player.original_role);
+    let new_role = this.roles.find(role => role.name === target_player.actual_role);
 
     new_role.action(player_copying);
     player_copying.action();
@@ -382,6 +382,41 @@ GAME.prototype.peekOnPlayer = function(player_peeking, target_player) {
     if (own_index == -1 || target_index == -1) return false;
 
     player_peeking.player_knowledge[target_index] = target_player.actual_role;
+
+    return true;
+}
+
+GAME.prototype.peekCenter = function(player_peeking, target_center) {
+    let own_index = this.player_list.findIndex(player => player === player_peeking);
+    let target_index = this.center_cards.findIndex(center => center === target_center);
+
+    if (own_index == -1 || target_index == -1) return false;
+
+    player_peeking.center_knowledge[target_index] = target_center.actual_role;
+
+    return true;
+}
+
+GAME.prototype.swapTwoPlayers = function(player_watching, player_swapping, target_player) {
+    let own_index = this.player_list.findIndex(player => player === player_watching);
+    let swapping_index = this.player_list.findIndex(player => player === player_swapping);
+    let target_index = this.player_list.findIndex(player => player === target_player);
+
+    if (own_index == -1 || swapping_index == -1 || target_index == -1) return false;
+
+    let holder = undefined;
+
+    holder = player_watching.player_knowledge[target_index];
+    player_watching.player_knowledge[target_index] = player_watching.player_knowledge[swapping_index];
+    player_watching.player_knowledge[swapping_index] = holder;
+
+    holder = target_player.actual_role;
+    target_player.actual_role = player_swapping.actual_role;
+    player_swapping.actual_role = holder;
+
+    holder = target_player.actual_team;
+    target_player.actual_team = player_swapping.actual_team;
+    player_swapping.actual_team = holder;
 
     return true;
 }

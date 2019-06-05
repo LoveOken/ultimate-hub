@@ -1,6 +1,6 @@
 function ROLE(name, quantity, team, description, action, necessary) {
     this.name = name;
-    
+
     this.team = team;
 
     this.description = description;
@@ -24,7 +24,7 @@ const CREATE_ROLE_LIST = (game) => {
             "Doppelganger is now that role's team and must complete their goal.",
             (player) => {
                 player.action = () => {
-                    player.action_state += 1;
+                    player.action_state = 1;
 
                     player.action = (target) => {
                         if (target == undefined) return;
@@ -46,17 +46,33 @@ const CREATE_ROLE_LIST = (game) => {
             "The Werewolves' goal is to survive and not be lynched",
             (player) => {
                 player.action = () => {
-                    player.action_state += 1;
+                    player.action_state = 1;
 
-                    game.recognizePlayers(
+                    let no_more_actions = () => {
+                        console.log("No more actions for WEREWOLF");
+                    }
+
+                    let lone_wolf_action = (target) => {
+                        if (target == undefined) return;
+
+                        if (game.peekCenter(player, target)) {
+                            player.action = no_more_actions;
+                        };
+                    }
+
+                    let not_alone = game.recognizePlayers(
                         player,
                         "WEREWOLF",
                         p => p.original_role != "MINION" && p.original_team == "Werewolf"
                     )
 
-                    player.action = () => {
-                        console.log("No more actions for WEREWOLF");
+                    if (not_alone || !game.lone_wolf) {
+                        player.action = no_more_actions; 
+                    } else {
+                        player.action = lone_wolf_action;
                     }
+
+
                 }
             },
             true
@@ -72,7 +88,7 @@ const CREATE_ROLE_LIST = (game) => {
             "The Minion's goal is to protect Werewolves from accussations.",
             (player) => {
                 player.action = () => {
-                    player.action_state += 1;
+                    player.action_state = 1;
 
                     game.recognizePlayers(
                         player,
@@ -97,7 +113,7 @@ const CREATE_ROLE_LIST = (game) => {
             "Masons are part of the Villager team, and must find the Werewolves to win.",
             (player) => {
                 player.action = () => {
-                    player.action_state += 1;
+                    player.action_state = 1;
 
                     game.recognizePlayers(
                         player,
@@ -122,11 +138,36 @@ const CREATE_ROLE_LIST = (game) => {
             "Seer is part of the Villager team, and must find the Werewolves to win.",
             (player) => {
                 player.action = () => {
-                    player.action_state += 1;
+                    player.action_state = 1;
 
-                    player.action = () => {
+                    let last_target = undefined;
+
+                    let no_more_actions = () => {
                         console.log("No more actions for SEER");
                     }
+
+                    let repeat_center_peek = (target) => {
+                        if (target == undefined) return;
+                        if (last_target == target) return;
+
+                        if (game.peekCenter(player, target)) {
+                            player.action = no_more_actions;
+                        };
+                    }
+
+                    player.action = (target) => {
+                        if (target == undefined) return;
+
+                        if (game.peekOnPlayer(player, target)) {
+                            player.action = no_more_actions;
+                        }
+
+                        if (game.peekCenter(player, target)) {
+                            last_target = target;
+                            player.action = repeat_center_peek;
+                        }
+                    }
+
                 }
             },
             false
@@ -142,10 +183,18 @@ const CREATE_ROLE_LIST = (game) => {
             "Robber is part of the Villager team, and must find the Werewolves to win.",
             (player) => {
                 player.action = () => {
-                    console.log("Once");
+                    player.action_state = 1;
 
-                    player.action = () => {
-                        console.log("Twice");
+                    let no_more_actions = () => {
+                        console.log("No more actions for ROBBER");
+                    }
+
+                    player.action = (target) => {
+                        if (target == undefined) return;
+
+                        if (game.peekOnPlayer(player, target) && game.swapTwoPlayers(player, player, target)) {
+                            player.action = no_more_actions;
+                        }
                     }
                 }
             },
