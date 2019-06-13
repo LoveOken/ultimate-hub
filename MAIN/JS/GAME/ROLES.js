@@ -17,7 +17,7 @@ const CREATE_ROLE_LIST = (game) => {
     output.push(
         new ROLE(
             "DOPPELGANGER",
-            1,
+            5,
             "Undefined",
             "Doppelganger looks at another player's card and copies its role. " +
             "Doppelganger then performs the action of said role. " +
@@ -39,7 +39,7 @@ const CREATE_ROLE_LIST = (game) => {
     output.push(
         new ROLE(
             "WEREWOLF",
-            6,
+            3,
             "Werewolf",
             "Werewolves recognize each other. " +
             "If active, a Lone Wolf can look at a center card. " +
@@ -81,7 +81,7 @@ const CREATE_ROLE_LIST = (game) => {
     output.push(
         new ROLE(
             "MINION",
-            1,
+            3,
             "Werewolf",
             "Minion knows which players are Werewolves. " +
             "The Werewolves dont know who the Minion is. " +
@@ -107,7 +107,7 @@ const CREATE_ROLE_LIST = (game) => {
     output.push(
         new ROLE(
             "MASON",
-            2,
+            4,
             "Villager",
             "Masons recognize each other. " +
             "Masons are part of the Villager team, and must find the Werewolves to win.",
@@ -132,7 +132,7 @@ const CREATE_ROLE_LIST = (game) => {
     output.push(
         new ROLE(
             "SEER",
-            1,
+            3,
             "Villager",
             "Seer can view another player's card, or two of the center cards. " +
             "Seer is part of the Villager team, and must find the Werewolves to win.",
@@ -157,6 +157,7 @@ const CREATE_ROLE_LIST = (game) => {
 
                     player.action = (target) => {
                         if (target == undefined) return;
+                        if (target == player) return;
 
                         if (game.peekOnPlayer(player, target)) {
                             player.action = no_more_actions;
@@ -191,8 +192,10 @@ const CREATE_ROLE_LIST = (game) => {
 
                     player.action = (target) => {
                         if (target == undefined) return;
+                        if (target == player) return;
 
-                        if (game.peekOnPlayer(player, target) && game.swapTwoPlayers(player, player, target)) {
+                        if (game.peekOnPlayer(player, target)) {
+                            game.swapTwoPlayers(player, player, target)
                             player.action = no_more_actions;
                         }
                     }

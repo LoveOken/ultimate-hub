@@ -50,7 +50,7 @@
                 <BUTTON TYPE="button" CLASS="CONFIGURATION-SEATS" ID="SEATS-STAND" onclick="CONFIGURATION_SEATS_CLICK('SEATS-SIT');" style="display: none;">
                     Stand
                 </BUTTON>
-                <BUTTON TYPE="button" ID="CONTENTS-BUTTON-ON" onclick="CONFIGURATION_CONFIRM_SETTINGS();">
+                <BUTTON TYPE="button" ID="CONTENTS-BUTTON-ON" onclick="GAME_CONFIRM_SETTINGS();">
                     Start Game
                 </BUTTON>
                 <SPAN ID="CONTENTS-BUTTON-OFF">
@@ -58,7 +58,7 @@
                 </SPAN>
                 <LABEL ID="CONTENTS-READY" FOR="CONTENTS-READY-CHECKBOX" style="display: none">
                     Ready?
-                    <INPUT ID="CONTENTS-READY-CHECKBOX" TYPE="checkbox" onclick="CONFIGURATION_READY_TO_PLAY(); return false;">
+                    <INPUT ID="CONTENTS-READY-CHECKBOX" TYPE="checkbox" onclick="GAME_SET_READY_TO_PLAY(); return false;">
                     <SPAN ID="CONTENTS-READY-CHECKMARK"></SPAN>
                 </LABEL>
             </DIV>
@@ -70,15 +70,15 @@
                         Center Cards
                     </H1>
                     <DIV ID="CENTER-CONTENTS">
-                        <BUTTON CLASS="CARD-GRID">
+                        <BUTTON CLASS="CARD-GRID CENTER-GRID" onclick="GAME_PLAYER_INTERACTION(0, 0);">
                             <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
                             <DIV CLASS="CARD-PLACEHOLDER"></DIV>
                         </BUTTON>
-                        <BUTTON CLASS="CARD-GRID">
+                        <BUTTON CLASS="CARD-GRID CENTER-GRID" onclick="GAME_PLAYER_INTERACTION(0, 0);">
                             <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
                             <DIV CLASS="CARD-PLACEHOLDER"></DIV>
                         </BUTTON>
-                        <BUTTON CLASS="CARD-GRID">
+                        <BUTTON CLASS="CARD-GRID CENTER-GRID" onclick="GAME_PLAYER_INTERACTION(0, 0);">
                             <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
                             <DIV CLASS="CARD-PLACEHOLDER"></DIV>
                         </BUTTON>
@@ -90,45 +90,45 @@
                     </H1>
                     <DIV ID="PLAYERS-CONTENTS">
                         <DIV CLASS="PLAYERS-CONTENTS">
-                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="PLAYER_TO_GAME_INTERACTION(0, 0);">
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="GAME_PLAYER_INTERACTION(0, 0);">
                                 <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
                                 <DIV CLASS="CARD-PLACEHOLDER"></DIV>
                             </BUTTON>
-                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="PLAYER_TO_GAME_INTERACTION(0, 1);">
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="GAME_PLAYER_INTERACTION(0, 1);">
                                 <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
                                 <DIV CLASS="CARD-PLACEHOLDER"></DIV>
                             </BUTTON>
-                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="PLAYER_TO_GAME_INTERACTION(0, 2);">
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="GAME_PLAYER_INTERACTION(0, 2);">
                                 <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
                                 <DIV CLASS="CARD-PLACEHOLDER"></DIV>
                             </BUTTON>
-                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="PLAYER_TO_GAME_INTERACTION(0, 3);">
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="GAME_PLAYER_INTERACTION(0, 3);">
                                 <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
                                 <DIV CLASS="CARD-PLACEHOLDER"></DIV>
                             </BUTTON>
-                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="PLAYER_TO_GAME_INTERACTION(0, 4);">
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="GAME_PLAYER_INTERACTION(0, 4);">
                                 <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
                                 <DIV CLASS="CARD-PLACEHOLDER"></DIV>
                             </BUTTON>
                         </DIV>
                         <DIV CLASS="PLAYERS-CONTENTS">
-                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="PLAYER_TO_GAME_INTERACTION(0, 5);">
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="GAME_PLAYER_INTERACTION(0, 5);">
                                 <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
                                 <DIV CLASS="CARD-PLACEHOLDER"></DIV>
                             </BUTTON>
-                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="PLAYER_TO_GAME_INTERACTION(0, 6);">
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="GAME_PLAYER_INTERACTION(0, 6);">
                                 <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
                                 <DIV CLASS="CARD-PLACEHOLDER"></DIV>
                             </BUTTON>
-                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="PLAYER_TO_GAME_INTERACTION(0, 7);">
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="GAME_PLAYER_INTERACTION(0, 7);">
                                 <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
                                 <DIV CLASS="CARD-PLACEHOLDER"></DIV>
                             </BUTTON>
-                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="PLAYER_TO_GAME_INTERACTION(0, 8);">
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="GAME_PLAYER_INTERACTION(0, 8);">
                                 <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
                                 <DIV CLASS="CARD-PLACEHOLDER"></DIV>
                             </BUTTON>
-                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="PLAYER_TO_GAME_INTERACTION(0, 9);">
+                            <BUTTON CLASS="CARD-GRID PLAYER-GRID" onclick="GAME_PLAYER_INTERACTION(0, 9);">
                                 <SPAN CLASS="CARD-NAME">Placeholder</SPAN>
                                 <DIV CLASS="CARD-PLACEHOLDER"></DIV>
                             </BUTTON>
@@ -154,10 +154,13 @@
     </DIV>
     <DIV ID="BOARD2">
     </DIV>
-    <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/SOCKET.js"></SCRIPT>
     <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/PROTOTYPES.js"></SCRIPT>
-    <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/CONSTANTS.js"></SCRIPT>
-    <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/ROUTING.js"></SCRIPT>
+    <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/SOCKET.js"></SCRIPT>
+    <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/SCROLLBARS.js"></SCRIPT>
+    <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/GAME-CLIENT.js"></SCRIPT>
+    <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/MAIN-FACTORY.js"></SCRIPT>
+    <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/MAIN-DISPLAY.js"></SCRIPT>
+    <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/MAIN-ROUTING.js"></SCRIPT>
 </BODY>
 
 </HTML>

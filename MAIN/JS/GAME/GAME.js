@@ -40,7 +40,9 @@ function PLAYER(name, tag) {
     this.action_state = 0;
 }
 
-function CENTER(role) {
+function CENTER(name, role) {
+    this.name = name;
+
     this.actual_role = role.name;
 
     this.actual_team = role.team;
@@ -197,6 +199,9 @@ GAME.prototype.shuffleRoles = function() {
             player.original_team = roles[role_index].team;
 
             roles[role_index].action(player);
+
+            console.log(roles[role_index].name);
+
         }
     )
 
@@ -206,10 +211,18 @@ GAME.prototype.shuffleRoles = function() {
         random_role = roles_to_pick_from.slice(2 * random_factor, 2 * random_factor + 2);
 
         roles_to_pick_from = roles_to_pick_from.replace(random_role, '');
-
         role_index = eval(random_role);
 
-        this.center_cards.push(new CENTER(roles[role_index]));
+        console.log(roles[role_index].name);
+
+        name = "Center " + i;
+
+        this.center_cards.push(
+            new CENTER(
+                name, 
+                roles[role_index]
+            )
+        );
     }
 }
 
@@ -358,12 +371,14 @@ GAME.prototype.copyPlayer = function(player_copying, target_player) {
 
 GAME.prototype.recognizePlayers = function(player_recognizing, role_to_recognize_as, condition_of_recognition) {
     let output = false;
-    let own_index = this.player_list.findIndex(player => player === player_peeking);
+    let own_index = this.player_list.findIndex(player => player === player_recognizing);
 
     if (own_index == -1) return output;
 
     this.player_list.forEach(
         (p, i) => {
+            if (i == own_index) return;
+
             if (condition_of_recognition(p)) {
                 player_recognizing.player_knowledge[i] = role_to_recognize_as;
 
@@ -449,7 +464,13 @@ GAME.prototype.parseForUpdate = function(tag) {
         }
     );
 
-    delete game.center_cards;
+    game.center_cards.forEach(
+        function(center) {
+            delete center.actual_role;
+
+            delete center.actual_team;
+        }
+    );
 
     game.roles.forEach(
         function(role) {
