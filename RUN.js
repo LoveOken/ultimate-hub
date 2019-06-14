@@ -53,7 +53,7 @@ app.post('/login-submission', function(request, response) {
 
 /* Game Itself */
 
-const { GAME } = require("./MAIN/JS/GAME/GAME.js");
+const { GAME } = require("./MAIN/JS/GAME/GAME-ENGINE.js");
 
 var game = new GAME();
 

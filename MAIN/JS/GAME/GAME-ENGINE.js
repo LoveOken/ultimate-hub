@@ -1,4 +1,4 @@
-const { CREATE_ROLE_LIST } = require("./ROLES.js");
+const { CREATE_ROLE_CARDS } = require("./GAME-ROLES.js");
 
 function GAME() {
     this.id = "Game Test";
@@ -8,7 +8,7 @@ function GAME() {
 
     this.center_cards = new Array;
 
-    this.roles = CREATE_ROLE_LIST(this);
+    this.roles = CREATE_ROLE_CARDS(this);
     this.role_on_play = 0;
 
     this.stage = 0;
@@ -54,6 +54,16 @@ GAME.prototype.createDebugPlayer = function() {
     this.player_list.push(dummy);
 
     this.setReady();
+}
+
+GAME.prototype.debugPlayerList = function() {
+    this.player_list.forEach((player) => {
+        console.log(player);
+    });
+
+    this.center_cards.forEach((center) => {
+        console.log(center);
+    })
 }
 
 GAME.prototype.disconnectPlayer = function(tag) {
@@ -199,9 +209,6 @@ GAME.prototype.shuffleRoles = function() {
             player.original_team = roles[role_index].team;
 
             roles[role_index].action(player);
-
-            console.log(roles[role_index].name);
-
         }
     )
 
@@ -213,8 +220,6 @@ GAME.prototype.shuffleRoles = function() {
         roles_to_pick_from = roles_to_pick_from.replace(random_role, '');
         role_index = eval(random_role);
 
-        console.log(roles[role_index].name);
-
         name = "Center " + i;
 
         this.center_cards.push(
@@ -224,6 +229,8 @@ GAME.prototype.shuffleRoles = function() {
             )
         );
     }
+
+    this.debugPlayerList();
 }
 
 GAME.prototype.initializeKnowledge = function() {
@@ -303,7 +310,7 @@ GAME.prototype.nightPhase = function(update_function, i) {
     let players = this.player_list.filter(player => player.original_role === roles[i].name);
 
     this.role_on_play = this.roles.findIndex(role => role.name === roles[i].name);
-    this.stage_clock = 20;
+    this.stage_clock = 30;
 
     let currentAction = () => {
         players.forEach(
@@ -347,6 +354,7 @@ GAME.prototype.playerInteraction = function(tag, type, whom, update_function) {
 
     from.action(to);
 
+    this.debugPlayerList();
     update_function();
 }
 

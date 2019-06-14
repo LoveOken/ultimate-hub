@@ -12,12 +12,12 @@ function ROLE(name, quantity, team, description, action, necessary) {
     this.necessary = necessary;
 }
 
-const CREATE_ROLE_LIST = (game) => {
+const CREATE_ROLE_CARDS = (game) => {
     let output = new Array;
     output.push(
         new ROLE(
             "DOPPELGANGER",
-            5,
+            1,
             "Undefined",
             "Doppelganger looks at another player's card and copies its role. " +
             "Doppelganger then performs the action of said role. " +
@@ -28,6 +28,7 @@ const CREATE_ROLE_LIST = (game) => {
 
                     player.action = (target) => {
                         if (target == undefined) return;
+                        if (target == player) return;
 
                         game.copyPlayer(player, target);
                     }
@@ -39,7 +40,7 @@ const CREATE_ROLE_LIST = (game) => {
     output.push(
         new ROLE(
             "WEREWOLF",
-            3,
+            2,
             "Werewolf",
             "Werewolves recognize each other. " +
             "If active, a Lone Wolf can look at a center card. " +
@@ -81,7 +82,7 @@ const CREATE_ROLE_LIST = (game) => {
     output.push(
         new ROLE(
             "MINION",
-            3,
+            1,
             "Werewolf",
             "Minion knows which players are Werewolves. " +
             "The Werewolves dont know who the Minion is. " +
@@ -107,7 +108,7 @@ const CREATE_ROLE_LIST = (game) => {
     output.push(
         new ROLE(
             "MASON",
-            4,
+            2,
             "Villager",
             "Masons recognize each other. " +
             "Masons are part of the Villager team, and must find the Werewolves to win.",
@@ -177,7 +178,7 @@ const CREATE_ROLE_LIST = (game) => {
     output.push(
         new ROLE(
             "ROBBER",
-            1,
+            3,
             "Villager",
             "Robber swaps cards with one player. " +
             "Robber is now that role. Robber has now the goal of the stolen card. " +
@@ -207,17 +208,34 @@ const CREATE_ROLE_LIST = (game) => {
     output.push(
         new ROLE(
             "TROUBLEMAKER",
-            1,
+            3,
             "Villager",
             "Troublemaker swaps two other players' cards. " +
             "Troublemaker does not know the cards that she is swapping. " +
             "Troublemaker is part of the Villager team, and must find the Werewolves to win.",
             (player) => {
                 player.action = () => {
-                    console.log("Once");
+                    player.action_state = 1;
 
-                    player.action = () => {
-                        console.log("Twice");
+                    let no_more_actions = () => {
+                        console.log("No more actions for TROUBLEMAKER");
+                    }
+
+                    let last_target = undefined
+
+                    player.action = (target) => {
+                        if (target == last_target) return;
+                        if (target == undefined) return;
+                        if (target == player) return;
+
+                        if (last_target == undefined) {
+                            last_target = target;
+                            return;
+                        }
+
+                        if (game.swapTwoPlayers(player, last_target, target)) {
+                            player.action = no_more_actions;
+                        }
                     }
                 }
             },
@@ -327,4 +345,4 @@ const CREATE_ROLE_LIST = (game) => {
 }
 
 
-module.exports.CREATE_ROLE_LIST = CREATE_ROLE_LIST;
+module.exports.CREATE_ROLE_CARDS = CREATE_ROLE_CARDS;
