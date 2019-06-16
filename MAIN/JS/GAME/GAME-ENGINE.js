@@ -1,4 +1,4 @@
-const { CREATE_ROLE_CARDS } = require("./GAME-ROLES.js");
+const { CREATE_ROLE_CARDS } = require("./GAME-STAGING.js");
 
 function GAME() {
     this.id = "Game Test";
@@ -17,6 +17,9 @@ function GAME() {
     this.ready = false;
 
     this.lone_wolf = false;
+
+    this.action_time_multiplier = 1;
+    this.discussion_time = 5;
 }
 
 function PLAYER(name, tag) {
@@ -220,7 +223,7 @@ GAME.prototype.shuffleRoles = function() {
         roles_to_pick_from = roles_to_pick_from.replace(random_role, '');
         role_index = eval(random_role);
 
-        name = "Center " + i;
+        name = "Center " + (i + 1);
 
         this.center_cards.push(
             new CENTER(
@@ -307,11 +310,17 @@ GAME.prototype.preparationPhase = function(tag, update_function) {
 
 GAME.prototype.nightPhase = function(update_function, i) {
     let roles = this.roles.filter(role => role.active.includes(true));
-    let players = this.player_list.filter(player => player.original_role === roles[i].name);
+
+    let players;
+    if (roles[i] != undefined) {
+        players = this.player_list.filter(player => player.original_role === roles[i].name);
+    } else {
+        this.discussionPhase(update_function);
+        return;
+    }
 
     this.role_on_play = this.roles.findIndex(role => role.name === roles[i].name);
-    this.stage_clock = 30;
-
+    
     let currentAction = () => {
         players.forEach(
             function(player) {
@@ -327,10 +336,30 @@ GAME.prototype.nightPhase = function(update_function, i) {
 
     currentAction();
 
+    let time = roles[i].time;
+    if (time == 0) {
+        this.discussionPhase(update_function);
+        return;
+    } else {
+        this.stage_clock = time * this.action_time_multiplier;
+    }
+
     this.clockStart(
         update_function,
         end_function
     )
+}
+
+GAME.prototype.discussionPhase = function(update_function) {
+    this.stage = 3;
+    this.stage_clock = this.discussion_time * 60;
+
+    this.clockStart(
+        update_function,
+        () => {
+            console.log("lmao");
+        }
+    );
 }
 
 GAME.prototype.playerInteraction = function(tag, type, whom, update_function) {
@@ -385,8 +414,6 @@ GAME.prototype.recognizePlayers = function(player_recognizing, role_to_recognize
 
     this.player_list.forEach(
         (p, i) => {
-            if (i == own_index) return;
-
             if (condition_of_recognition(p)) {
                 player_recognizing.player_knowledge[i] = role_to_recognize_as;
 
@@ -441,7 +468,39 @@ GAME.prototype.swapTwoPlayers = function(player_watching, player_swapping, targe
     target_player.actual_team = player_swapping.actual_team;
     player_swapping.actual_team = holder;
 
+    delete holder;
+
     return true;
+}
+
+GAME.prototype.swapPlayerCenter = function(player_watching, player_swapping, target_center) {
+    let own_index = this.player_list.findIndex(player => player === player_watching);
+    let swapping_index = this.player_list.findIndex(player => player === player_swapping);
+    let target_index = this.center_cards.findIndex(center => center === target_center);
+
+    if (own_index == -1 || swapping_index == -1 || target_index == -1) return false;
+
+    let holder = undefined;
+
+    holder = player_watching.center_knowledge[target_index];
+    player_watching.center_knowledge[target_index] = player_watching.player_knowledge[swapping_index];
+    player_watching.player_knowledge[swapping_index] = holder;
+
+    holder = target_center.actual_role;
+    target_center.actual_role = player_swapping.actual_role;
+    player_swapping.actual_role = holder;
+
+    holder = target_center.actual_team;
+    target_center.actual_team = player_swapping.actual_team;
+    player_swapping.actual_team = holder;
+
+    delete holder;
+
+    return true;
+}
+
+GAME.prototype.rolePlayingIs = function(role_name) {
+    return (this.roles[this.role_on_play].name == role_name);
 }
 
 GAME.prototype.parseForUpdate = function(tag) {

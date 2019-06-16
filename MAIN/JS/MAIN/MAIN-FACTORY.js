@@ -33,41 +33,39 @@ const CREATE_SELECTABLE_ROLE = (form, role, index, active, subindex, onclick) =>
 }
 
 const CREATE_CARDS = () => {
-    document.getElementsByClassName("CARD-GRID").forEach(
-        function() {
-            card = document.createElement("div");
-            card_contents = document.createElement("div");
-            card_front = document.createElement("div");
-            card_back = document.createElement("div");
+    for (let i = 1; 20 >= i; i++) {
+        card = document.createElement("div");
+        card_contents = document.createElement("div");
+        card_front = document.createElement("div");
+        card_back = document.createElement("div");
 
-            card.setAttribute("DATA-FLIP", "FRONT");
-            card.setAttribute("DATA-ANIMATING", "FALSE");
+        card.setAttribute("DATA-FLIP", "FRONT");
+        card.setAttribute("DATA-ANIMATING", "FALSE");
 
-            card.classList.add("CARD");
-            card_contents.classList.add("CARD-CONTENTS");
-            card_front.classList.add("CARD-FRONT");
-            card_back.classList.add("CARD-BACK");
+        card.classList.add("CARD");
+        card_contents.classList.add("CARD-CONTENTS");
+        card_front.classList.add("CARD-FRONT");
+        card_back.classList.add("CARD-BACK");
 
-            card_sprite_front = document.createElement("div");
-            card_sprite_back = document.createElement("div");
+        card_sprite_front = document.createElement("div");
+        card_sprite_back = document.createElement("div");
 
-            card_sprite_front.classList.add("CARD-SPRITE");
-            card_sprite_front.classList.add("UNDEFINED");
-            card_sprite_back.classList.add("CARD-SPRITE");
-            card_sprite_back.classList.add("UNDEFINED");
+        card_sprite_front.classList.add("CARD-SPRITE");
+        card_sprite_front.classList.add("UNDEFINED");
+        card_sprite_back.classList.add("CARD-SPRITE");
+        card_sprite_back.classList.add("UNDEFINED");
 
 
-            card_front.appendChild(card_sprite_front);
-            card_back.appendChild(card_sprite_back);
-            card_contents.appendChild(card_front);
-            card_contents.appendChild(card_back);
-            card.appendChild(card_contents);
+        card_front.appendChild(card_sprite_front);
+        card_back.appendChild(card_sprite_back);
+        card_contents.appendChild(card_front);
+        card_contents.appendChild(card_back);
+        card.appendChild(card_contents);
 
-            card.style.display = "none";
+        card.style.display = "none";
 
-            document.getElementById("GAME").append(card);
-        }
-    );
+        document.getElementById("GAME").append(card);
+    }
 }
 
 CREATE_CARDS();

@@ -1,15 +1,18 @@
-let container, form, fieldset, scrollbar, scrollrail, player_seats, cards, card_sprites;
+let container, fieldset, form, scrollbar, scrollrail, cards, card_sprites, player_seats, center_seats;
 
 container = document.getElementById("ROLES");
-form = document.getElementById("ROLES-FORM");
 fieldset = document.getElementById("ROLES-FIELDSET");
+form = document.getElementById("ROLES-FORM");
+
 
 scrollbar = document.getElementById("ROLES-SCROLLBAR");
 scrollrail = document.getElementById("ROLES-SCROLLRAIL");
 
-player_seats = document.getElementsByClassName("PLAYER-GRID");
 cards = document.getElementsByClassName("CARD");
 card_sprites = document.getElementsByClassName("CARD-FRONT");
+
+player_seats = document.getElementsByClassName("PLAYER-GRID");
+center_seats = document.getElementsByClassName("CENTER-GRID");
 
 let do_once_connected = () => {
     document.getElementsByClassName("LOADER").forEach(
@@ -66,6 +69,12 @@ let display_default = () => {
             element.style.display = "none";
         }
     );
+
+    center_seats.forEach(
+        function(element) {
+            element.style.display = "none";
+        }
+    );
 }
 
 let display_if_room_is_full = () => {
@@ -108,9 +117,41 @@ let display_player_cards = (knowledge, index) => {
     }
 }
 
-let placeholder = () => {
+let display_center_seats = (center, index) => {
+	let seat = center_seats[index];
 
+    seat.style.display = "";
+    seat.children[0].innerText = center.name;
 }
+
+let initialize_center_cards = (center, index) => {
+    let seat = center_seats[index];
+    let card = cards[10 + index];
+
+    if (card.getAttribute("DATA-ANIMATING") == "TRUE") return;
+
+    card.style.display = "";
+    card.style.left = seat.offsetLeft + "px";
+    card.style.top = seat.offsetTop + "px";
+}
+
+let display_center_cards = (knowledge, index) => {
+    let sprite = card_sprites[10 + index].children[0];
+    let old_sprite_name = sprite.classList.item(1);
+
+    let new_sprite_name;
+
+    if (knowledge == undefined) {
+        new_sprite_name = "UNKNOWN";
+    } else {
+        new_sprite_name = knowledge[index];
+    }
+
+    if (old_sprite_name != new_sprite_name) {
+        sprite.classList.remove(old_sprite_name);
+        sprite.classList.add(new_sprite_name);
+    }
+} 
 
 let display_when_table_leader = () => {
     document.getElementById("CONTENTS-BUTTON-ON").style.display = "block";
@@ -196,9 +237,9 @@ GAME_TO_CLIENT_INIT(
     display_player_seats,
     initialize_player_cards,
     display_player_cards,
-    placeholder,
-    placeholder,
-    placeholder,
+    display_center_seats,
+    initialize_center_cards,
+    display_center_cards,
     display_when_table_leader,
     display_when_not_table_leader,
     display_based_on_stage,
