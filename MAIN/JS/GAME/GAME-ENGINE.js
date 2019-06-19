@@ -1,4 +1,6 @@
-const { CREATE_ROLE_CARDS } = require("./GAME-STAGING.js");
+const { CREATE_ROLE_CARDS, CREATE_WIN_CONDITIONS } = require("./GAME-STAGING.js");
+
+/* Object Definition */
 
 function GAME() {
     this.id = "Game Test";
@@ -18,8 +20,9 @@ function GAME() {
 
     this.lone_wolf = false;
 
-    this.action_time_multiplier = 1;
-    this.discussion_time = 5;
+    this.action_time_multiplier = 0.25;
+    this.discussion_time = 0.5;
+    this.voting_time = 20;
 }
 
 function PLAYER(name, tag) {
@@ -39,8 +42,16 @@ function PLAYER(name, tag) {
     this.actual_team = "Undefined";
     this.original_team = "Undefined";
 
-    this.action = null;
     this.action_state = 0;
+    this.evaluate = new Function;
+    this.end = new Function;
+    this.vote = new Function;
+    this.action = new Function;
+
+    this.vote_count = 0;
+    this.alive = true;
+
+    this.won = false;
 }
 
 function CENTER(name, role) {
@@ -50,6 +61,8 @@ function CENTER(name, role) {
 
     this.actual_team = role.team;
 }
+
+/* Debugging */
 
 GAME.prototype.createDebugPlayer = function() {
     dummy = new PLAYER("Dummy", -1);
@@ -68,6 +81,8 @@ GAME.prototype.debugPlayerList = function() {
         console.log(center);
     })
 }
+
+/* Game Preparations */
 
 GAME.prototype.disconnectPlayer = function(tag) {
     let me = this.player_list.findIndex(player => player.tag === tag);
@@ -166,16 +181,12 @@ GAME.prototype.setReady = function() {
     no_necessary_roles_active = (this.roles.filter(role => role.necessary === true && role.active.includes(true)).length == 0);
     cards_dont_align = (amount_of_cards_picked != this.player_list.length + 3);
 
-    if (
+    this.ready = !(
         not_everyone_is_ready ||
         not_enough_players ||
         no_necessary_roles_active ||
         cards_dont_align
-    ) {
-        this.ready = false;
-    } else {
-        this.ready = true;
-    }
+    );
 }
 
 GAME.prototype.shuffleRoles = function() {
@@ -227,7 +238,7 @@ GAME.prototype.shuffleRoles = function() {
 
         this.center_cards.push(
             new CENTER(
-                name, 
+                name,
                 roles[role_index]
             )
         );
@@ -277,6 +288,8 @@ GAME.prototype.clockStart = function(update_function, end_function) {
     }
 }
 
+/* Game Stages */
+
 GAME.prototype.preparationPhase = function(tag, update_function) {
     let from = this.player_list.findIndex(player => player.tag === tag);
 
@@ -320,7 +333,7 @@ GAME.prototype.nightPhase = function(update_function, i) {
     }
 
     this.role_on_play = this.roles.findIndex(role => role.name === roles[i].name);
-    
+
     let currentAction = () => {
         players.forEach(
             function(player) {
@@ -351,16 +364,68 @@ GAME.prototype.nightPhase = function(update_function, i) {
 }
 
 GAME.prototype.discussionPhase = function(update_function) {
+    let determine_result = () => {
+        this.stage = 5;
+
+        let dead_players;
+        let most_voted_player = null;
+
+        let make_vote = (player) => {
+            player.vote();
+        }
+
+        let find_most_voted_player = (player) => {
+            if (most_voted_player == null || player.vote_count > most_voted_player.vote_count) most_voted_player = player;
+        }
+
+        let kill_most_voted_player = () => {
+            this.killPlayer(most_voted_player);
+        }
+
+        this.player_list.forEach(make_vote);
+        this.player_list.forEach(find_most_voted_player);
+        
+        kill_most_voted_player();
+        dead_players = this.player_list.filter(player => player.alive == false);
+
+        let evaluate_win_condition = (player) => {
+            player.evaluate(dead_players);
+        }
+
+        this.player_list.forEach(evaluate_win_condition);
+
+        this.debugPlayerList();
+        update_function();
+    }
+
+    let voting_phase = () => {
+        this.stage = 4;
+        this.stage_clock = this.voting_time;
+
+        this.clockStart(
+            update_function,
+            determine_result
+        );
+    }
+
     this.stage = 3;
     this.stage_clock = this.discussion_time * 60;
 
+    let create_win_conditions = (player) => {
+        CREATE_WIN_CONDITIONS(player, this);
+    }
+
+    this.player_list.forEach(create_win_conditions);
+
+    this.debugPlayerList()
+
     this.clockStart(
         update_function,
-        () => {
-            console.log("lmao");
-        }
+        voting_phase
     );
 }
+
+/* Player Interactions */
 
 GAME.prototype.playerInteraction = function(tag, type, whom, update_function) {
     let from = this.player_list.find(player => player.tag === tag);
@@ -370,18 +435,22 @@ GAME.prototype.playerInteraction = function(tag, type, whom, update_function) {
         if (from === undefined || to === undefined) {
             throw (Error("Both target and sender must be defined."));
         }
-        if (this.stage != 2) {
-            throw (Error("Interaction not in time."));
-        }
-        if (from.original_role != this.roles[this.role_on_play].name) {
-            throw (Error("Role invalid for interaction."));
-        }
     } catch (err) {
         console.log(err);
         return;
     }
 
-    from.action(to);
+    switch (this.stage) {
+        case 2:
+            if (from.original_role != this.roles[this.role_on_play].name) return;
+            from.action(to);
+            break;
+        case 4:
+            from.vote(to);
+            break;
+        default:
+            return;
+    }
 
     this.debugPlayerList();
     update_function();
@@ -502,6 +571,35 @@ GAME.prototype.swapPlayerCenter = function(player_watching, player_swapping, tar
 GAME.prototype.rolePlayingIs = function(role_name) {
     return (this.roles[this.role_on_play].name == role_name);
 }
+
+GAME.prototype.voteFor = function(target) {
+    let target_index = this.player_list.findIndex(player => player === target);
+
+    if (target_index == -1) return false;
+
+    target.vote_count += 1;
+
+    return true;
+}
+
+GAME.prototype.randomPlayer = function() {
+    random_index = Math.floor(Math.random() * this.player_list.length);
+
+    return (this.player_list[random_index]);
+}
+
+GAME.prototype.killPlayer = function(target) {
+    let target_index = this.player_list.findIndex(player => player === target);
+
+    if (target_index == -1) return false;
+
+    target.alive = false;
+    target.end();
+
+    return true;
+}
+
+/* Exporting */
 
 GAME.prototype.parseForUpdate = function(tag) {
     let game = JSON.parse(JSON.stringify(this));

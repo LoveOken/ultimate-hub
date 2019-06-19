@@ -1,20 +1,77 @@
 function ROLE(name, quantity, team, description, action, necessary, time) {
     this.name = name;
-
     this.team = team;
-
     this.description = description;
 
-    this.time = time;
     this.action = action;
 
     this.active = Array(quantity).fill(false);
 
     this.necessary = necessary;
+
+    this.time = time;
 }
 
 const CREATE_ROLE_CARDS = (game) => {
     let output = new Array;
+
+    /* Vote Functions */
+
+    let default_vote = (player) => {
+        let vote_end = () => {
+            console.log("No more votes");
+        }
+
+        let vote_function = (target) => {
+            if (target == player) return;
+
+            if (target == undefined) {
+                do {
+                    target = game.randomPlayer();
+                } while (target == player);
+            }
+
+            if (game.voteFor(target)) {
+                player.vote = vote_end;
+            }
+        };
+
+        return vote_function;
+    }
+
+    let hunter_vote = (player) => {
+        let kill_end = () => {
+            console.log("No more kills");
+        }
+
+        let vote_end = () => {
+            console.log("No more votes");
+        }
+
+        let vote_function = (target) => {
+            if (target == player) return;
+
+            if (target == undefined) {
+                do {
+                    target = game.randomPlayer();
+                } while (target == player);
+            }
+
+            let kill_voted_player = () => {
+                player.end = kill_end;
+                game.killPlayer(target);
+            }
+
+            if (game.voteFor(target)) {
+                player.vote = vote_end;
+                player.end = kill_voted_player;
+            }
+        }
+
+        return vote_function;
+    }
+
+    /* Role Definitions */
 
     const DOPPELGANGER = new ROLE(
         "DOPPELGANGER",
@@ -24,12 +81,18 @@ const CREATE_ROLE_CARDS = (game) => {
         "Doppelganger then performs the action of said role. " +
         "Doppelganger is now that role's team and must complete their goal.",
         (player) => {
+            player.vote = default_vote(player);
+
             player.action = () => {
                 player.action_state = 1;
 
                 player.action = (target) => {
-                    if (target == undefined) return;
                     if (target == player) return;
+                    if (target == undefined) {
+                        do {
+                            target = game.randomPlayer();
+                        } while (target == player);
+                    };
 
                     game.copyPlayer(player, target);
                 }
@@ -40,12 +103,14 @@ const CREATE_ROLE_CARDS = (game) => {
     );
     const WEREWOLF = new ROLE(
         "WEREWOLF",
-        6,
+        2,
         "Werewolf",
         "Werewolves recognize each other. " +
         "If active, a Lone Wolf can look at a center card. " +
         "The Werewolves' goal is to survive and not be lynched",
         (player) => {
+            player.vote = default_vote(player);
+
             player.action = () => {
                 player.action_state = 1;
 
@@ -77,8 +142,6 @@ const CREATE_ROLE_CARDS = (game) => {
                 } else {
                     player.action = lone_wolf_action;
                 }
-
-
             }
         },
         true,
@@ -92,6 +155,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "The Werewolves dont know who the Minion is. " +
         "The Minion's goal is to protect Werewolves from accussations.",
         (player) => {
+            player.vote = default_vote(player);
+
             player.action = () => {
                 player.action_state = 1;
 
@@ -116,6 +181,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "Masons recognize each other. " +
         "Masons are part of the Villager team, and must find the Werewolves to win.",
         (player) => {
+            player.vote = default_vote(player);
+
             player.action = () => {
                 player.action_state = 1;
 
@@ -140,6 +207,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "Seer can view another player's card, or two of the center cards. " +
         "Seer is part of the Villager team, and must find the Werewolves to win.",
         (player) => {
+            player.vote = default_vote(player);
+
             player.action = () => {
                 player.action_state = 1;
 
@@ -171,12 +240,11 @@ const CREATE_ROLE_CARDS = (game) => {
                         player.action = repeat_center_peek;
                     }
                 }
-
             }
         },
         false,
         20
-    )
+    );
     const ROBBER = new ROLE(
         "ROBBER",
         1,
@@ -185,6 +253,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "Robber is now that role. Robber has now the goal of the stolen card. " +
         "Robber is part of the Villager team, and must find the Werewolves to win.",
         (player) => {
+            player.vote = default_vote(player);
+
             player.action = () => {
                 player.action_state = 1;
 
@@ -214,6 +284,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "Troublemaker does not know the cards that she is swapping. " +
         "Troublemaker is part of the Villager team, and must find the Werewolves to win.",
         (player) => {
+            player.vote = default_vote(player);
+
             player.action = () => {
                 player.action_state = 1;
 
@@ -250,6 +322,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "Drunk does not know the role of the card swapped. " +
         "Drunk is part of the Villager team, and must find the Werewolves to win.",
         (player) => {
+            player.vote = default_vote(player);
+
             player.action = () => {
                 player.action_state = 1;
 
@@ -278,6 +352,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "Insomniac looks at her card, to see if it has been swapped. " +
         "Insomniac is part of the Villager team, and must find the Werewolves to win.",
         (player) => {
+            player.vote = default_vote(player);
+
             player.action = () => {
                 player.action_state = 1;
                 player.original_role = "INSOMNIAC";
@@ -294,7 +370,7 @@ const CREATE_ROLE_CARDS = (game) => {
         },
         false,
         5
-    ); 
+    );
     const VILLAGER = new ROLE(
         "VILLAGER",
         3,
@@ -302,6 +378,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "Villager doesn't wake up at night. " +
         "Villager is part of the Villager team, and must find the Werewolves to win.",
         (player) => {
+            player.vote = default_vote(player);
+
             player.action = () => {
                 console.log("VILLAGER doesn't have a night action");
             }
@@ -317,6 +395,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "If the Hunter dies, the person that got voted by the Hunter also dies. " +
         "Hunter is part of the Villager team, and must find the Werewolves to win.",
         (player) => {
+            player.vote = hunter_vote(player);
+
             player.action = () => {
                 console.log("HUNTER doesn't have a night action");
             }
@@ -331,6 +411,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "Tanner doesn't wake up at night. " +
         "If Tanner gets lynched, he wins.",
         (player) => {
+            player.vote = default_vote(player);
+
             player.action = () => {
                 console.log("TANNER doesn't have a night action");
             }
@@ -338,6 +420,8 @@ const CREATE_ROLE_CARDS = (game) => {
         false,
         0
     );
+
+    /* Role Loading */
 
     output.push(
         DOPPELGANGER,
@@ -352,10 +436,82 @@ const CREATE_ROLE_CARDS = (game) => {
         VILLAGER,
         HUNTER,
         TANNER
-    );   
+    );
 
     return output;
 }
 
+const CREATE_WIN_CONDITIONS = (player) => {
+    switch (player.actual_team) {
+        case "Villager":
+            {
+                let villager_win_condition = (dead) => {
+                    let tanner_is_dead = false;
+                    let won = false;
+
+                    let check_condition = (target) => {
+                        if (target.actual_team == "Werewolf" && target.actual_role != "MINION" && !tanner_is_dead) {
+                            won = true;
+                        }
+                        if (target.actual_team == "Tanner") {
+                            tanner_is_dead = true;
+                            won = false;
+                        }
+                    }
+
+                    dead.forEach(check_condition);
+                    player.won = won;
+                }
+
+                player.evaluate = villager_win_condition;
+
+                break;
+            }
+
+        case "Werewolf":
+            {
+                let werewolf_win_condition = (dead) => {
+                    let won = true;
+
+                    let check_condition = (target) => {
+                        if (target.actual_team == "Werewolf" && target.actual_role != "MINION") {
+                            won = false;
+                        }
+                        if (target.actual_team == "Tanner") {
+                            won = false;
+                        }
+                    }
+
+                    dead.forEach(check_condition);
+                    player.won = won;
+                }
+
+                player.evaluate = werewolf_win_condition;
+
+                break;
+            }
+
+        case "Tanner":
+            {
+                let tanner_win_condition = (dead) => {
+                    let won = false;
+
+                    let check_condition = (target) => {
+                        if (target.actual_team == "Tanner") {
+                            won = true;
+                        }
+                    }
+
+                    dead.forEach(check_condition);
+                    player.won = won;
+                }
+
+                player.evaluate = tanner_win_condition;
+
+                break;
+            }
+    }
+}
 
 module.exports.CREATE_ROLE_CARDS = CREATE_ROLE_CARDS;
+module.exports.CREATE_WIN_CONDITIONS = CREATE_WIN_CONDITIONS;
