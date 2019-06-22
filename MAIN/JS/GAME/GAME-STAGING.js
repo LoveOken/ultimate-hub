@@ -15,6 +15,10 @@ function ROLE(name, quantity, team, description, action, necessary, time) {
 const CREATE_ROLE_CARDS = (game) => {
     let output = new Array;
 
+    /* Custom Options */
+
+    game.options.lone_wolf = false;
+
     /* Vote Functions */
 
     let default_vote = (player) => {
@@ -77,8 +81,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "DOPPELGANGER",
         1,
         "Undefined",
-        "Doppelganger looks at another player's card and copies its role. " +
-        "Doppelganger then performs the action of said role. " +
+        "Doppelganger must look at another player's card and copy its role.<br>" +
+        "Doppelganger then performs the action of said role.<br>" +
         "Doppelganger is now that role's team and must complete their goal.",
         (player) => {
             player.vote = default_vote(player);
@@ -105,16 +109,16 @@ const CREATE_ROLE_CARDS = (game) => {
         "WEREWOLF",
         2,
         "Werewolf",
-        "Werewolves recognize each other. " +
-        "If active, a Lone Wolf can look at a center card. " +
-        "The Werewolves' goal is to survive and not be lynched",
+        "Werewolves recognize each other.<br>" +
+        "If active, a Lone Wolf can look at a center card.<br>" +
+        "The Werewolves' goal is to survive and not be lynched.",
         (player) => {
             player.vote = default_vote(player);
 
             player.action = () => {
                 player.action_state = 1;
 
-                if (game.lone_wolf) {
+                if (game.options.lone_wolf) {
                     WEREWOLF.time = 20;
                 }
 
@@ -137,7 +141,7 @@ const CREATE_ROLE_CARDS = (game) => {
                     p => p.original_role != "MINION" && p.actual_team == "Werewolf" && p != player
                 )
 
-                if (not_alone || !game.lone_wolf) {
+                if (not_alone || !game.options.lone_wolf) {
                     player.action = no_more_actions;
                 } else {
                     player.action = lone_wolf_action;
@@ -151,8 +155,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "MINION",
         1,
         "Werewolf",
-        "Minion knows which players are Werewolves. " +
-        "The Werewolves dont know who the Minion is. " +
+        "Minion knows which players are Werewolves.<br>" +
+        "The Werewolves dont know who the Minion is.<br>" +
         "The Minion's goal is to protect Werewolves from accussations.",
         (player) => {
             player.vote = default_vote(player);
@@ -178,7 +182,7 @@ const CREATE_ROLE_CARDS = (game) => {
         "MASON",
         2,
         "Villager",
-        "Masons recognize each other. " +
+        "Masons recognize each other.<br>" +
         "Masons are part of the Villager team, and must find the Werewolves to win.",
         (player) => {
             player.vote = default_vote(player);
@@ -204,7 +208,7 @@ const CREATE_ROLE_CARDS = (game) => {
         "SEER",
         1,
         "Villager",
-        "Seer can view another player's card, or two of the center cards. " +
+        "Seer can view another player's card, or two of the center cards.<br>" +
         "Seer is part of the Villager team, and must find the Werewolves to win.",
         (player) => {
             player.vote = default_vote(player);
@@ -249,8 +253,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "ROBBER",
         1,
         "Villager",
-        "Robber swaps cards with one player. " +
-        "Robber is now that role. Robber has now the goal of the stolen card. " +
+        "Robber swaps cards with one player.<br>" +
+        "Robber is now that role. Robber has now the goal of the stolen card.<br>" +
         "Robber is part of the Villager team, and must find the Werewolves to win.",
         (player) => {
             player.vote = default_vote(player);

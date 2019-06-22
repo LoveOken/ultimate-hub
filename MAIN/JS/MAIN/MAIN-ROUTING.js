@@ -99,7 +99,7 @@ let initialize_player_cards = (player, index) => {
     card.style.top = seat.offsetTop + "px";
 }
 
-let display_player_cards = (knowledge, index) => {
+let display_player_cards = (knowledge, index, public_knowledge, stage) => {
     let sprite = card_sprites[index].children[0];
     let old_sprite_name = sprite.classList.item(1);
 
@@ -110,6 +110,8 @@ let display_player_cards = (knowledge, index) => {
     } else {
         new_sprite_name = knowledge[index];
     }
+
+    if (stage == 5) new_sprite_name = public_knowledge[index];
 
     if (old_sprite_name != new_sprite_name) {
         sprite.classList.remove(old_sprite_name);
@@ -135,7 +137,7 @@ let initialize_center_cards = (center, index) => {
     card.style.top = seat.offsetTop + "px";
 }
 
-let display_center_cards = (knowledge, index) => {
+let display_center_cards = (knowledge, index, public_knowledge, stage) => {
     let sprite = card_sprites[10 + index].children[0];
     let old_sprite_name = sprite.classList.item(1);
 
@@ -146,6 +148,8 @@ let display_center_cards = (knowledge, index) => {
     } else {
         new_sprite_name = knowledge[index];
     }
+
+    if (stage == 5) new_sprite_name = public_knowledge[index];
 
     if (old_sprite_name != new_sprite_name) {
         sprite.classList.remove(old_sprite_name);
@@ -194,19 +198,32 @@ let display_based_on_stage = (stage, role_on_play) => {
     title.innerText = [
         "Game hasn't started yet.",
         "Game is about to start.",
-        "Game has started. Night Phase.",
+        "Game has started. Night Stage.",
+        "Game has started. Day Stage.",
+        "Game has started. Day Finished.",
+        "Game has ended."
     ][stage];
 
     subtitle.innerText = [
         "",
-        "Preparation phase",
+        "Get ready on your seats!",
         role_on_play.name + " is awake!",
+        "Talk and discuss!",
+        "Vote now!",
+        "You have won!"
     ][stage];
 
     description.innerText = [
         "",
         "Cards are being shuffled and dealt.",
         role_on_play.description,
+        "Everybody will discuss the events happened at night.<br>" +
+        "At the end of the day, everybody will vote to kill a person.<br>" +
+        "If that person is your target, you win.",
+        "Everyone must vote now.<br>" +
+        "Vote the person which you think is the enemy.<br>" +
+        "You have limited time to vote. If you don't vote, your vote will be random.",
+        "Win Conditions."
     ][stage];
 }
 

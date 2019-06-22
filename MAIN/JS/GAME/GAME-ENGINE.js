@@ -1,28 +1,31 @@
 const { CREATE_ROLE_CARDS, CREATE_WIN_CONDITIONS } = require("./GAME-STAGING.js");
 
-/* Object Definition */
+/* Object Definitions */
 
 function GAME() {
     this.id = "Game Test";
+
+    this.options = {
+        action_time_multiplier: 0.25,
+        discussion_time: 0.5,
+        voting_time: 20
+    }
+
+    this.roles = CREATE_ROLE_CARDS(this);
+    this.role_on_play = 0;
 
     this.player_list = new Array;
     this.player_max = 10;
 
     this.center_cards = new Array;
 
-    this.roles = CREATE_ROLE_CARDS(this);
-    this.role_on_play = 0;
-
     this.stage = 0;
     this.stage_clock = 0;
 
     this.ready = false;
 
-    this.lone_wolf = false;
-
-    this.action_time_multiplier = 0.25;
-    this.discussion_time = 0.5;
-    this.voting_time = 20;
+    this.public_player_knowledge = new Array;
+    this.public_center_knowledge = new Array;
 }
 
 function PLAYER(name, tag) {
@@ -323,8 +326,8 @@ GAME.prototype.preparationPhase = function(tag, update_function) {
 
 GAME.prototype.nightPhase = function(update_function, i) {
     let roles = this.roles.filter(role => role.active.includes(true));
-
     let players;
+
     if (roles[i] != undefined) {
         players = this.player_list.filter(player => player.original_role === roles[i].name);
     } else {
@@ -350,11 +353,12 @@ GAME.prototype.nightPhase = function(update_function, i) {
     currentAction();
 
     let time = roles[i].time;
+
     if (time == 0) {
         this.discussionPhase(update_function);
         return;
     } else {
-        this.stage_clock = time * this.action_time_multiplier;
+        this.stage_clock = time * this.options.action_time_multiplier;
     }
 
     this.clockStart(
@@ -367,7 +371,6 @@ GAME.prototype.discussionPhase = function(update_function) {
     let determine_result = () => {
         this.stage = 5;
 
-        let dead_players;
         let most_voted_player = null;
 
         let make_vote = (player) => {
@@ -379,28 +382,31 @@ GAME.prototype.discussionPhase = function(update_function) {
         }
 
         let kill_most_voted_player = () => {
-            this.killPlayer(most_voted_player);
+            if (most_voted_player.vote_count != 1) {
+                this.killPlayer(most_voted_player);
+            }
         }
 
         this.player_list.forEach(make_vote);
         this.player_list.forEach(find_most_voted_player);
-        
         kill_most_voted_player();
-        dead_players = this.player_list.filter(player => player.alive == false);
+
+        let dead_players = this.player_list.filter(player => player.alive == false);
 
         let evaluate_win_condition = (player) => {
             player.evaluate(dead_players);
         }
 
         this.player_list.forEach(evaluate_win_condition);
-
         this.debugPlayerList();
+        this.revealAll();
+
         update_function();
     }
 
     let voting_phase = () => {
         this.stage = 4;
-        this.stage_clock = this.voting_time;
+        this.stage_clock = this.options.voting_time;
 
         this.clockStart(
             update_function,
@@ -409,15 +415,10 @@ GAME.prototype.discussionPhase = function(update_function) {
     }
 
     this.stage = 3;
-    this.stage_clock = this.discussion_time * 60;
+    this.stage_clock = this.options.discussion_time * 60;
 
-    let create_win_conditions = (player) => {
-        CREATE_WIN_CONDITIONS(player, this);
-    }
-
-    this.player_list.forEach(create_win_conditions);
-
-    this.debugPlayerList()
+    this.player_list.forEach(CREATE_WIN_CONDITIONS);
+    this.debugPlayerList();
 
     this.clockStart(
         update_function,
@@ -599,6 +600,20 @@ GAME.prototype.killPlayer = function(target) {
     return true;
 }
 
+GAME.prototype.revealAll = function() {
+    this.player_list.forEach(
+        (target) => {
+            this.public_player_knowledge.push(target.actual_role);
+        }
+    )
+
+    this.center_cards.forEach(
+        (target) => {
+            this.public_center_knowledge.push(target.actual_role);
+        }
+    )
+}
+
 /* Exporting */
 
 GAME.prototype.parseForUpdate = function(tag) {
@@ -625,6 +640,9 @@ GAME.prototype.parseForUpdate = function(tag) {
             delete player.original_team;
 
             delete player.action;
+            delete player.vote;
+            delete player.end;
+            delete player.evaluate;
             delete player.action_state;
         }
     );

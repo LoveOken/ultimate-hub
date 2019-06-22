@@ -105,7 +105,7 @@ const GAME_TO_CLIENT_INIT =
                 initialize_player_cards(player, index);
 
                 if (game.stage > 0) {
-                    display_player_cards(my_player.player_knowledge, index);
+                    display_player_cards(my_player.player_knowledge, index, game.public_player_knowledge, game.stage);
                 }
             });
 
@@ -117,7 +117,7 @@ const GAME_TO_CLIENT_INIT =
                 initialize_center_cards(center, index);
 
                 if (game.stage > 0) {
-                    display_center_cards(my_player.center_knowledge, index);
+                    display_center_cards(my_player.center_knowledge, index, game.public_center_knowledge, game.stage);
                 }
             });
 
