@@ -171,7 +171,7 @@ let display_when_not_table_leader = () => {
     document.getElementById("ROLES-FIELDSET").setAttribute("disabled", true);
 }
 
-let display_based_on_stage = (stage, role_on_play) => {
+let display_based_on_stage = (stage, role_on_play, winners) => {
     switch (stage) {
         case 0:
             {
@@ -210,20 +210,22 @@ let display_based_on_stage = (stage, role_on_play) => {
         role_on_play.name + " is awake!",
         "Talk and discuss!",
         "Vote now!",
-        "You have won!"
+        "Everyone has voted!"
     ][stage];
+
+    let ending_description = (winners.length == 0) ? "Nobody has won." : "The winners are: " + winners.toString().replace(",", ", ");
 
     description.innerText = [
         "",
         "Cards are being shuffled and dealt.",
         role_on_play.description,
-        "Everybody will discuss the events happened at night.<br>" +
-        "At the end of the day, everybody will vote to kill a person.<br>" +
+        "Everybody will discuss the events happened at night. " +
+        "At the end of the day, everybody will vote to kill a person. " +
         "If that person is your target, you win.",
-        "Everyone must vote now.<br>" +
-        "Vote the person which you think is the enemy.<br>" +
+        "Everyone must vote now. " +
+        "Vote the person which you think is the enemy. " +
         "You have limited time to vote. If you don't vote, your vote will be random.",
-        "Win Conditions."
+        ending_description
     ][stage];
 }
 
@@ -239,7 +241,6 @@ let display_clock = (time) => {
     let clock = document.getElementById("STATUS-TIME");
     clock.innerText = time.secondsToMinutesAndSeconds();
 }
-
 
 GAME_TO_CLIENT_INIT(
     do_once_connected,

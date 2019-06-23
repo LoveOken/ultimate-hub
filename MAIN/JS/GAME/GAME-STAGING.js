@@ -81,8 +81,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "DOPPELGANGER",
         1,
         "Undefined",
-        "Doppelganger must look at another player's card and copy its role.<br>" +
-        "Doppelganger then performs the action of said role.<br>" +
+        "Doppelganger must look at another player's card and copy its role. " +
+        "Doppelganger then performs the action of said role. " +
         "Doppelganger is now that role's team and must complete their goal.",
         (player) => {
             player.vote = default_vote(player);
@@ -109,8 +109,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "WEREWOLF",
         2,
         "Werewolf",
-        "Werewolves recognize each other.<br>" +
-        "If active, a Lone Wolf can look at a center card.<br>" +
+        "Werewolves recognize each other. " +
+        "If active, a Lone Wolf can look at a center card. " +
         "The Werewolves' goal is to survive and not be lynched.",
         (player) => {
             player.vote = default_vote(player);
@@ -155,8 +155,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "MINION",
         1,
         "Werewolf",
-        "Minion knows which players are Werewolves.<br>" +
-        "The Werewolves dont know who the Minion is.<br>" +
+        "Minion knows which players are Werewolves. " +
+        "The Werewolves dont know who the Minion is. " +
         "The Minion's goal is to protect Werewolves from accussations.",
         (player) => {
             player.vote = default_vote(player);
@@ -182,7 +182,7 @@ const CREATE_ROLE_CARDS = (game) => {
         "MASON",
         2,
         "Villager",
-        "Masons recognize each other.<br>" +
+        "Masons recognize each other. " +
         "Masons are part of the Villager team, and must find the Werewolves to win.",
         (player) => {
             player.vote = default_vote(player);
@@ -208,7 +208,7 @@ const CREATE_ROLE_CARDS = (game) => {
         "SEER",
         1,
         "Villager",
-        "Seer can view another player's card, or two of the center cards.<br>" +
+        "Seer can view another player's card, or two of the center cards. " +
         "Seer is part of the Villager team, and must find the Werewolves to win.",
         (player) => {
             player.vote = default_vote(player);
@@ -253,8 +253,8 @@ const CREATE_ROLE_CARDS = (game) => {
         "ROBBER",
         1,
         "Villager",
-        "Robber swaps cards with one player.<br>" +
-        "Robber is now that role. Robber has now the goal of the stolen card.<br>" +
+        "Robber swaps cards with one player. " +
+        "Robber is now that role. Robber has now the goal of the stolen card. " +
         "Robber is part of the Villager team, and must find the Werewolves to win.",
         (player) => {
             player.vote = default_vote(player);
@@ -446,25 +446,33 @@ const CREATE_ROLE_CARDS = (game) => {
 }
 
 const CREATE_WIN_CONDITIONS = (player) => {
+    let won;
+
     switch (player.actual_team) {
         case "Villager":
             {
                 let villager_win_condition = (dead) => {
-                    let tanner_is_dead = false;
-                    let won = false;
+                    let dead_wolf = false;
+                    let dead_tanner = false;
+                    won = true;
 
                     let check_condition = (target) => {
-                        if (target.actual_team == "Werewolf" && target.actual_role != "MINION" && !tanner_is_dead) {
+                        if (target.actual_team == "Werewolf" && target.actual_role != "MINION" && !dead_tanner) {
+                            dead_wolf = true;
                             won = true;
                         }
                         if (target.actual_team == "Tanner") {
-                            tanner_is_dead = true;
+                            dead_tanner = true;
+                            won = false;
+                        }
+                        if (!dead_wolf) {
                             won = false;
                         }
                     }
 
                     dead.forEach(check_condition);
                     player.won = won;
+                    return won;
                 }
 
                 player.evaluate = villager_win_condition;
@@ -475,7 +483,7 @@ const CREATE_WIN_CONDITIONS = (player) => {
         case "Werewolf":
             {
                 let werewolf_win_condition = (dead) => {
-                    let won = true;
+                    won = true;
 
                     let check_condition = (target) => {
                         if (target.actual_team == "Werewolf" && target.actual_role != "MINION") {
@@ -488,6 +496,7 @@ const CREATE_WIN_CONDITIONS = (player) => {
 
                     dead.forEach(check_condition);
                     player.won = won;
+                    return won;
                 }
 
                 player.evaluate = werewolf_win_condition;
@@ -498,7 +507,7 @@ const CREATE_WIN_CONDITIONS = (player) => {
         case "Tanner":
             {
                 let tanner_win_condition = (dead) => {
-                    let won = false;
+                    won = false;
 
                     let check_condition = (target) => {
                         if (target.actual_team == "Tanner") {
@@ -508,6 +517,7 @@ const CREATE_WIN_CONDITIONS = (player) => {
 
                     dead.forEach(check_condition);
                     player.won = won;
+                    return won;
                 }
 
                 player.evaluate = tanner_win_condition;

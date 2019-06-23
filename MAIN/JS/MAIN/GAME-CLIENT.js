@@ -49,7 +49,7 @@ const GAME_TO_CLIENT_INIT =
         });
 
         socket.on("update-finish", (data) => {
-            let game, already_connected, my_player_index, my_player, player_seats, title, subtitle, description, clock;
+            let game, already_connected, my_player_index, my_player;
 
             let for_each_and_every_role = (todo) => {
                 game.roles.forEach((role, index) => {
@@ -127,7 +127,7 @@ const GAME_TO_CLIENT_INIT =
                 display_when_not_table_leader();
             }
 
-            display_based_on_stage(game.stage, game.roles[game.role_on_play]);
+            display_based_on_stage(game.stage, game.roles[game.role_on_play], game.winners);
             display_based_on_ready_game(game.ready);
             display_clock(game.stage_clock);
         })

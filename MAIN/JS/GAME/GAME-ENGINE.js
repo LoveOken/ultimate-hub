@@ -6,9 +6,9 @@ function GAME() {
     this.id = "Game Test";
 
     this.options = {
-        action_time_multiplier: 0.25,
-        discussion_time: 0.5,
-        voting_time: 20
+        action_time_multiplier: 0,
+        discussion_time: 0.1,
+        voting_time: 5
     }
 
     this.roles = CREATE_ROLE_CARDS(this);
@@ -26,6 +26,8 @@ function GAME() {
 
     this.public_player_knowledge = new Array;
     this.public_center_knowledge = new Array;
+
+    this.winners = new Array;
 }
 
 function PLAYER(name, tag) {
@@ -199,7 +201,7 @@ GAME.prototype.shuffleRoles = function() {
     roles_to_pick_from = "";
 
     roles.forEach(
-        function(role, index) {
+        (role, index) => {
             let string_index;
             string_index = Math.floor(index / 10).toString() + (index % 10).toString();
 
@@ -210,7 +212,7 @@ GAME.prototype.shuffleRoles = function() {
     );
 
     this.player_list.forEach(
-        function(player) {
+        (player) => {
             let random_factor, random_role, role_index;
             random_factor = Math.floor(Math.random() * roles_to_pick_from.length / 2);
             random_role = roles_to_pick_from.slice(2 * random_factor, 2 * random_factor + 2);
@@ -256,19 +258,19 @@ GAME.prototype.initializeKnowledge = function() {
     initial_center_knowledge = new Array;
 
     this.player_list.forEach(
-        function() {
+        () => {
             initial_player_knowledge.push("UNKNOWN");
         }
     )
 
     this.center_cards.forEach(
-        function() {
+        () => {
             initial_center_knowledge.push("UNKNOWN");
         }
     )
 
     this.player_list.forEach(
-        function(player, index) {
+        (player, index) => {
             player.player_knowledge = initial_player_knowledge.slice();
             player.center_knowledge = initial_center_knowledge.slice();
 
@@ -352,13 +354,13 @@ GAME.prototype.nightPhase = function(update_function, i) {
 
     currentAction();
 
-    let time = roles[i].time;
+    let time = roles[i].time * this.options.action_time_multiplier;
 
     if (time == 0) {
         this.discussionPhase(update_function);
         return;
     } else {
-        this.stage_clock = time * this.options.action_time_multiplier;
+        this.stage_clock = time;
     }
 
     this.clockStart(
@@ -394,11 +396,10 @@ GAME.prototype.discussionPhase = function(update_function) {
         let dead_players = this.player_list.filter(player => player.alive == false);
 
         let evaluate_win_condition = (player) => {
-            player.evaluate(dead_players);
+            if (player.evaluate(dead_players) && !this.winners.includes(player.actual_team)) this.winners.push(player.actual_team);
         }
 
         this.player_list.forEach(evaluate_win_condition);
-        this.debugPlayerList();
         this.revealAll();
 
         update_function();
@@ -418,7 +419,6 @@ GAME.prototype.discussionPhase = function(update_function) {
     this.stage_clock = this.options.discussion_time * 60;
 
     this.player_list.forEach(CREATE_WIN_CONDITIONS);
-    this.debugPlayerList();
 
     this.clockStart(
         update_function,
@@ -453,7 +453,6 @@ GAME.prototype.playerInteraction = function(tag, type, whom, update_function) {
             return;
     }
 
-    this.debugPlayerList();
     update_function();
 }
 
@@ -623,6 +622,7 @@ GAME.prototype.parseForUpdate = function(tag) {
 
     if (me != -1) {
         delete game.player_list[me].actual_role;
+        delete game.player_list[me].actual_team;
     }
 
     let other_players = game.player_list.filter(player => player.tag != tag);
