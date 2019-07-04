@@ -1,4 +1,5 @@
-const CONFIGURATION_TABS_OPEN = (content_to_see, tab_to_see) => {
+const DISPLAY_TAB = (content_to_see, tab_to_see) => {
+    "use strict";
     try {
         if (!tab_to_see.classList.contains('CONFIGURATION-TABS')) {
             throw (Error("Not a valid configuration tab."));
@@ -30,32 +31,13 @@ const CONFIGURATION_TABS_OPEN = (content_to_see, tab_to_see) => {
     tab_to_see.style.color = "#1c1c1c";
 }
 
-const CONFIGURATION_SEATS_CLICK = (button_to_see) => {
-    try {
-        if (!document.getElementById(button_to_see).classList.contains('CONFIGURATION-SEATS')) {
-            throw (Error("Not a valid configuration seat button."))
-        };
-        if (document.getElementById(button_to_see).style.display == "initial") {
-            throw (Error("This button is already on display."))
-        };
-    } catch (e) {
-        console.log(e);
-        return;
-    }
-
-    let will_sit;
-
-    if (button_to_see == "SEATS-STAND") {
-        will_sit = true;
-    } else {
-        will_sit = false;
-    }
-
+const DISPLAY_SEAT = (seat) => {
+    "use strict";
     document.getElementsByClassName("CONFIGURATION-SEATS").forEach(
         function(element) {
             element.style.display = "none";
         }
     )
 
-    GAME_SEAT_REQUEST(will_sit);
+    document.getElementById(seat).style.display = "";
 }

@@ -13,10 +13,10 @@
                     Configuration
                 </H1>
                 <DIV ID="CONFIGURATION-TABS">
-                    <BUTTON ID="ROLES-TITLE" CLASS="CONFIGURATION-TABS CONFIGURATION-DEFAULT" onclick="CONFIGURATION_TABS_OPEN('CONFIGURATION-CONTENTS-ROLES', this)">
+                    <BUTTON ID="ROLES-TITLE" CLASS="CONFIGURATION-TABS CONFIGURATION-DEFAULT" onclick="DISPLAY_TAB('CONFIGURATION-CONTENTS-ROLES', this)">
                             Roles
                     </BUTTON>
-                    <BUTTON ID="SETTINGS-TITLE" CLASS="CONFIGURATION-TABS" onclick="CONFIGURATION_TABS_OPEN('CONFIGURATION-CONTENTS-SETTINGS', this)">
+                    <BUTTON ID="SETTINGS-TITLE" CLASS="CONFIGURATION-TABS" onclick="DISPLAY_TAB('CONFIGURATION-CONTENTS-SETTINGS', this)">
                             Settings
                     </BUTTON>
                 </DIV>
@@ -44,10 +44,10 @@
                         </FIELDSET>
                     </DIV>
                 </DIV>
-                <BUTTON TYPE="button" CLASS="CONFIGURATION-SEATS" ID="SEATS-SIT" onclick="CONFIGURATION_SEATS_CLICK('SEATS-STAND');" style="display: none;">
+                <BUTTON TYPE="button" CLASS="CONFIGURATION-SEATS" ID="SEATS-SIT" onclick="GAME_SEAT_REQUEST(true);" style="display: none;">
                     Sit
                 </BUTTON>
-                <BUTTON TYPE="button" CLASS="CONFIGURATION-SEATS" ID="SEATS-STAND" onclick="CONFIGURATION_SEATS_CLICK('SEATS-SIT');" style="display: none;">
+                <BUTTON TYPE="button" CLASS="CONFIGURATION-SEATS" ID="SEATS-STAND" onclick="GAME_SEAT_REQUEST(false);" style="display: none;">
                     Stand
                 </BUTTON>
                 <BUTTON TYPE="button" ID="CONTENTS-BUTTON-ON" onclick="GAME_CONFIRM_SETTINGS();">

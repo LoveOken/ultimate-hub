@@ -1,102 +1,33 @@
-function ROLE(name, quantity, team, description, action, necessary, time) {
+const { GAME, ROLE } = require("./GAME-ENGINE-FACTORY.js");
+const VOTE = require("./GAME-STAGING-VOTE.js");
+
+
+
+GAME.prototype.roleTrack = function() {
     "use strict";
-    this.name = name;
-    this.team = team;
-    this.description = description;
+    this.trackers = {
+        wolf_in_play: false,
+        tanner_in_play: false,
+    };
 
-    this.action = action;
-
-    this.active = new Array(quantity);
-    this.active.fill(false);
-
-    this.necessary = necessary;
-
-    this.time = time;
+    this.options.lone_wolf = false;
 }
 
-/* Custom Variables */
 
-let wolf_in_play = false;
 
-const CREATE_ROLE_CARDS = function(game) {
+GAME.prototype.roleStage = function() {
     "use strict";
-    let output = [];
-
-    /* Custom Options */
-
-    game.options.lone_wolf = false;
-
-    /* Vote Functions */
-
-    let default_vote = function(player) {
-        let vote_end = function() {
-            console.log("No more votes");
-        };
-
-        let vote_function = function(target) {
-            if (target === player) {
-                return;
-            }
-
-            if (target === undefined) {
-                do {
-                    target = game.randomPlayer();
-                } while (target === player);
-            }
-
-            if (game.voteFor(target)) {
-                player.vote = vote_end;
-            }
-        };
-
-        return vote_function;
-    };
-
-    let hunter_vote = function(player) {
-        let kill_end = function() {
-            console.log("No more kills");
-        };
-
-        let vote_end = function() {
-            console.log("No more votes");
-        };
-
-        let vote_function = function(target) {
-            if (target === player) {
-                return;
-            }
-
-            if (target === undefined) {
-                do {
-                    target = game.randomPlayer();
-                } while (target === player);
-            }
-
-            let kill_voted_player = function() {
-                player.end = kill_end;
-                game.killPlayer(target);
-            };
-
-            if (game.voteFor(target)) {
-                player.vote = vote_end;
-                player.end = kill_voted_player;
-            }
-        };
-
-        return vote_function;
-    };
-
-    /* Role Definitions */
+    let game = this;
 
     const DOPPELGANGER = new ROLE(
         "DOPPELGANGER",
         1,
         "Undefined",
         "Doppelganger must look at another player's card and copy its role. " +
-            "Doppelganger then performs the action of said role. " +
-            "Doppelganger is now that role's team and must complete their goal.",
+        "Doppelganger then performs the action of said role. " +
+        "Doppelganger is now that role's team and must complete their goal.",
         function(player) {
-            player.vote = default_vote(player);
+            player.vote = VOTE.Default(player, game);
 
             player.action = function() {
                 player.action_state = 1;
@@ -124,13 +55,13 @@ const CREATE_ROLE_CARDS = function(game) {
         2,
         "Werewolf",
         "Werewolves recognize each other. " +
-            "If active, a Lone Wolf can look at a center card. " +
-            "The Werewolves' goal is to survive and not be lynched.",
+        "If active, a Lone Wolf can look at a center card. " +
+        "The Werewolves' goal is to survive and not be lynched.",
         function(player) {
-            player.vote = default_vote(player);
+            player.vote = VOTE.Default(player, game);
 
             player.action = function() {
-                wolf_in_play = true;
+                game.trackers.wolf_in_play = true;
 
                 player.action_state = 1;
 
@@ -156,9 +87,9 @@ const CREATE_ROLE_CARDS = function(game) {
                     player,
                     "WEREWOLF",
                     p =>
-                        p.original_role !== "MINION" &&
-                        p.actual_team === "Werewolf" &&
-                        p !== player
+                    p.original_role !== "MINION" &&
+                    p.actual_team === "Werewolf" &&
+                    p !== player
                 );
 
                 if (not_alone || !game.options.lone_wolf) {
@@ -176,10 +107,10 @@ const CREATE_ROLE_CARDS = function(game) {
         1,
         "Werewolf",
         "Minion knows which players are Werewolves. " +
-            "The Werewolves dont know who the Minion is. " +
-            "The Minion's goal is to protect Werewolves from accussations.",
+        "The Werewolves dont know who the Minion is. " +
+        "The Minion's goal is to protect Werewolves from accussations.",
         function(player) {
-            player.vote = default_vote(player);
+            player.vote = VOTE.Default(player, game);
 
             player.action = function() {
                 player.action_state = 1;
@@ -188,9 +119,9 @@ const CREATE_ROLE_CARDS = function(game) {
                     player,
                     "WEREWOLF",
                     p =>
-                        p.original_role !== "MINION" &&
-                        p.actual_team === "Werewolf" &&
-                        p !== player
+                    p.original_role !== "MINION" &&
+                    p.actual_team === "Werewolf" &&
+                    p !== player
                 );
 
                 player.action = function() {
@@ -206,9 +137,9 @@ const CREATE_ROLE_CARDS = function(game) {
         2,
         "Villager",
         "Masons recognize each other. " +
-            "Masons are part of the Villager team, and must find the Werewolves to win.",
+        "Masons are part of the Villager team, and must find the Werewolves to win.",
         function(player) {
-            player.vote = default_vote(player);
+            player.vote = VOTE.Default(player, game);
 
             player.action = function() {
                 player.action_state = 1;
@@ -232,9 +163,9 @@ const CREATE_ROLE_CARDS = function(game) {
         1,
         "Villager",
         "Seer can view another player's card, or two of the center cards. " +
-            "Seer is part of the Villager team, and must find the Werewolves to win.",
+        "Seer is part of the Villager team, and must find the Werewolves to win.",
         function(player) {
-            player.vote = default_vote(player);
+            player.vote = VOTE.Default(player, game);
 
             player.action = function() {
                 player.action_state = 1;
@@ -279,10 +210,10 @@ const CREATE_ROLE_CARDS = function(game) {
         1,
         "Villager",
         "Robber swaps cards with one player. " +
-            "Robber is now that role. Robber has now the goal of the stolen card. " +
-            "Robber is part of the Villager team, and must find the Werewolves to win.",
+        "Robber is now that role. Robber has now the goal of the stolen card. " +
+        "Robber is part of the Villager team, and must find the Werewolves to win.",
         function(player) {
-            player.vote = default_vote(player);
+            player.vote = VOTE.Default(player, game);
 
             player.action = function() {
                 player.action_state = 1;
@@ -311,10 +242,10 @@ const CREATE_ROLE_CARDS = function(game) {
         1,
         "Villager",
         "Troublemaker swaps two other players' cards. " +
-            "Troublemaker does not know the cards that she is swapping. " +
-            "Troublemaker is part of the Villager team, and must find the Werewolves to win.",
+        "Troublemaker does not know the cards that she is swapping. " +
+        "Troublemaker is part of the Villager team, and must find the Werewolves to win.",
         function(player) {
-            player.vote = default_vote(player);
+            player.vote = VOTE.Default(player, game);
 
             player.action = function() {
                 player.action_state = 1;
@@ -353,10 +284,10 @@ const CREATE_ROLE_CARDS = function(game) {
         1,
         "Villager",
         "Drunk swaps cards with one card of the center. " +
-            "Drunk does not know the role of the card swapped. " +
-            "Drunk is part of the Villager team, and must find the Werewolves to win.",
+        "Drunk does not know the role of the card swapped. " +
+        "Drunk is part of the Villager team, and must find the Werewolves to win.",
         function(player) {
-            player.vote = default_vote(player);
+            player.vote = VOTE.Default(player, game);
 
             player.action = function() {
                 player.action_state = 1;
@@ -384,10 +315,10 @@ const CREATE_ROLE_CARDS = function(game) {
         1,
         "Villager",
         "Insomniac cant sleep at night. " +
-            "Insomniac looks at her card, to see if it has been swapped. " +
-            "Insomniac is part of the Villager team, and must find the Werewolves to win.",
+        "Insomniac looks at her card, to see if it has been swapped. " +
+        "Insomniac is part of the Villager team, and must find the Werewolves to win.",
         function(player) {
-            player.vote = default_vote(player);
+            player.vote = VOTE.Default(player, game);
 
             player.action = function() {
                 player.action_state = 1;
@@ -411,9 +342,9 @@ const CREATE_ROLE_CARDS = function(game) {
         3,
         "Villager",
         "Villager doesn't wake up at night. " +
-            "Villager is part of the Villager team, and must find the Werewolves to win.",
+        "Villager is part of the Villager team, and must find the Werewolves to win.",
         function(player) {
-            player.vote = default_vote(player);
+            player.vote = VOTE.Default(player, game);
 
             player.action = function() {
                 console.log("VILLAGER doesn't have a night action");
@@ -427,10 +358,10 @@ const CREATE_ROLE_CARDS = function(game) {
         1,
         "Villager",
         "Hunter doesn't wake up at night. " +
-            "If the Hunter dies, the person that got voted by the Hunter also dies. " +
-            "Hunter is part of the Villager team, and must find the Werewolves to win.",
+        "If the Hunter dies, the person that got voted by the Hunter also dies. " +
+        "Hunter is part of the Villager team, and must find the Werewolves to win.",
         function(player) {
-            player.vote = hunter_vote(player);
+            player.vote = VOTE.Hunter(player, game);
 
             player.action = function() {
                 console.log("HUNTER doesn't have a night action");
@@ -444,9 +375,9 @@ const CREATE_ROLE_CARDS = function(game) {
         1,
         "Tanner",
         "Tanner doesn't wake up at night. " +
-            "If Tanner gets lynched, he wins.",
+        "If Tanner gets lynched, he wins.",
         function(player) {
-            player.vote = default_vote(player);
+            player.vote = VOTE.Default(player, game);
 
             player.action = function() {
                 console.log("TANNER doesn't have a night action");
@@ -456,9 +387,7 @@ const CREATE_ROLE_CARDS = function(game) {
         0
     );
 
-    /* Role Loading */
-
-    output.push(
+    this.roles = [
         DOPPELGANGER,
         WEREWOLF,
         MINION,
@@ -471,106 +400,99 @@ const CREATE_ROLE_CARDS = function(game) {
         VILLAGER,
         HUNTER,
         TANNER
-    );
+    ];
+}
 
-    return output;
-};
 
-const CREATE_WIN_CONDITIONS = function(player) {
+
+GAME.prototype.roleWin = function(player) {
     "use strict";
     let won;
 
     switch (player.actual_team) {
-        case "Villager": {
-            let villager_win_condition = dead => {
-                let dead_wolf = false;
-                let dead_villager = false;
-                won = true;
+        case "Villager":
+            {
+                let villager_win_condition = function(dead) {
+                    let dead_wolf = false;
+                    let dead_villager = false;
+                    won = true;
 
-                let check_condition = function(target) {
-                    if (
-                        target.actual_team === "Werewolf" &&
-                        target.actual_role !== "MINION"
-                    ) {
-                        dead_wolf = true;
-                    }
-                    if (target.actual_team === "Villager") {
-                        dead_villager = true;
-                    }
+                    let check_condition = function(target) {
+                        if (target.actual_team === "Werewolf" && target.actual_role !== "MINION") {
+                            dead_wolf = true;
+                        }
+                        if (target.actual_team === "Villager") {
+                            dead_villager = true;
+                        }
+                        if (target.actual_team === "Tanner") {
+                            won = false;
+                        }
+                    };
 
-                    if (target.actual_team === "Tanner") {
+                    dead.forEach(check_condition);
+
+                    if (game.trackers.wolf_in_play && !dead_wolf) {
                         won = false;
                     }
+
+                    if (!game.trackers.wolf_in_play && dead_villager) {
+                        won = false;
+                    }
+
+                    player.won = won;
+                    return won;
                 };
 
-                dead.forEach(check_condition);
+                player.evaluate = villager_win_condition;
 
-                if (wolf_in_play && !dead_wolf) {
+                break;
+            }
+
+        case "Werewolf":
+            {
+                let werewolf_win_condition = function(dead) {
+                    won = true;
+
+                    let check_condition = function(target) {
+                        if (target.actual_team === "Werewolf" && target.actual_role !== "MINION") {
+                            won = false;
+                        }
+                        if (target.actual_team === "Tanner") {
+                            won = false;
+                        }
+                    };
+
+                    dead.forEach(check_condition);
+
+                    player.won = won;
+                    return won;
+                };
+
+                player.evaluate = werewolf_win_condition;
+
+                break;
+            }
+
+        case "Tanner":
+            {
+                let tanner_win_condition = function(dead) {
                     won = false;
-                }
 
-                if (!wolf_in_play && dead_villager) {
-                    won = false;
-                }
+                    let check_condition = function(target) {
+                        if (target.actual_team === "Tanner") {
+                            won = true;
+                        }
+                    };
 
-                player.won = won;
-                return won;
-            };
+                    dead.forEach(check_condition);
 
-            player.evaluate = villager_win_condition;
-
-            break;
-        }
-
-        case "Werewolf": {
-            let werewolf_win_condition = dead => {
-                won = true;
-
-                let check_condition = function(target) {
-                    if (
-                        target.actual_team === "Werewolf" &&
-                        target.actual_role !== "MINION"
-                    ) {
-                        won = false;
-                    }
-                    if (target.actual_team === "Tanner") {
-                        won = false;
-                    }
+                    player.won = won;
+                    return won;
                 };
 
-                dead.forEach(check_condition);
+                player.evaluate = tanner_win_condition;
 
-                player.won = won;
-                return won;
-            };
-
-            player.evaluate = werewolf_win_condition;
-
-            break;
-        }
-
-        case "Tanner": {
-            let tanner_win_condition = dead => {
-                won = false;
-
-                let check_condition = function(target) {
-                    if (target.actual_team === "Tanner") {
-                        won = true;
-                    }
-                };
-
-                dead.forEach(check_condition);
-
-                player.won = won;
-                return won;
-            };
-
-            player.evaluate = tanner_win_condition;
-
-            break;
-        }
+                break;
+            }
     }
 };
-
-module.exports.CREATE_ROLE_CARDS = CREATE_ROLE_CARDS;
-module.exports.CREATE_WIN_CONDITIONS = CREATE_WIN_CONDITIONS;

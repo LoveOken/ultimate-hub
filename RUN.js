@@ -34,6 +34,8 @@ app.use(express.urlencoded());
 app.use(express.static(__dirname + "/MAIN"));
 
 app.get("/", function(request, response) {
+    "use strict";
+
     if (request.session.is_logged_in === undefined) {
         response.sendFile(path.join(__dirname, "/MAIN/LOGIN.html"));
     } else {
@@ -42,11 +44,11 @@ app.get("/", function(request, response) {
     }
 });
 
-app.post("/login-submission", function(request, response) {
+app.post("/HANDSHAKE", function(request, response) {
+    "use strict";
+
     request.session.is_logged_in = true;
-
     request.session.username = request.body.username;
-
     request.session.save();
 
     response.redirect("/");
@@ -55,7 +57,7 @@ app.post("/login-submission", function(request, response) {
 
 /* Game Itself */
 
-const { GAME } = require("./MAIN/JS/GAME/GAME-ENGINE.js");
+const { GAME } = require("./MAIN/JS/GAME/GAME-ENGINE-FACTORY.js");
 
 var game = new GAME();
 
@@ -65,19 +67,20 @@ global.SOCKET_LIST = {};
 global.SOCKETS_ONLINE = 0;
 
 io.sockets.on("connection", function(socket) {
-    var session = socket.handshake.session;
+    "use strict";
+    var handshake = socket.handshake.session;
 
     socket.already_connected = false;
 
-    if (session.is_logged_in) {
-        if (session.tag == null) {
-            session.tag = SOCKETS_ONLINE;
+    if (handshake.is_logged_in) {
+        if (handshake.tag == null) {
+            handshake.tag = SOCKETS_ONLINE;
             SOCKETS_ONLINE++;
 
-            session.save();
+            handshake.save();
         }
 
-        SOCKET_LIST[session.tag] = socket;
+        SOCKET_LIST[handshake.tag] = socket;
     }
 
     socket.on("debug-player", () => {
@@ -86,39 +89,39 @@ io.sockets.on("connection", function(socket) {
     });
 
     socket.on("seat-request", data => {
-        game.seatRequest(session.username, session.tag, data.will_sit);
+        game.seatRequest(handshake.username, handshake.tag, data.will_sit);
         io.sockets.emit("update-start");
     });
 
     socket.on("toggle-role-activity", data => {
-        game.toggleRole(session.tag, data.value, data.which);
+        game.toggleRole(handshake.tag, data.value, data.which);
         io.sockets.emit("update-start");
     });
 
     socket.on("set_ready_to_play", data => {
-        game.togglePlayerReady(session.tag);
+        game.togglePlayerReady(handshake.tag);
         io.sockets.emit("update-start");
     });
 
     socket.on("confirm-settings", data => {
-        game.preparationPhase(session.tag, () => {
+        game.preparationPhase(handshake.tag, () => {
             io.sockets.emit("update-start");
         });
     });
 
     socket.on("player-interaction", data => {
-        game.playerInteraction(session.tag, data.type, data.whom, () => {
+        game.playerInteraction(handshake.tag, data.type, data.whom, () => {
             socket.emit("update-start");
         });
     });
 
     socket.on("disconnect", () => {
-        game.disconnectPlayer(session.tag);
+        game.disconnectPlayer(handshake.tag);
         io.sockets.emit("update-start");
     });
 
     socket.on("update-process", () => {
-        let output = game.parseForUpdate(session.tag);
+        let output = game.parseForUpdate(handshake.tag);
 
         socket.emit("update-finish", {
             game: output,
