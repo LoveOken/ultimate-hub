@@ -1,12 +1,12 @@
-const DISPLAY_TAB = (content_to_see, tab_to_see) => {
+const DISPLAY_CONFIGURATION_TAB = function(content_to_see, tab_to_see) {
     "use strict";
     try {
         if (!tab_to_see.classList.contains('CONFIGURATION-TABS')) {
-            throw (Error("Not a valid configuration tab."));
+            throw (new Error("Not a valid configuration tab."));
         }
         if (!document.getElementById(content_to_see).classList.contains('CONFIGURATION-CONTENTS')) {
-            throw (Error("Not a valid configuration content."))
-        };
+            throw (new Error("Not a valid configuration content."));
+        }
     } catch (e) {
         console.log(e);
         return;
@@ -29,9 +29,9 @@ const DISPLAY_TAB = (content_to_see, tab_to_see) => {
 
     tab_to_see.style.backgroundColor = "#dedede";
     tab_to_see.style.color = "#1c1c1c";
-}
+};
 
-const DISPLAY_SEAT = (seat) => {
+const DISPLAY_CONFIGURATION_SEAT = function(seat) {
     "use strict";
     document.getElementsByClassName("CONFIGURATION-SEATS").forEach(
         function(element) {
@@ -40,4 +40,4 @@ const DISPLAY_SEAT = (seat) => {
     )
 
     document.getElementById(seat).style.display = "";
-}
+};

@@ -7,11 +7,11 @@ GAME.prototype.roleTrack = function() {
     "use strict";
     this.trackers = {
         wolf_in_play: false,
-        tanner_in_play: false,
+        tanner_in_play: false
     };
 
     this.options.lone_wolf = false;
-}
+};
 
 
 

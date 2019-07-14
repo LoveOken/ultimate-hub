@@ -1,5 +1,6 @@
-const CREATE_SELECTABLE_ROLE = (form, role, index, active, subindex, onclick) => {
-    let grid, checkbox, label, card;
+const CREATE_SELECTABLE_ROLE = function(form, role, index, active, subindex, onclick) {
+    "use strict";
+    let grid, checkbox, checkmark, label, card;
 
     grid = document.createElement("DIV");
     checkbox = document.createElement("INPUT");
@@ -18,7 +19,7 @@ const CREATE_SELECTABLE_ROLE = (form, role, index, active, subindex, onclick) =>
     checkmark.classList.add("CHECKMARK");
     checkmark.onclick = function() {
         checkbox.click();
-    }
+    };
 
     label.htmlFor = checkbox.id;
 
@@ -30,10 +31,13 @@ const CREATE_SELECTABLE_ROLE = (form, role, index, active, subindex, onclick) =>
     grid.appendChild(checkmark);
     grid.appendChild(label);
     form.appendChild(grid);
-}
+};
 
-const CREATE_CARDS = () => {
-    for (let i = 1; 20 >= i; i++) {
+const CREATE_CARDS = function() {
+    "use strict";
+    let i;
+    for (i = 1; 20 >= i; i += 1) {
+        let card, card_contents, card_front, card_back;
         card = document.createElement("div");
         card_contents = document.createElement("div");
         card_front = document.createElement("div");
@@ -46,6 +50,8 @@ const CREATE_CARDS = () => {
         card_contents.classList.add("CARD-CONTENTS");
         card_front.classList.add("CARD-FRONT");
         card_back.classList.add("CARD-BACK");
+
+        let card_sprite_front, card_sprite_back;
 
         card_sprite_front = document.createElement("div");
         card_sprite_back = document.createElement("div");
@@ -66,6 +72,6 @@ const CREATE_CARDS = () => {
 
         document.getElementById("GAME").append(card);
     }
-}
+};
 
 CREATE_CARDS();

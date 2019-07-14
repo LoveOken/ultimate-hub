@@ -33,27 +33,41 @@ app.use(express.urlencoded());
 
 app.use(express.static(__dirname + "/MAIN"));
 
-app.get("/", function(request, response) {
+app.get("/", function(request, response){
     "use strict";
 
-    if (request.session.is_logged_in === undefined) {
-        response.sendFile(path.join(__dirname, "/MAIN/LOGIN.html"));
-    } else {
-        response.sendFile(path.join(__dirname, "/MAIN/MAIN.html"));
-        request.body.responseTest = "Hello World";
+    if (request.session.is_logged_in) {
+        response.redirect("/main");
+    } else {     
+        response.redirect("/login");
     }
+
+    response.end();
 });
 
-app.post("/HANDSHAKE", function(request, response) {
+app.get("/login", function(request, response){
+    response.sendFile(path.join(__dirname, "/MAIN/LOGIN.html"));
+    response.end();
+})
+
+app.post("/login/handshake", function(request, response){
     "use strict";
 
     request.session.is_logged_in = true;
+
     request.session.username = request.body.username;
+    request.session.password = request.body.password;
     request.session.save();
 
-    response.redirect("/");
+    response.redirect("/main");
     response.end();
 });
+
+app.get("/main", function(request, response){
+    response.sendFile(path.join(__dirname, "/MAIN/MAIN.html"));
+    response.end();
+})
+
 
 /* Game Itself */
 
@@ -88,8 +102,8 @@ io.sockets.on("connection", function(socket) {
         io.sockets.emit("update-start");
     });
 
-    socket.on("seat-request", data => {
-        game.seatRequest(handshake.username, handshake.tag, data.will_sit);
+    socket.on("seat-request", () => {
+        game.seatRequest(handshake.username, handshake.tag);
         io.sockets.emit("update-start");
     });
 
@@ -98,12 +112,12 @@ io.sockets.on("connection", function(socket) {
         io.sockets.emit("update-start");
     });
 
-    socket.on("set_ready_to_play", data => {
+    socket.on("set_ready_to_play", () => {
         game.togglePlayerReady(handshake.tag);
         io.sockets.emit("update-start");
     });
 
-    socket.on("confirm-settings", data => {
+    socket.on("confirm-settings", () => {
         game.preparationPhase(handshake.tag, () => {
             io.sockets.emit("update-start");
         });
