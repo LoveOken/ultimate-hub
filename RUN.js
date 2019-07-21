@@ -33,27 +33,27 @@ app.use(express.urlencoded());
 
 app.use(express.static(__dirname + "/MAIN"));
 
-app.get("/", function(request, response){
+app.get("/", function(request, response) {
     "use strict";
 
-    if (request.session.is_logged_in) {
+    if (request.session.logged) {
         response.redirect("/main");
-    } else {     
+    } else {
         response.redirect("/login");
     }
 
     response.end();
 });
 
-app.get("/login", function(request, response){
+app.get("/login", function(request, response) {
+    "use strict";
     response.sendFile(path.join(__dirname, "/MAIN/LOGIN.html"));
-    response.end();
-})
+});
 
-app.post("/login/handshake", function(request, response){
+app.post("/login/handshake", function(request, response) {
     "use strict";
 
-    request.session.is_logged_in = true;
+    request.session.logged = true;
 
     request.session.username = request.body.username;
     request.session.password = request.body.password;
@@ -63,30 +63,33 @@ app.post("/login/handshake", function(request, response){
     response.end();
 });
 
-app.get("/main", function(request, response){
+app.get("/main", function(request, response) {
+    "use strict";
     response.sendFile(path.join(__dirname, "/MAIN/MAIN.html"));
-    response.end();
-})
 
+    request.session.room = "Main";
+    request.session.save();
+});
 
 /* Game Itself */
 
-const { GAME } = require("./MAIN/JS/GAME/GAME-ENGINE-FACTORY.js");
+const { TABLE } = require("./MAIN/JS/TABLE/TABLE-ENGINE-FACTORY.js");
 
-var game = new GAME();
+var table = new TABLE("Default");
+var game = table.game;
+var chat = table.chat;
 
 /* Socket.io Routing */
 
-global.SOCKET_LIST = {};
+global.SOCKET_LIST = [];
 global.SOCKETS_ONLINE = 0;
 
-io.sockets.on("connection", function(socket) {
+io.sockets.on("connection", socket => {
     "use strict";
-    var handshake = socket.handshake.session;
 
-    socket.already_connected = false;
+    socket.on("ready", () => {
+        let handshake = socket.handshake.session;
 
-    if (handshake.is_logged_in) {
         if (handshake.tag == null) {
             handshake.tag = SOCKETS_ONLINE;
             SOCKETS_ONLINE++;
@@ -95,56 +98,98 @@ io.sockets.on("connection", function(socket) {
         }
 
         SOCKET_LIST[handshake.tag] = socket;
-    }
+        socket.join(handshake.room);
+        socket.already_connected = false;
 
-    socket.on("debug-player", () => {
-        game.createDebugPlayer();
-        io.sockets.emit("update-start");
-    });
+        switch (handshake.room) {
+            case "Main":
+                {
+                    socket
+                    .on("update-process", () => {
+                        let output = game.parseForUpdate(handshake.tag);
 
-    socket.on("seat-request", () => {
-        game.seatRequest(handshake.username, handshake.tag);
-        io.sockets.emit("update-start");
-    });
+                        socket.emit("update-finish", {
+                            game: output,
+                            already_connected: socket.already_connected,
+                            logged: handshake.logged
+                        });
+                    })
+                    .on("validate-connection", () => {
+                        socket.already_connected = true;
+                    });
 
-    socket.on("toggle-role-activity", data => {
-        game.toggleRole(handshake.tag, data.value, data.which);
-        io.sockets.emit("update-start");
-    });
+                    if (handshake.logged) {
+                        chat.newAuthor(handshake.username, handshake.tag);
+                        game.doesPlayerExist(handshake.tag) ?
+                            chat.addFilterToAuthor("Player", handshake.tag) :
+                            chat.addFilterToAuthor("Spectator", handshake.tag);
 
-    socket.on("set_ready_to_play", () => {
-        game.togglePlayerReady(handshake.tag);
-        io.sockets.emit("update-start");
-    });
+                        socket
+                            .on("debug-player", () => {
+                                game.createDebugPlayer();
+                                io.sockets.in("Main").emit("update-start");
+                            })
+                            .on("seat-request", () => {
+                                game.seatRequest(handshake.username, handshake.tag);
 
-    socket.on("confirm-settings", () => {
-        game.preparationPhase(handshake.tag, () => {
-            io.sockets.emit("update-start");
-        });
-    });
+                                game.doesPlayerExist(handshake.tag) ?
+                                    chat.addFilterToAuthor(
+                                        "Player",
+                                        handshake.tag
+                                    ) :
+                                    chat.addFilterToAuthor(
+                                        "Spectator",
+                                        handshake.tag
+                                    );
 
-    socket.on("player-interaction", data => {
-        game.playerInteraction(handshake.tag, data.type, data.whom, () => {
-            socket.emit("update-start");
-        });
-    });
+                                io.sockets.in("Main").emit("update-start");
+                            })
+                            .on("toggle-role-activity", data => {
+                                game.toggleRole(
+                                    handshake.tag,
+                                    data.value,
+                                    data.which
+                                );
+                                io.sockets.in("Main").emit("update-start");
+                            })
+                            .on("set_ready_to_play", () => {
+                                game.togglePlayerReady(handshake.tag);
+                                io.sockets.in("Main").emit("update-start");
+                            })
+                            .on("confirm-settings", () => {
+                                game.preparationPhase(handshake.tag, () => {
+                                    io.sockets.in("Main").emit("update-start");
+                                });
+                            })
+                            .on("player-interaction", data => {
+                                game.playerInteraction(
+                                    handshake.tag,
+                                    data.type,
+                                    data.whom,
+                                    () => {
+                                        socket.emit("update-start");
+                                    }
+                                );
+                            })
+                            .on("disconnect", () => {
+                                game.disconnectPlayer(handshake.tag);
+                                io.sockets.in("Main").emit("update-start");
+                            })
+                            .on("send-message", content => {
+                                chat.newMessage(handshake.tag, content);
+                                io.sockets
+                                    .in("Main")
+                                    .emit("receive-messages", chat.messages);
+                            });
+                    }
 
-    socket.on("disconnect", () => {
-        game.disconnectPlayer(handshake.tag);
-        io.sockets.emit("update-start");
-    });
+                    socket
+                    .emit("update-start")
+                    .emit("receive-messages", chat.messages);
 
-    socket.on("update-process", () => {
-        let output = game.parseForUpdate(handshake.tag);
-
-        socket.emit("update-finish", {
-            game: output,
-            already_connected: socket.already_connected
-        });
-    });
-
-    socket.on("validate-connection", function() {
-        socket.already_connected = true;
+                    break;
+                }
+        }
     });
 });
 

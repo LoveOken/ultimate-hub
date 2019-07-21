@@ -20,21 +20,22 @@ GAME.prototype.shuffleRoles = function() {
         ));
     };
 
-    let check_if_active = function(active) {
-        if (active === true) {
-            roles_to_pick_from += string_index;
-        }
-    };
-
     roles.forEach(function(role, index) {
         let string_index;
         string_index = Math.floor(index / 10).toString() + (index % 10);
+
+        let check_if_active = function(active) {
+            if (active === true) {
+                roles_to_pick_from += string_index;
+            }
+        };
 
         role.active.forEach(check_if_active);
     });
 
     this.player_list.forEach(function(player) {
         let role = role_random();
+        let role_index;
 
         roles_to_pick_from = roles_to_pick_from.replace(role, "");
 
@@ -49,8 +50,10 @@ GAME.prototype.shuffleRoles = function() {
         roles[role_index].action(player);
     });
 
+    let i;
     for (i = 0; 3 > i; i += 1) {
         let role = role_random();
+        let role_index, name;
 
         roles_to_pick_from = roles_to_pick_from.replace(role, "");
         role_index = parseInt(role, 10);
@@ -200,7 +203,7 @@ GAME.prototype.discussionPhase = function(update_function) {
     let determine_result = function() {
         game.stage = 5;
 
-        let most_votes;
+        let most_votes = 0;
 
         let make_vote = function(player) {
             player.vote();
@@ -216,7 +219,7 @@ GAME.prototype.discussionPhase = function(update_function) {
         game.player_list.forEach(find_most_voted);
 
         if (most_votes !== 1) {
-            game.player_list.filter(player => player.vote_count === most_votes).forEach(game.killPlayer);
+            game.player_list.filter(player => player.vote_count === most_votes).forEach(player => game.killPlayer(player));
         }
 
         let dead = game.player_list.filter(
@@ -250,7 +253,26 @@ GAME.prototype.discussionPhase = function(update_function) {
     this.stage = 3;
     this.stage_clock = this.options.discussion_time * 60;
 
-    this.player_list.forEach(this.roleWin);
+    this.player_list.forEach(player => game.roleWin(player));
 
     this.clockStart(update_function, voting_phase);
 };
+
+
+
+GAME.prototype.revealAll = function() {
+    "use strict";
+    let game = this;
+
+    this.player_list.forEach(
+        function(target) {
+            game.public_player_knowledge.push(target.actual_role);
+        }
+    );
+
+    this.center_cards.forEach(
+        function(target) {
+            game.public_center_knowledge.push(target.actual_role);
+        }
+    );
+}

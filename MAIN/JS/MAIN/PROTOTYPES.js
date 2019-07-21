@@ -17,6 +17,7 @@ Number.prototype.secondsToMinutesAndSeconds = function() {
 HTMLCollection.prototype.forEach = function(todo) {
     "use strict";
     let length_to_use = this.length;
+    let i;
     for (i = 0; length_to_use > i; i++) {
         todo(this[i], i);
     }

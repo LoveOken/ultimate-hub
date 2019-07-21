@@ -47,3 +47,7 @@ GAME.prototype.parseForUpdate = function(tag) {
 
     return game;
 };
+
+GAME.prototype.doesPlayerExist = function(tag) {
+    return (this.player_list.findIndex(player => player.tag === tag) >= 0);
+};

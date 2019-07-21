@@ -407,6 +407,7 @@ GAME.prototype.roleStage = function() {
 
 GAME.prototype.roleWin = function(player) {
     "use strict";
+    let game = this;
     let won;
 
     switch (player.actual_team) {

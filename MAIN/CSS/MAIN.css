@@ -69,17 +69,11 @@ label {
 
 #MAIN-BOARD * {
     -webkit-touch-callout: none;
-    /* iOS Safari */
     -webkit-user-select: none;
-    /* Chrome/Safari/Opera */
     -khtml-user-select: none;
-    /* Konqueror */
     -moz-user-select: none;
-    /* Firefox */
     -ms-user-select: none;
-    /* Internet Explorer/Edge */
     user-select: none;
-    /* Non-prefixed version, currently not supported by any browser */
 }
 
 #CONFIGURATION,
@@ -313,6 +307,11 @@ label {
     background: url(../IMG/MAIN/SPRITES.png) -962px 0;
 }
 
+.CARD.DEAD .CARD-SPRITE {
+    border-color: #00bcc9;
+    filter: invert(1);
+}
+
 .CONFIGURATION-SEATS {
     display: block;
     float: left;
@@ -542,6 +541,10 @@ label {
     border-radius: 5px;
 }
 
+.CARD-GRID.DEAD {
+    color: #ff4336;
+}
+
 #STATUS {
     clip-path: polygon(0 -20px, 0 100%, 100% 100%, 100% -20px);
     position: relative;
@@ -600,4 +603,9 @@ label {
     padding: 0 10px;
     width: 100%;
     height: 60px;
+}
+
+#INFO-BOARD {
+    position: absolute;
+    right: 0;
 }

@@ -37,7 +37,7 @@ const DISPLAY_CONFIGURATION_SEAT = function(seat) {
         function(element) {
             element.style.display = "none";
         }
-    )
+    );
 
     document.getElementById(seat).style.display = "";
 };

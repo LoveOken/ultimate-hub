@@ -14,10 +14,10 @@
                 </H1>
                 <DIV ID="CONFIGURATION-TABS">
                     <BUTTON ID="ROLES-TITLE" CLASS="CONFIGURATION-TABS CONFIGURATION-DEFAULT" onclick="DISPLAY_CONFIGURATION_TAB('CONFIGURATION-CONTENTS-ROLES', this)">
-                            Roles
+                        Roles
                     </BUTTON>
                     <BUTTON ID="SETTINGS-TITLE" CLASS="CONFIGURATION-TABS" onclick="DISPLAY_CONFIGURATION_TAB('CONFIGURATION-CONTENTS-SETTINGS', this)">
-                            Settings
+                        Settings
                     </BUTTON>
                 </DIV>
             </DIV>
@@ -152,12 +152,19 @@
         <DIV CLASS="LOADER">
         </DIV>
     </DIV>
-    <DIV ID="BOARD2">
+    <DIV ID="INFO-BOARD">
+        <DIV ID="CHAT" style="visibility: visible">
+            <H2 ID="CHAT-TITLE">Chat</H2>
+            <FORM ID="CHAT-FORM" onsubmit="CREATE_MESSAGE(); return false;">
+                <INPUT ID="CHAT-INPUT" TYPE="text" NAME="message" PLACEHOLDER="Send a message." MAX="100">
+                <INPUT ID="CHAT-SUBMIT" TYPE="submit" TYPE="submit">
+            </FORM>
+        </DIV>
     </DIV>
     <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/PROTOTYPES.js"></SCRIPT>
     <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/SOCKET.js"></SCRIPT>
     <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/SCROLLBARS.js"></SCRIPT>
-    <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/GAME-CLIENT.js"></SCRIPT>
+    <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/TABLE-CLIENT.js"></SCRIPT>
     <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/MAIN-FACTORY.js"></SCRIPT>
     <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/MAIN-DISPLAY.js"></SCRIPT>
     <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/MAIN-ROUTING.js"></SCRIPT>

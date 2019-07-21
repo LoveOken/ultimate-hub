@@ -23,74 +23,82 @@ const GAME_PLAYER_INTERACTION = function(type_of_interaction, interacted_with) {
     });
 };
 
-const GAME_TO_CLIENT_INIT = function(general, roles, players, center) {
+const GAME_TOGGLE_ROLE = function(value, which) {
+    "use strict";
+    socket.emit("toggle-role-activity", {
+        value: value,
+        which: which
+    });
+
+    return false;
+}
+
+const CHAT_SEND_MESSAGE = function(message) {
+    "use strict";
+    socket.emit("send-message", message);
+}
+
+const CLIENT_INIT = function(GENERAL, ROLES, PLAYERS, CENTER) {
     "use strict";
     socket.on("update-start", function() {
         socket.emit("update-process");
     });
 
     socket.on("update-finish", function(data) {
-        let game, already_connected, my_player_index, my_player;
+        let game, already_connected, logged, my_player_index, my_player;
 
-        let roles_for_each = function(todo) {
-            let active_for_each = function(role, index) {
-                let perform = function(active, subindex) {
-                    let toggle = function() {
-                        socket.emit("toggle-role-activity", {
-                            value: index,
-                            which: subindex
-                        });
-
-                        return false;
-                    };
-
-                    todo(role, index, active, subindex, toggle);
+        let FOR_EVERY_ROLE = function(todo) {
+            let ROLE_ACT = function(role, index) {
+                let ACTIVE_ACT = function(active, subindex) {
+                    todo(role, index, active, subindex, () => GAME_TOGGLE_ROLE(index, subindex));
                 };
 
-                role.active.forEach(perform);
+                role.active.forEach(ACTIVE_ACT);
             };
 
-            game.roles.forEach(active_for_each);
+            game.roles.forEach(ROLE_ACT);
         };
 
         game = data.game;
         already_connected = data.already_connected;
+        logged = data.logged;
+
 
         my_player_index = game.player_list.findIndex(
             player => player.visible === true
         );
 
-        (my_player_index !== -1) ? general.sitting(my_player): general.standing();
-
         my_player = game.player_list[my_player_index];
 
-        general.default();
+        (my_player_index !== -1) ? GENERAL.sitting(my_player): GENERAL.standing();
+
+        GENERAL.default();
 
         if (!already_connected) {
-            general.start();
+            GENERAL.start();
             socket.emit("validate-connection");
         }
 
-        if (roles.undisplayed()) {
-            roles_for_each(roles.display);
-            roles.after_display();
+        if (ROLES.undisplayed()) {
+            FOR_EVERY_ROLE(ROLES.display);
+            ROLES.after_display();
         } else {
-            roles_for_each(roles.update);
+            FOR_EVERY_ROLE(ROLES.update);
         }
 
         game.player_list.forEach(function(player, index) {
-            players.initialize(player, index);
+            PLAYERS.initialize(player, index);
 
             if (index + 1 == game.player_max) {
-                general.full();
+                GENERAL.full();
             }
         });
 
         game.player_list.forEach(function(player, index) {
-            players.position(player, index);
+            PLAYERS.position(player, index);
 
             if (game.stage > 0) {
-                players.display(
+                PLAYERS.display(
                     my_player.player_knowledge,
                     index,
                     game.public_player_knowledge,
@@ -100,14 +108,14 @@ const GAME_TO_CLIENT_INIT = function(general, roles, players, center) {
         });
 
         game.center_cards.forEach(function(center, index) {
-            center.initialize(center, index);
+            CENTER.initialize(center, index);
         });
 
         game.center_cards.forEach(function(center, index) {
-            center.position(center, index);
+            CENTER.position(center, index);
 
             if (game.stage > 0) {
-                center.display(
+                CENTER.display(
                     my_player.center_knowledge,
                     index,
                     game.public_center_knowledge,
@@ -116,16 +124,24 @@ const GAME_TO_CLIENT_INIT = function(general, roles, players, center) {
             }
         });
 
-        (my_player_index === 0) ? general.leading(): general.following();
+        (my_player_index === 0) ? GENERAL.leading(): GENERAL.following();
 
-        general.stage(
+        GENERAL.stage(
             game.stage,
             game.roles[game.role_on_play],
             game.winners
         );
-        general.ready(game.ready);
-        general.clock(game.stage_clock);
+        GENERAL.ready(game.ready);
+        GENERAL.clock(game.stage_clock);
+
+        if (!logged) {
+            GENERAL.unlogged();
+        }
     });
 
-    socket.emit("update-process");
+    socket.on("receive-messages", (messages) => {
+        console.log(messages);
+    });
+
+    socket.emit("ready");
 };

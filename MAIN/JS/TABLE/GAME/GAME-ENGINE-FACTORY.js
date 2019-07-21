@@ -3,13 +3,13 @@ function GAME(name) {
     this.id = name;
 
     this.options = {
-        action_time_multiplier: 1,
-        discussion_time: 0.1,
+        action_time_multiplier: 0,
+        discussion_time: 0,
         voting_time: 5
     };
+    this.roleTrack();
 
     this.role_on_play = 0;
-    this.roleTrack();
     this.roleStage();
 
     this.player_list = [];

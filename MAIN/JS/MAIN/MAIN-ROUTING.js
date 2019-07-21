@@ -11,6 +11,7 @@ center_seats = document.getElementsByClassName("CENTER-GRID");
 
 function GENERAL() {
     "use strict";
+
     this.start = function() {
         document.getElementsByClassName("LOADER").forEach(function(element) {
             element.style.display = "none";
@@ -20,6 +21,17 @@ function GENERAL() {
 
         document.getElementById("CONFIGURATION").style.visibility = "visible";
         document.getElementById("GAME").style.visibility = "visible";
+    };
+
+    this.unlogged = function() {
+        document.getElementsByClassName("CONFIGURATION-SEATS").forEach(
+            function(element) {
+                element.style.display = "none";
+            }
+        );
+
+        document.getElementById("CONTENTS-BUTTON-ON").style.display = "none";
+        document.getElementById("CONTENTS-BUTTON-OFF").style.display = "none";
     };
 
     this.default = function() {
@@ -210,7 +222,7 @@ function PLAYERS() {
         seat.children[0].innerText = player.name;
 
         if (!player.alive) {
-            seat.addClass("DEAD");
+            seat.classList.add("DEAD");
         }
     };
 
@@ -221,7 +233,7 @@ function PLAYERS() {
         if (card.getAttribute("DATA-ANIMATING") == "TRUE") return;
 
         if (!player.alive) {
-            card.addClass("DEAD");
+            card.classList.add("DEAD");
         }
 
         card.style.display = "";
@@ -292,4 +304,4 @@ function CENTER() {
 };
 
 
-GAME_TO_CLIENT_INIT(new GENERAL(), new ROLES(), new PLAYERS(), new CENTER());
+CLIENT_INIT(new GENERAL(), new ROLES(), new PLAYERS(), new CENTER());
