@@ -108,11 +108,13 @@ io.sockets.on("connection", socket => {
                     .on("update-process", () => {
                         let output = game.parseForUpdate(handshake.tag);
 
-                        socket.emit("update-finish", {
-                            game: output,
-                            already_connected: socket.already_connected,
-                            logged: handshake.logged
-                        });
+                        socket
+                            .emit("update-finish", {
+                                game: output,
+                                already_connected: socket.already_connected,
+                                logged: handshake.logged
+                            })
+                            .emit("receive-messages", chat.messages);
                     })
                     .on("validate-connection", () => {
                         socket.already_connected = true;
