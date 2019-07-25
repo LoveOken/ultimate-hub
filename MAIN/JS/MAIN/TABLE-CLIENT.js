@@ -140,7 +140,7 @@ const CLIENT_INIT = function(GENERAL, ROLES, PLAYERS, CENTER) {
     });
 
     socket.on("receive-messages", (messages) => {
-        console.log(messages);
+        GENERAL.chat(messages);
     });
 
     socket.emit("ready");

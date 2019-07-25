@@ -12,7 +12,14 @@ center_seats = document.getElementsByClassName("CENTER-GRID");
 function GENERAL() {
     "use strict";
 
+    let itself = this;
+
     this.start = function() {
+        let i;
+        for (i = 0; 20 > i; i += 1) {
+            CREATE_CARD();
+        }
+
         document.getElementsByClassName("LOADER").forEach(function(element) {
             element.style.display = "none";
         });
@@ -166,6 +173,20 @@ function GENERAL() {
     this.clock = function(time) {
         let clock = document.getElementById("STATUS-TIME");
         clock.innerText = time.secondsToMinutesAndSeconds();
+    };
+
+    this.messages = 0;
+
+    this.chat = function(messages) {
+        let i, len;
+        len = messages.length;
+        
+        for (i = itself.messages; len > i; i += 1) {
+            CREATE_MESSAGE(messages[i]);
+            itself.messages += 1;
+        }
+
+        console.log(messages);
     };
 };
 

@@ -33,61 +33,88 @@ const CREATE_SELECTABLE_ROLE = function(form, role, index, active, subindex, onc
     form.appendChild(grid);
 };
 
-const CREATE_CARDS = function() {
+const CREATE_CARD = function() {
     "use strict";
-    let i;
-    for (i = 1; 20 >= i; i += 1) {
-        let card, card_contents, card_front, card_back;
-        card = document.createElement("div");
-        card_contents = document.createElement("div");
-        card_front = document.createElement("div");
-        card_back = document.createElement("div");
+    let card, card_contents, card_front, card_back;
+    card = document.createElement("div");
+    card_contents = document.createElement("div");
+    card_front = document.createElement("div");
+    card_back = document.createElement("div");
 
-        card.setAttribute("DATA-FLIP", "FRONT");
-        card.setAttribute("DATA-ANIMATING", "FALSE");
+    card.setAttribute("DATA-FLIP", "FRONT");
+    card.setAttribute("DATA-ANIMATING", "FALSE");
 
-        card.classList.add("CARD");
-        card_contents.classList.add("CARD-CONTENTS");
-        card_front.classList.add("CARD-FRONT");
-        card_back.classList.add("CARD-BACK");
+    card.classList.add("CARD");
+    card_contents.classList.add("CARD-CONTENTS");
+    card_front.classList.add("CARD-FRONT");
+    card_back.classList.add("CARD-BACK");
 
-        let card_sprite_front, card_sprite_back;
+    let card_sprite_front, card_sprite_back;
 
-        card_sprite_front = document.createElement("div");
-        card_sprite_back = document.createElement("div");
+    card_sprite_front = document.createElement("div");
+    card_sprite_back = document.createElement("div");
 
-        card_sprite_front.classList.add("CARD-SPRITE");
-        card_sprite_front.classList.add("UNDEFINED");
-        card_sprite_back.classList.add("CARD-SPRITE");
-        card_sprite_back.classList.add("UNDEFINED");
+    card_sprite_front.classList.add("CARD-SPRITE");
+    card_sprite_front.classList.add("UNDEFINED");
+    card_sprite_back.classList.add("CARD-SPRITE");
+    card_sprite_back.classList.add("UNDEFINED");
 
+    card_front.appendChild(card_sprite_front);
+    card_back.appendChild(card_sprite_back);
+    card_contents.appendChild(card_front);
+    card_contents.appendChild(card_back);
+    card.appendChild(card_contents);
 
-        card_front.appendChild(card_sprite_front);
-        card_back.appendChild(card_sprite_back);
-        card_contents.appendChild(card_front);
-        card_contents.appendChild(card_back);
-        card.appendChild(card_contents);
+    card.style.display = "none";
 
-        card.style.display = "none";
-
-        document.getElementById("GAME").append(card);
-    }
+    document.getElementById("GAME").appendChild(card);
 };
 
-const CREATE_MESSAGE = function() {
+const CREATE_MESSAGE = function(message) {
     "use strict";
-    let input = document.getElementById('CHAT-INPUT');
+    let container, paragraph, author, divider, content, emblems;
 
-    if (input.value === "") {
-        return false;
-    }
+    container = document.createElement("div");
+    paragraph = document.createElement("p");
+    author = document.createElement("span");
+    divider = document.createElement("span");
+    content = document.createElement("span");
+    emblems = document.createElement("p");
 
-    if (input.value.length > input.max) {
-        return false;
-    }
+    author.innerText = message.name;
+    divider.innerText = ": ";
+    content.innerText = message.content;
 
-    CHAT_SEND_MESSAGE(input.value);
-    input.value = "";
+    author.classList.add("MESSAGE-AUTHOR");
+    content.classList.add("MESSAGE-CONTENT");
+    container.classList.add("MESSAGE");
+
+    message.filters.forEach(
+        function(filter) {
+            switch (filter.name) {
+                case "Spectator":
+                    {
+                        container.classList.add("SPECTATOR");
+                        emblems.innerText += "(Spectator)"
+
+                        break;
+                    }
+                case "Player":
+                    {
+                        container.classList.add("PLAYER");
+
+                        break;
+                    }
+            }
+        }
+    );
+
+    author.appendChild(divider);
+    paragraph.appendChild(author);
+    paragraph.appendChild(content);
+
+    container.appendChild(emblems);
+    container.appendChild(paragraph);
+
+    document.getElementById("CHAT-CONTAINER").appendChild(container);
 }
-
-CREATE_CARDS();

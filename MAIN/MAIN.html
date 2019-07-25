@@ -155,7 +155,9 @@
     <DIV ID="INFO-BOARD">
         <DIV ID="CHAT" style="visibility: visible">
             <H2 ID="CHAT-TITLE">Chat</H2>
-            <FORM ID="CHAT-FORM" onsubmit="CREATE_MESSAGE(); return false;">
+            <DIV ID="CHAT-CONTAINER">
+            </DIV>
+            <FORM ID="CHAT-FORM" onsubmit="SEND_MESSAGE(); return false;">
                 <INPUT ID="CHAT-INPUT" TYPE="text" NAME="message" PLACEHOLDER="Send a message." MAX="100">
                 <INPUT ID="CHAT-SUBMIT" TYPE="submit" TYPE="submit">
             </FORM>
@@ -166,6 +168,7 @@
     <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/SCROLLBARS.js"></SCRIPT>
     <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/TABLE-CLIENT.js"></SCRIPT>
     <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/MAIN-FACTORY.js"></SCRIPT>
+    <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/MAIN-SENDS.js"></SCRIPT>
     <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/MAIN-DISPLAY.js"></SCRIPT>
     <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/MAIN-ROUTING.js"></SCRIPT>
 </BODY>
