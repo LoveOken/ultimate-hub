@@ -58,6 +58,8 @@ label {
 
 #MAIN-BOARD {
     position: absolute;
+    z-index: 3;
+    box-shadow: 0px 0px 5px black;
     overflow: visible;
     background-color: #1c1c1c;
     color: #dedede;
@@ -607,5 +609,133 @@ label {
 
 #INFO-BOARD {
     position: absolute;
+    left: 800px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #eee;
+    font-family: 'Roboto Slab', serif;
+}
+
+#CHAT-TITLE {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    position: absolute;
+    z-index: 2;
+    font-size: 20px;
+    line-height: 22px;
+    vertical-align: middle;
+    display: block;
+    float: left;
+    margin: 0px;
+    padding: 4px 10px;
+    width: 100%;
+    height: 30px;
+    background: #333;
+    color: #e6e6e6;
+    box-shadow: 0px 0px 3px black;
+}
+
+#CHAT-SCROLLABLE {
+    padding: 0px;
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    top: 30px;
+    bottom: 30px;
+    overflow: hidden;
+    background-color: #eee;
+    color: #000;
+}
+
+#CHAT-FIELD {
+    overflow: hidden;
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    top: 0px;
+    bottom: 0px;
+    background-color: #eee;
+    color: #000;
+}
+
+#CHAT-CONTAINER {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 10px;
+    padding: 3px 10px 5px;
+}
+
+#CHAT-SCROLLRAIL {
+    overflow: hidden;
+    position: absolute;
+    z-index: 2;
+    width: 16px;
+    height: 100%;
     right: 0;
 }
+
+#CHAT-SCROLLBAR {
+    position: absolute;
+    height: 300px;
+    width: 16px;
+}
+
+#CHAT-SCROLLBAR-VISIBLE {
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    position: absolute;
+    background-color: #1c1c1c;
+    border-radius: 15px;
+}
+
+.MESSAGE p {
+    display: inline-block;
+    white-space: normal;
+    overflow-wrap: break-word;
+    margin: 1px 3px;
+}
+
+.MESSAGE-EMBLEMS {
+    font-weight: bold;
+    margin-right: 4px;
+}
+
+.MESSAGE-AUTHOR {
+    font-weight: bold;
+    color: #0066ff;
+}
+
+#CHAT-FORM {
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    bottom: 0;
+}
+
+#CHAT-INPUT {
+    font-size: 15px;
+    line-height: 20px;
+    width: 100%;
+    height: 30px;
+    border: 0px solid black;
+    padding: 5px 15px;
+    font-family: 'Roboto Slab', serif;
+    font-style: italic;
+    background-color: #dedede;
+    box-shadow: 0px 0px 10px black;
+    color: #333;
+}
+
+#CHAT-SUBMIT {
+    display: none;
+}
+
+

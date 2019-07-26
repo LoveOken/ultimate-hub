@@ -28,6 +28,11 @@ function GENERAL() {
 
         document.getElementById("CONFIGURATION").style.visibility = "visible";
         document.getElementById("GAME").style.visibility = "visible";
+        document.getElementById("STATUS").style.display = "";
+
+        document.getElementById("CHAT").style.visibility = "visible";
+
+
     };
 
     this.unlogged = function() {
@@ -175,18 +180,34 @@ function GENERAL() {
         clock.innerText = time.secondsToMinutesAndSeconds();
     };
 
-    this.messages = 0;
-
     this.chat = function(messages) {
         let i, len;
         len = messages.length;
-        
-        for (i = itself.messages; len > i; i += 1) {
-            CREATE_MESSAGE(messages[i]);
-            itself.messages += 1;
+
+        let container = document.getElementById("CHAT-CONTAINER");
+        let view = document.getElementById("CHAT-FIELD");
+
+        let pre_bottom = view.offsetHeight - container.offsetTop - container.offsetHeight;
+
+        for (i = 0; len > i; i += 1) {
+            CREATE_MESSAGE(messages[i], i);
         }
 
-        console.log(messages);
+        let post_bottom = view.offsetHeight - container.offsetTop - container.offsetHeight;
+
+        let scroll_chat = CREATE_VERTICAL_SCROLLBAR(
+            document.getElementById("CHAT-SCROLLBAR"),
+            document.getElementById("CHAT-SCROLLRAIL"),
+            view,
+            document.getElementById("CHAT-SCROLLABLE"),
+            container
+        );
+
+        console.log(pre_bottom, post_bottom);
+
+        if (Math.floor(pre_bottom) >= -20 && Math.floor(post_bottom) < -20) {
+            scroll_chat();
+        }
     };
 };
 

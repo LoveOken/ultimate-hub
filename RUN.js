@@ -175,6 +175,8 @@ io.sockets.on("connection", socket => {
                             })
                             .on("disconnect", () => {
                                 game.disconnectPlayer(handshake.tag);
+                                chat.addFilterToAuthor("Spectator", handshake.tag);
+
                                 io.sockets.in("Main").emit("update-start");
                             })
                             .on("send-message", content => {
@@ -186,8 +188,7 @@ io.sockets.on("connection", socket => {
                     }
 
                     socket
-                    .emit("update-start")
-                    .emit("receive-messages", chat.messages);
+                    .emit("update-start");
 
                     break;
                 }

@@ -70,7 +70,7 @@ const CREATE_CARD = function() {
     document.getElementById("GAME").appendChild(card);
 };
 
-const CREATE_MESSAGE = function(message) {
+const CREATE_MESSAGE = function(message, tag) {
     "use strict";
     let container, paragraph, author, divider, content, emblems;
 
@@ -79,12 +79,15 @@ const CREATE_MESSAGE = function(message) {
     author = document.createElement("span");
     divider = document.createElement("span");
     content = document.createElement("span");
-    emblems = document.createElement("p");
+    emblems = document.createElement("span");
+
+    container.setAttribute("DATA-TAG", tag.toString());
 
     author.innerText = message.name;
     divider.innerText = ": ";
     content.innerText = message.content;
 
+    emblems.classList.add("MESSAGE-EMBLEMS");
     author.classList.add("MESSAGE-AUTHOR");
     content.classList.add("MESSAGE-CONTENT");
     container.classList.add("MESSAGE");
@@ -109,12 +112,21 @@ const CREATE_MESSAGE = function(message) {
         }
     );
 
-    author.appendChild(divider);
+    paragraph.appendChild(emblems);
     paragraph.appendChild(author);
+    author.appendChild(divider);
     paragraph.appendChild(content);
 
-    container.appendChild(emblems);
     container.appendChild(paragraph);
 
-    document.getElementById("CHAT-CONTAINER").appendChild(container);
+    let current = document.querySelector('.MESSAGE[DATA-TAG="' + tag + '"]');
+    
+    if (current === null) {
+        document.getElementById("CHAT-CONTAINER").appendChild(container);
+    } else {
+        if (!current.isEqualNode(container)) {
+            document.getElementById("CHAT-CONTAINER").insertBefore(container, current);
+            current.remove();
+        }
+    }   
 }

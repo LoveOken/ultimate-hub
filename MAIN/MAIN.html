@@ -136,7 +136,7 @@
                     </DIV>
                 </DIV>
             </DIV>
-            <DIV ID="STATUS">
+            <DIV ID="STATUS" style="display: none">
                 <SPAN ID="STATUS-TITLE">Current Status Here.</SPAN>
                 <DIV ID="STATUS-HEADER">
                     <SPAN ID="STATUS-TIME">00:00</SPAN>
@@ -153,14 +153,26 @@
         </DIV>
     </DIV>
     <DIV ID="INFO-BOARD">
-        <DIV ID="CHAT" style="visibility: visible">
+        <DIV ID="CHAT" style="visibility: hidden">
             <H2 ID="CHAT-TITLE">Chat</H2>
-            <DIV ID="CHAT-CONTAINER">
+            <DIV ID="CHAT-SCROLLABLE">
+                <DIV ID="CHAT-FIELD">
+                    <DIV ID="CHAT-CONTAINER">
+                    </DIV>
+                </DIV>
+                <DIV ID="CHAT-SCROLLRAIL">
+                    <DIV ID="CHAT-SCROLLBAR">
+                        <DIV ID="CHAT-SCROLLBAR-VISIBLE">
+                        </DIV>
+                    </DIV>
+                </DIV>
             </DIV>
             <FORM ID="CHAT-FORM" onsubmit="SEND_MESSAGE(); return false;">
                 <INPUT ID="CHAT-INPUT" TYPE="text" NAME="message" PLACEHOLDER="Send a message." MAX="100">
                 <INPUT ID="CHAT-SUBMIT" TYPE="submit" TYPE="submit">
             </FORM>
+        </DIV>
+        <DIV CLASS="LOADER">
         </DIV>
     </DIV>
     <SCRIPT TYPE="text/javascript" SRC="JS/MAIN/PROTOTYPES.js"></SCRIPT>
