@@ -1,212 +1,244 @@
 const CREATE_HORIZONTAL_SCROLLBAR = (scrollbar, scrollrail, field, container, content) => {
-    let w = (100 * container.offsetWidth / content.offsetWidth);
+    let w, l;
 
-    if (w > 100) {
-        scrollrail.style.display = "none";
-        return;
-    }
+    let output = {
+        scrollerUpdate: () => {
+            w = (100 * container.offsetWidth / content.offsetWidth).clamp(0, 100);
+            l = (100 * -content.offsetLeft / content.offsetWidth).clamp(0, 100 - w);
 
-    scrollrail.style.display = "";
-    scrollbar.style.width = w + "%";
-    scrollbar.style.left = (-content.offsetLeft * scrollrail.offsetWidth / content.offsetWidth) + "px";
+            (w >= 100) ? scrollrail.style.visibility = "hidden": scrollrail.style.visibility = "visible";
+            scrollbar.style.width = w + "%";
 
-    let pos1 = 0;
-    let pos2 = 0;
+            scrollbar.style.left = l + "%";
+            content.style.left = (-l * content.offsetWidth / 100) + "px";
 
-    let deactivate_rail = (e) => {
-        e = e || window.event;
-        e.preventDefault();
+            let pos1 = 0;
+            let pos2 = 0;
 
-        scrollrail.onmousedown = null;
-    }
+            let deactivate_rail = (e) => {
+                e = e || window.event;
+                e.preventDefault();
 
-    let activate_rail = (e) => {
-        e = e || window.event;
-        e.preventDefault();
+                scrollrail.onmousedown = null;
+            }
 
-        scrollrail.onmousedown = attract_the_scrollbar;
-    }
+            let activate_rail = (e) => {
+                e = e || window.event;
+                e.preventDefault();
 
-    let start_dragging = (e) => {
-        e = e || window.event;
-        e.preventDefault();
+                scrollrail.onmousedown = attract_the_scrollbar;
+            }
 
-        pos2 = e.clientX;
+            let start_dragging = (e) => {
+                e = e || window.event;
+                e.preventDefault();
 
-        document.onmouseup = stop_dragging;
-        document.onmousemove = drag_the_scrollbar;
-        field.onwheel = null;
-    }
+                pos2 = e.clientX;
 
-    let drag_the_scrollbar = (e) => {
-        e = e || window.event;
-        e.preventDefault();
+                document.onmouseup = stop_dragging;
+                document.onmousemove = drag_the_scrollbar;
+                field.onwheel = null;
+            }
 
-        pos1 = pos2 - e.clientX;
-        pos2 = e.clientX;
+            let drag_the_scrollbar = (e) => {
+                e = e || window.event;
+                e.preventDefault();
 
-        scrollbar.style.left =
-            (scrollbar.offsetLeft - pos1).clamp(0, scrollrail.offsetWidth - scrollbar.offsetWidth) + "px";
+                pos1 = pos2 - e.clientX;
+                pos2 = e.clientX;
 
-        content.style.left =
-            (-scrollbar.offsetLeft * container.offsetWidth / scrollbar.offsetWidth).clamp(-content.offsetWidth, 0) + "px";
-    }
+                diff = (100 * -pos1 / scrollrail.offsetWidth);
+                l = (l + diff).clamp(0, 100 - w);
 
-    let wheel_the_scrollbar = (e) => {
-        e = e || window.event;
-        e.preventDefault();
+                scrollbar.style.left = l + "%";
+                content.style.left = (-l * content.offsetWidth / 100) + "px";
+            }
 
-        delta = e.deltaY.clamp(-1, 1);
+            let wheel_the_scrollbar = (e) => {
+                e = e || window.event;
+                e.preventDefault();
 
-        scrollbar.style.left =
-            (scrollbar.offsetLeft + delta * 20).clamp(0, scrollrail.offsetWidth - scrollbar.offsetWidth) + "px";
+                delta = e.deltaY.clamp(-1, 1);
 
-        content.style.left =
-            (-scrollbar.offsetLeft * container.offsetWidth / scrollbar.offsetWidth).clamp(-content.offsetWidth, 0) + "px";
-    }
+                diff = (100 * delta * 20 / scrollrail.offsetWidth);
+                l = (l + diff).clamp(0, 100 - w);
 
-    let attract_the_scrollbar = (e) => {
-        e = e || window.event;
-        e.preventDefault();
+                scrollbar.style.left = l + "%";
+                content.style.left = (-l * content.offsetWidth / 100) + "px";
+            }
 
-        let pos = e.clientX;
+            let attract_the_scrollbar = (e) => {
+                e = e || window.event;
+                e.preventDefault();
 
-        scrollbar.style.left =
-            (pos - scrollrail.offsetLeft - scrollbar.offsetWidth / 2).clamp(0, scrollrail.offsetWidth - scrollbar.offsetWidth) + "px";
+                let pos = e.clientX;
 
-        content.style.left =
-            (-scrollbar.offsetLeft * container.offsetWidth / scrollbar.offsetWidth).clamp(-content.offsetWidth, 0) + "px";
+                diff = (100 * (pos - scrollrail.offsetLeft - scrollbar.offsetWidth / 2) / scrollrail.offsetWidth);
+                l = diff.clamp(0, 100 - w);
 
-        scrollbar.onmousedown();
-    }
+                scrollbar.style.left = l + "%";
+                content.style.left = (-l * content.offsetWidth / 100) + "px";
 
-    let stop_dragging = (e) => {
-        e = e || window.event;
-        e.preventDefault();
+                scrollbar.onmousedown();
+            }
 
-        document.onmouseup = null;
-        document.onmousemove = null;
-        field.onwheel = wheel_the_scrollbar;
-    }
+            let stop_dragging = (e) => {
+                e = e || window.event;
+                e.preventDefault();
 
-    scrollrail.onmousedown = attract_the_scrollbar;
-    scrollbar.onmousedown = start_dragging;
-    scrollbar.onmouseover = deactivate_rail;
-    scrollbar.onmouseout = activate_rail;
-    field.onwheel = wheel_the_scrollbar;
+                document.onmouseup = null;
+                document.onmousemove = null;
+                field.onwheel = wheel_the_scrollbar;
+            }
+
+            scrollrail.onmousedown = attract_the_scrollbar;
+            scrollbar.onmousedown = start_dragging;
+            scrollbar.onmouseover = deactivate_rail;
+            scrollbar.onmouseout = activate_rail;
+            field.onwheel = wheel_the_scrollbar;
+        },
+        resizeTranslate: (xl, xw) => {
+            (xw < 100) ? l = (xl * (100 - w) / (100 - xw)).clamp(0, 100 - w): l = 0;
+
+            scrollbar.style.left = l + "%";
+            content.style.left = (-l * content.offsetWidth / 100) + "px";
+        },
+        scrollRight: () => {
+            l = (100 - w);
+
+            scrollbar.style.left = l + "%";
+            content.style.left = (-l * content.offsetWidth / 100) + "px";
+        },
+        scrollLeft: () => {
+            l = 0;
+
+            scrollbar.style.left = l + "%";
+            content.style.left = (-l * content.offsetWidth / 100) + "px";
+        }
+    };
+
+    window.addEventListener('resize', () => {
+        let xl = l;
+        let xw = w;
+        output.scrollerUpdate();
+        output.resizeTranslate(xl, xw);
+    });
+
+    output.scrollerUpdate();
+
+    return output;
 }
 
 
 
 
 const CREATE_VERTICAL_SCROLLBAR = (scrollbar, scrollrail, field, container, content) => {
-    let h = (100 * container.offsetHeight / content.offsetHeight);
-    let t = (100 * -content.offsetTop / content.offsetHeight).clamp(0, 100 - h);
+    let h, t;
 
-    if (h > 100) {
-        scrollrail.style.display = "none";
+    let output = {
+        scrollerUpdate: () => {
+            h = (100 * container.offsetHeight / content.offsetHeight).clamp(0, 100);
+            t = (100 * -content.offsetTop / content.offsetHeight).clamp(0, 100 - h);
 
-        scrollrail.onmousedown = null;
-        scrollbar.onmousedown = null;
-        scrollbar.onmouseover = null;
-        scrollbar.onmouseout = null;
-        field.onwheel = null;
+            (h >= 100) ? scrollrail.style.visibility = "hidden": scrollrail.style.visibility = "visible";
+            scrollbar.style.height = h + "%";
 
-        return;
-    }
+            scrollbar.style.top = t + "%";
+            content.style.top = (-t * content.offsetHeight / 100) + "px";
 
-    console.log(h, t);
+            let pos1 = 0;
+            let pos2 = 0;
 
-    scrollrail.style.display = "";
-    scrollbar.style.height = h + "%";
-    scrollbar.style.top = t + "%";
+            let deactivate_rail = (e) => {
+                e = e || window.event;
+                e.preventDefault();
 
-    let pos1 = 0;
-    let pos2 = 0;
+                scrollrail.onmousedown = null;
+            }
 
-    let deactivate_rail = (e) => {
-        e = e || window.event;
-        e.preventDefault();
+            let activate_rail = (e) => {
+                e = e || window.event;
+                e.preventDefault();
 
-        scrollrail.onmousedown = null;
-    }
+                scrollrail.onmousedown = attract_the_scrollbar;
+            }
 
-    let activate_rail = (e) => {
-        e = e || window.event;
-        e.preventDefault();
+            let start_dragging = (e) => {
+                e = e || window.event;
+                e.preventDefault();
 
-        scrollrail.onmousedown = attract_the_scrollbar;
-    }
+                pos2 = e.clientY;
 
-    let start_dragging = (e) => {
-        e = e || window.event;
-        e.preventDefault();
+                document.onmouseup = stop_dragging;
+                document.onmousemove = drag_the_scrollbar;
+                field.onwheel = null;
+            }
 
-        pos2 = e.clientY;
+            let drag_the_scrollbar = (e) => {
+                e = e || window.event;
+                e.preventDefault();
 
-        document.onmouseup = stop_dragging;
-        document.onmousemove = drag_the_scrollbar;
-        field.onwheel = null;
-    }
+                pos1 = pos2 - e.clientY;
+                pos2 = e.clientY;
 
-    let drag_the_scrollbar = (e) => {
-        e = e || window.event;
-        e.preventDefault();
+                diff = (100 * -pos1 / scrollrail.offsetHeight);
+                t = (t + diff).clamp(0, 100 - h);
 
-        pos1 = pos2 - e.clientY;
-        pos2 = e.clientY;
+                scrollbar.style.top = t + "%";
+                content.style.top = (-t * content.offsetHeight / 100) + "px";
+            }
 
-        diff = (100 * -pos1 / scrollrail.offsetHeight);
-        t = (t + diff).clamp(0, 100 - h);
+            let wheel_the_scrollbar = (e) => {
+                e = e || window.event;
+                e.preventDefault();
 
-        scrollbar.style.top = t + "%";
-        content.style.top = (-t * content.offsetHeight / 100) + "px";
-    }
+                delta = e.deltaY.clamp(-1, 1);
 
-    let wheel_the_scrollbar = (e) => {
-        e = e || window.event;
-        e.preventDefault();
+                diff = (100 * delta * 20 / scrollrail.offsetHeight);
+                t = (t + diff).clamp(0, 100 - h);
 
-        delta = e.deltaY.clamp(-1, 1);
+                scrollbar.style.top = t + "%";
+                content.style.top = (-t * content.offsetHeight / 100) + "px";
+            }
 
-        diff = (100 * delta * 20 / scrollrail.offsetHeight);
-        t = (t + diff).clamp(0, 100 - h);
+            let attract_the_scrollbar = (e) => {
+                e = e || window.event;
+                e.preventDefault();
 
-        scrollbar.style.top = t + "%";
-        content.style.top = (-t * content.offsetHeight / 100) + "px";
-    }
+                let pos = e.clientY;
 
-    let attract_the_scrollbar = (e) => {
-        e = e || window.event;
-        e.preventDefault();
+                diff = (100 * (pos - scrollrail.offsetTop - scrollbar.offsetHeight / 2) / scrollrail.offsetHeight);
+                t = diff.clamp(0, 100 - h);
 
-        let pos = e.clientY;
+                scrollbar.style.top = t + "%";
+                content.style.top = (-t * content.offsetHeight / 100) + "px";
 
-        diff = (100 * (pos - scrollrail.offsetTop - scrollbar.offsetHeight / 2) / scrollrail.offsetHeight);
-        t = diff.clamp(0, 100 - h);
+                scrollbar.onmousedown();
+            }
 
-        scrollbar.style.top = t + "%";
-        content.style.top = (-t * content.offsetHeight / 100) + "px";
+            let stop_dragging = (e) => {
+                e = e || window.event;
+                e.preventDefault();
 
-        scrollbar.onmousedown();
-    }
+                document.onmouseup = null;
+                document.onmousemove = null;
+                field.onwheel = wheel_the_scrollbar;
+            }
 
-    let stop_dragging = (e) => {
-        e = e || window.event;
-        e.preventDefault();
+            scrollrail.onmousedown = attract_the_scrollbar;
+            scrollbar.onmousedown = start_dragging;
+            scrollbar.onmouseover = deactivate_rail;
+            scrollbar.onmouseout = activate_rail;
+            field.onwheel = wheel_the_scrollbar;
+        },
+        resizeTranslate: (xt, xh) => {
+            (xh < 100) ? t = (xt * (100 - h) / (100 - xh)).clamp(0, 100 - h): t = 0;
 
-        document.onmouseup = null;
-        document.onmousemove = null;
-        field.onwheel = wheel_the_scrollbar;
-    }
+            console.log(t);
 
-    scrollrail.onmousedown = attract_the_scrollbar;
-    scrollbar.onmousedown = start_dragging;
-    scrollbar.onmouseover = deactivate_rail;
-    scrollbar.onmouseout = activate_rail;
-    field.onwheel = wheel_the_scrollbar;
-
-    return {
+            scrollbar.style.top = t + "%";
+            content.style.top = (-t * content.offsetHeight / 100) + "px";
+        },
         scrollToBottom: () => {
             t = (100 - h);
 
@@ -220,4 +252,15 @@ const CREATE_VERTICAL_SCROLLBAR = (scrollbar, scrollrail, field, container, cont
             content.style.top = (-t * content.offsetHeight / 100) + "px";
         }
     };
+
+    window.addEventListener('resize', () => {
+        let xt = t;
+        let xh = h;
+        output.scrollerUpdate();
+        output.resizeTranslate(xt, xh);
+    });
+
+    output.scrollerUpdate();
+
+    return output;
 }

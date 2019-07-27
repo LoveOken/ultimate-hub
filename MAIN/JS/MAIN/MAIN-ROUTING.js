@@ -180,31 +180,28 @@ function GENERAL() {
         clock.innerText = time.secondsToMinutesAndSeconds();
     };
 
-    this.chat = function(messages) {
-        let i, len;
-        len = messages.length;
+    this.chatScroller = CREATE_VERTICAL_SCROLLBAR(
+        document.getElementById("CHAT-SCROLLBAR"),
+        document.getElementById("CHAT-SCROLLRAIL"),
+        document.getElementById("CHAT-FIELD"),
+        document.getElementById("CHAT-SCROLLABLE"),
+        document.getElementById("CHAT-CONTAINER")
+    );
 
+    this.chat = function(messages) {
         let container = document.getElementById("CHAT-CONTAINER");
         let field = document.getElementById("CHAT-FIELD");
 
         let pre_bottom = field.offsetHeight - container.offsetTop - container.offsetHeight;
 
-        for (i = 0; len > i; i += 1) {
-            CREATE_MESSAGE(messages[i], i);
-        }
+        messages.forEach(CREATE_MESSAGE);
 
         let post_bottom = field.offsetHeight - container.offsetTop - container.offsetHeight;
 
-        let chat = CREATE_VERTICAL_SCROLLBAR(
-            document.getElementById("CHAT-SCROLLBAR"),
-            document.getElementById("CHAT-SCROLLRAIL"),
-            field,
-            document.getElementById("CHAT-SCROLLABLE"),
-            container
-        );
+        itself.chatScroller.scrollerUpdate();
 
         if (pre_bottom >= 0 && post_bottom < 0) {
-            chat.scrollToBottom();
+            itself.chatScroller.scrollToBottom();
         }
     };
 };
