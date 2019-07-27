@@ -185,28 +185,26 @@ function GENERAL() {
         len = messages.length;
 
         let container = document.getElementById("CHAT-CONTAINER");
-        let view = document.getElementById("CHAT-FIELD");
+        let field = document.getElementById("CHAT-FIELD");
 
-        let pre_bottom = view.offsetHeight - container.offsetTop - container.offsetHeight;
+        let pre_bottom = field.offsetHeight - container.offsetTop - container.offsetHeight;
 
         for (i = 0; len > i; i += 1) {
             CREATE_MESSAGE(messages[i], i);
         }
 
-        let post_bottom = view.offsetHeight - container.offsetTop - container.offsetHeight;
+        let post_bottom = field.offsetHeight - container.offsetTop - container.offsetHeight;
 
-        let scroll_chat = CREATE_VERTICAL_SCROLLBAR(
+        let chat = CREATE_VERTICAL_SCROLLBAR(
             document.getElementById("CHAT-SCROLLBAR"),
             document.getElementById("CHAT-SCROLLRAIL"),
-            view,
+            field,
             document.getElementById("CHAT-SCROLLABLE"),
             container
         );
 
-        console.log(pre_bottom, post_bottom);
-
-        if (Math.floor(pre_bottom) >= -20 && Math.floor(post_bottom) < -20) {
-            scroll_chat();
+        if (pre_bottom >= 0 && post_bottom < 0) {
+            chat.scrollToBottom();
         }
     };
 };

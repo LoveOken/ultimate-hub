@@ -89,23 +89,37 @@ const CREATE_HORIZONTAL_SCROLLBAR = (scrollbar, scrollrail, field, container, co
         field.onwheel = wheel_the_scrollbar;
     }
 
+    scrollrail.onmousedown = attract_the_scrollbar;
     scrollbar.onmousedown = start_dragging;
     scrollbar.onmouseover = deactivate_rail;
     scrollbar.onmouseout = activate_rail;
     field.onwheel = wheel_the_scrollbar;
 }
 
+
+
+
 const CREATE_VERTICAL_SCROLLBAR = (scrollbar, scrollrail, field, container, content) => {
     let h = (100 * container.offsetHeight / content.offsetHeight);
+    let t = (100 * -content.offsetTop / content.offsetHeight).clamp(0, 100 - h);
 
     if (h > 100) {
         scrollrail.style.display = "none";
+
+        scrollrail.onmousedown = null;
+        scrollbar.onmousedown = null;
+        scrollbar.onmouseover = null;
+        scrollbar.onmouseout = null;
+        field.onwheel = null;
+
         return;
     }
 
+    console.log(h, t);
+
     scrollrail.style.display = "";
     scrollbar.style.height = h + "%";
-    scrollbar.style.top = (-content.offsetTop * scrollrail.offsetHeight / content.offsetHeight) + "px";
+    scrollbar.style.top = t + "%";
 
     let pos1 = 0;
     let pos2 = 0;
@@ -142,11 +156,11 @@ const CREATE_VERTICAL_SCROLLBAR = (scrollbar, scrollrail, field, container, cont
         pos1 = pos2 - e.clientY;
         pos2 = e.clientY;
 
-        scrollbar.style.top =
-            (scrollbar.offsetTop - pos1).clamp(0, scrollrail.offsetHeight - scrollbar.offsetHeight) + "px";
+        diff = (100 * -pos1 / scrollrail.offsetHeight);
+        t = (t + diff).clamp(0, 100 - h);
 
-        content.style.top =
-            (-scrollbar.offsetTop * container.offsetHeight / scrollbar.offsetHeight).clamp(-content.offsetHeight, 0) + "px";
+        scrollbar.style.top = t + "%";
+        content.style.top = (-t * content.offsetHeight / 100) + "px";
     }
 
     let wheel_the_scrollbar = (e) => {
@@ -155,11 +169,11 @@ const CREATE_VERTICAL_SCROLLBAR = (scrollbar, scrollrail, field, container, cont
 
         delta = e.deltaY.clamp(-1, 1);
 
-        scrollbar.style.top =
-            (scrollbar.offsetTop + delta * 20).clamp(0, scrollrail.offsetHeight - scrollbar.offsetHeight) + "px";
+        diff = (100 * delta * 20 / scrollrail.offsetHeight);
+        t = (t + diff).clamp(0, 100 - h);
 
-        content.style.top =
-            (-scrollbar.offsetTop * container.offsetHeight / scrollbar.offsetHeight).clamp(-content.offsetHeight, 0) + "px";
+        scrollbar.style.top = t + "%";
+        content.style.top = (-t * content.offsetHeight / 100) + "px";
     }
 
     let attract_the_scrollbar = (e) => {
@@ -168,11 +182,11 @@ const CREATE_VERTICAL_SCROLLBAR = (scrollbar, scrollrail, field, container, cont
 
         let pos = e.clientY;
 
-        scrollbar.style.top =
-            (pos - scrollrail.offsetTop - scrollbar.offsetHeight / 2).clamp(0, scrollrail.offsetHeight - scrollbar.offsetHeight) + "px";
+        diff = (100 * (pos - scrollrail.offsetTop - scrollbar.offsetHeight / 2) / scrollrail.offsetHeight);
+        t = diff.clamp(0, 100 - h);
 
-        content.style.top =
-            (-scrollbar.offsetTop * container.offsetHeight / scrollbar.offsetHeight).clamp(-content.offsetHeight, 0) + "px";
+        scrollbar.style.top = t + "%";
+        content.style.top = (-t * content.offsetHeight / 100) + "px";
 
         scrollbar.onmousedown();
     }
@@ -186,18 +200,24 @@ const CREATE_VERTICAL_SCROLLBAR = (scrollbar, scrollrail, field, container, cont
         field.onwheel = wheel_the_scrollbar;
     }
 
+    scrollrail.onmousedown = attract_the_scrollbar;
     scrollbar.onmousedown = start_dragging;
     scrollbar.onmouseover = deactivate_rail;
     scrollbar.onmouseout = activate_rail;
     field.onwheel = wheel_the_scrollbar;
 
-    let SCROLL = function() {
-        scrollbar.style.top =
-            Math.floor(scrollrail.offsetHeight - scrollbar.offsetHeight) + "px";
+    return {
+        scrollToBottom: () => {
+            t = (100 - h);
 
-        content.style.top =
-            Math.floor(-content.offsetHeight + container.offsetHeight) + "px";
-    }
+            scrollbar.style.top = t + "%";
+            content.style.top = (-t * content.offsetHeight / 100) + "px";
+        },
+        scrollUp: () => {
+            t = 0;
 
-    return SCROLL;
+            scrollbar.style.top = t + "%";
+            content.style.top = (-t * content.offsetHeight / 100) + "px";
+        }
+    };
 }
