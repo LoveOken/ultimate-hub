@@ -1,4 +1,4 @@
-/* Variable Declaration */
+var { Table } = require("./MAIN/JS/TABLE/TABLE-ENGINE-FACTORY.js");
 
 var express = require("express");
 var socketIO = require("socket.io");
@@ -17,7 +17,6 @@ var session = require("express-session")({
 });
 var sharedsession = require("express-socket.io-session");
 
-/* Express Routing */
 
 app.set("port", 2000);
 app.set("trust proxy", 1);
@@ -37,7 +36,7 @@ app.get("/", function(request, response) {
     "use strict";
 
     if (request.session.logged) {
-        response.redirect("/main");
+        response.redirect("/lobby");
     } else {
         response.redirect("/login");
     }
@@ -48,6 +47,9 @@ app.get("/", function(request, response) {
 app.get("/login", function(request, response) {
     "use strict";
     response.sendFile(path.join(__dirname, "/MAIN/LOGIN.html"));
+
+    request.session.room = "Login";
+    request.session.save();
 });
 
 app.post("/login/handshake", function(request, response) {
@@ -57,37 +59,34 @@ app.post("/login/handshake", function(request, response) {
 
     request.session.username = request.body.username;
     request.session.password = request.body.password;
+
     request.session.save();
 
-    response.redirect("/main");
+    response.redirect("/lobby");
     response.end();
 });
 
-app.get("/main", function(request, response) {
+app.get("/lobby", function(request, response) {
     "use strict";
-    response.sendFile(path.join(__dirname, "/MAIN/MAIN.html"));
+    response.sendFile(path.join(__dirname, "/MAIN/LOBBY.html"));
 
-    request.session.room = "Main";
+    request.session.room = "Lobby";
     request.session.save();
+
 });
 
-/* Game Itself */
-
-const { TABLE } = require("./MAIN/JS/TABLE/TABLE-ENGINE-FACTORY.js");
-
-var table = new TABLE("Default");
-var game = table.game;
-var chat = table.chat;
-
-/* Socket.io Routing */
 
 global.SOCKET_LIST = [];
 global.SOCKETS_ONLINE = 0;
+
+global.TABLE_LIST = [];
 
 io.sockets.on("connection", socket => {
     "use strict";
 
     socket.on("ready", () => {
+        socket.already_connected = false;
+
         let handshake = socket.handshake.session;
 
         if (handshake.tag == null) {
@@ -98,12 +97,17 @@ io.sockets.on("connection", socket => {
         }
 
         SOCKET_LIST[handshake.tag] = socket;
-        socket.join(handshake.room);
-        socket.already_connected = false;
 
         switch (handshake.room) {
             case "Main":
                 {
+                    let room = handshake.room + handshake.table;
+                    socket.join(room);
+
+                    let table = TABLE_LIST[handshake.table];
+                    let game = table.game;
+                    let chat = table.chat;
+
                     socket
                     .on("update-process", () => {
                         let output = game.parseForUpdate(handshake.tag);
@@ -122,6 +126,7 @@ io.sockets.on("connection", socket => {
 
                     if (handshake.logged) {
                         chat.newAuthor(handshake.username, handshake.tag);
+
                         game.doesPlayerExist(handshake.tag) ?
                             chat.addFilterToAuthor("Player", handshake.tag) :
                             chat.addFilterToAuthor("Spectator", handshake.tag);
@@ -129,22 +134,21 @@ io.sockets.on("connection", socket => {
                         socket
                             .on("debug-player", () => {
                                 game.createDebugPlayer();
-                                io.sockets.in("Main").emit("update-start");
+
+                                io.sockets
+                                    .in(room)
+                                    .emit("update-start");
                             })
                             .on("seat-request", () => {
                                 game.seatRequest(handshake.username, handshake.tag);
 
                                 game.doesPlayerExist(handshake.tag) ?
-                                    chat.addFilterToAuthor(
-                                        "Player",
-                                        handshake.tag
-                                    ) :
-                                    chat.addFilterToAuthor(
-                                        "Spectator",
-                                        handshake.tag
-                                    );
+                                    chat.addFilterToAuthor("Player", handshake.tag) :
+                                    chat.addFilterToAuthor("Spectator", handshake.tag);
 
-                                io.sockets.in("Main").emit("update-start");
+                                io.sockets
+                                    .in(room)
+                                    .emit("update-start");
                             })
                             .on("toggle-role-activity", data => {
                                 game.toggleRole(
@@ -152,22 +156,27 @@ io.sockets.on("connection", socket => {
                                     data.value,
                                     data.which
                                 );
-                                io.sockets.in("Main").emit("update-start");
+
+                                io.sockets
+                                    .in(room)
+                                    .emit("update-start");
                             })
                             .on("set_ready_to_play", () => {
                                 game.togglePlayerReady(handshake.tag);
-                                io.sockets.in("Main").emit("update-start");
+
+                                io.sockets
+                                    .in(room)
+                                    .emit("update-start");
                             })
                             .on("confirm-settings", () => {
                                 game.preparationPhase(handshake.tag, () => {
-                                    io.sockets.in("Main").emit("update-start");
+                                    io.sockets
+                                        .in(room)
+                                        .emit("update-start");
                                 });
                             })
                             .on("player-interaction", data => {
-                                game.playerInteraction(
-                                    handshake.tag,
-                                    data.type,
-                                    data.whom,
+                                game.playerInteraction(handshake.tag, data.type, data.whom,
                                     () => {
                                         socket.emit("update-start");
                                     }
@@ -177,18 +186,52 @@ io.sockets.on("connection", socket => {
                                 game.disconnectPlayer(handshake.tag);
                                 chat.addFilterToAuthor("Spectator", handshake.tag);
 
-                                io.sockets.in("Main").emit("update-start");
+                                socket.leave(handshake.room);
+                                socket.join(handshake.table);
+
+                                io.sockets
+                                    .in(room)
+                                    .emit("update-start");
                             })
                             .on("send-message", content => {
                                 chat.newMessage(handshake.tag, content);
+
                                 io.sockets
-                                    .in("Main")
+                                    .in(room)
                                     .emit("receive-messages", chat.messages);
                             });
                     }
 
                     socket
                     .emit("update-start");
+
+                    break;
+                }
+            case "Lobby":
+                {
+                    let room = handshake.room;
+                    socket.join(room);
+
+                    socket
+                    .on("creation-request", () => {
+                        let foundation = (new Date()).getTime().toString();
+                        let table = TABLE_LIST.push(new Table(foundation)) - 1;
+
+                        app.get("/main/" + foundation, function(request, response) {
+                            "use strict";
+                            response.sendFile(path.join(__dirname, "/MAIN/MAIN.html"));
+
+                            request.session.room = "Main";
+                            request.session.table = table;
+
+                            request.session.save();
+                        });
+
+                        socket.emit("redirect-to-table", "/main/" + foundation);
+                    })
+                    .on("disconnect", () => {
+                        socket.leave(room);
+                    })
 
                     break;
                 }

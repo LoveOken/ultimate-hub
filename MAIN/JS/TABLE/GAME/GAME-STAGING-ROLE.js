@@ -452,18 +452,36 @@ GAME.prototype.roleWin = function(player) {
         case "Werewolf":
             {
                 let werewolf_win_condition = function(dead) {
-                    won = true;
+                    let dead_wolf = false;
+                    let dead_villager = false;
+                    let dead_tanner = false;
+                    won = false;
 
                     let check_condition = function(target) {
                         if (target.actual_team === "Werewolf" && target.actual_role !== "MINION") {
-                            won = false;
+                            dead_wolf = true;
+                        }
+                        if (target.actual_team === "Villager") {
+                            dead_villager = true;
                         }
                         if (target.actual_team === "Tanner") {
-                            won = false;
+                            dead_tanner = false;
                         }
                     };
 
                     dead.forEach(check_condition);
+
+                    if (game.trackers.wolf_in_play && !dead_wolf) {
+                        won = true;
+                    }
+
+                    if (!game.trackers.wolf_in_play && dead_villager) {
+                        won = true;
+                    }
+
+                    if (dead_tanner) {
+                        won = false;
+                    }
 
                     player.won = won;
                     return won;

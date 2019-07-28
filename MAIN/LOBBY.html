@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<HTML>
+
+<HEAD>
+</HEAD>
+
+<BODY>
+    <DIV ID="LOBBY">
+        <DIV ID="LOBBY-FORM">
+            <BUTTON ID="LOBBY-FORM-SUBMIT" onclick="TABLE_CREATION_REQUEST();">
+                Create Game
+            </BUTTON>
+        </DIV>
+        <DIV ID="LOBBY-ROOMS">
+        </DIV>
+    </DIV>
+    <SCRIPT TYPE="text/javascript" SRC="/JS/UTILS/PROTOTYPES.js"></SCRIPT>
+    <SCRIPT TYPE="text/javascript" SRC="/JS/UTILS/SOCKET.js"></SCRIPT>
+    <SCRIPT TYPE="text/javascript" SRC="/JS/UTILS/SCROLLBARS.js"></SCRIPT>
+    <SCRIPT>
+    	let socket = io();
+
+    	const TABLE_CREATION_REQUEST = function() {
+    		"user-strict";
+    		socket.emit("creation-request");
+    	};
+
+    	socket.on("redirect-to-table", function(destination) {
+    		window.location.href = destination;
+    	});
+
+    	socket.emit("ready");
+    </SCRIPT>
+</BODY>
+
+</HTML>
