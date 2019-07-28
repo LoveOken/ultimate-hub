@@ -84,8 +84,8 @@ function ROUTER(dirname) {
         });
     };
 
-    this.serverListen = function() {
-    	router.server.listen(2000);
+    this.serverListen = function(port) {
+    	router.server.listen(port);
     }
 }
 
