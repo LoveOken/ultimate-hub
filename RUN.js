@@ -13,6 +13,6 @@ ROUTER.routeLobby();
 
 SOCKET.socketConnect();
 
-ROUTER.serverListen(process.env.PORT);
+ROUTER.serverListen(2000);
 
 /* Use any port for local, Use process.env.PORT for Deploy in Heroku */
