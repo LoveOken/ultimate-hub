@@ -1,18 +1,13 @@
-const { Router } = require("./BACKEND/EXPRESS-ROUTING.js");
 const { Socket } = require("./BACKEND/SOCKET-BACKEND.js");
 
-let ROUTER = new Router(__dirname);
-let SOCKET = new Socket(ROUTER);
+let SOCKET = new Socket(__dirname);
 
-ROUTER.routeStart();
+SOCKET.express.routeStart();
 SOCKET.socketStart();
 
-ROUTER.routeRoot();
-ROUTER.routeLogin();
-ROUTER.routeLobby();
+SOCKET.express.initialRoutingSetup();
 
 SOCKET.socketConnect();
-
-ROUTER.serverListen(2000);
+SOCKET.express.serverListen(2000);
 
 /* Use any port for local, Use process.env.PORT for Deploy in Heroku */

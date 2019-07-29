@@ -31,6 +31,8 @@ function MESSAGE(content, author, time) {
     this.time = time;
 }
 
+
+
 CHAT.prototype.newAuthor = function(name, tag) {
     "use strict";
     let from = this.authors.findIndex(author => author.tag === tag);
@@ -41,11 +43,15 @@ CHAT.prototype.newAuthor = function(name, tag) {
     }
 };
 
+
+
 CHAT.prototype.newFilter = function(name, priority) {
     "use strict";
     let filter = new FILTER(name, priority);
     this.filters.push(filter);
 };
+
+
 
 CHAT.prototype.newMessage = function(tag, content) {
     "use strict";
@@ -60,6 +66,8 @@ CHAT.prototype.newMessage = function(tag, content) {
 
     return true;
 };
+
+
 
 CHAT.prototype.addFilterToAuthor = function(name, tag) {
     "use strict";
@@ -79,5 +87,7 @@ CHAT.prototype.addFilterToAuthor = function(name, tag) {
 
     author.filters.push(filter);
 };
+
+
 
 module.exports.CHAT = CHAT;

@@ -84,9 +84,15 @@ function ROUTER(dirname) {
         });
     };
 
+    this.initialRoutingSetup = function() {
+        router.routeRoot();
+        router.routeLogin();
+        router.routeLobby();
+    };
+
     this.serverListen = function(port) {
-    	router.server.listen(port);
-    }
+        router.server.listen(port);
+    };
 }
 
 module.exports.Router = ROUTER;

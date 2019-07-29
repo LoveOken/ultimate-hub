@@ -1,17 +1,20 @@
 const { Table } = require("../MAIN/JS/TABLE/TABLE-ENGINE-FACTORY.js");
+const { Router } = require("./EXPRESS-ROUTING.js");
 
-function SOCKET(express) {
+function SOCKET(dirname) {
     "use strict";
     let router = this;
+
+    this.express = new Router(dirname);
 
     this.engine = require("socket.io");
     this.session = require("express-socket.io-session");
 
-    this.io = this.engine(express.server);
+    this.io = this.engine(this.express.server);
 
     this.socketStart = function() {
         router.io.use(
-            router.session(express.session, {
+            router.session(router.express.session, {
                 autoSave: true
             })
         );
@@ -155,7 +158,7 @@ function SOCKET(express) {
                 let foundation = (new Date()).getTime().toString();
                 let table = router.tableList.push(new Table(foundation)) - 1;
 
-                express.routeMain(foundation, table);
+                router.express.routeMain(foundation, table);
 
                 socket.emit("redirect-to-table", "/main/" + foundation);
             })

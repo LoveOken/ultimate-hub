@@ -234,8 +234,6 @@ const CREATE_VERTICAL_SCROLLBAR = (scrollbar, scrollrail, field, container, cont
         resizeTranslate: (xt, xh) => {
             (xh < 100) ? t = (xt * (100 - h) / (100 - xh)).clamp(0, 100 - h): t = 0;
 
-            console.log(t);
-
             scrollbar.style.top = t + "%";
             content.style.top = (-t * content.offsetHeight / 100) + "px";
         },
