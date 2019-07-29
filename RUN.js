@@ -8,6 +8,6 @@ SOCKET.socketStart();
 SOCKET.express.initialRoutingSetup();
 
 SOCKET.socketConnect();
-SOCKET.express.serverListen(2000);
+SOCKET.express.serverListen(process.env.PORT);
 
 /* Use any port for local, Use process.env.PORT for Deploy in Heroku */
