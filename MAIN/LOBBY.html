@@ -49,6 +49,7 @@
         })
         .on("update-tables", function(tables) {
             tables.forEach(CREATE_TABLE_DISPLAY);
+            console.log(tables);
         })
         .emit("ready");
     </SCRIPT>

@@ -5,7 +5,12 @@ const modulePublic = function(game, accessor) {
         "use strict";
         let clone, me;
 
+        console.log(game);
+
         clone = JSON.parse(JSON.stringify(game));
+
+        console.log(clone);
+        
         me = clone.player_list.findIndex(player => player.tag === tag);
 
         if (me !== -1) {

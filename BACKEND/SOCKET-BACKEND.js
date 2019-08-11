@@ -189,7 +189,7 @@ function SOCKET(dirname) {
 
                 tableList.forEach(
                     function(table) {
-                        tables.push(table.game.parseForUpdate(handshake.tag));
+                        tables.push(table.getGame().parseForUpdate(handshake.tag));
                     }
                 );
 
