@@ -2,15 +2,21 @@
 <HTML>
 
 <HEAD>
-	<SCRIPT TYPE="text/javascript" SRC="/JS/UTILS/RELOAD.js"></SCRIPT>
+    <SCRIPT TYPE="text/javascript" SRC="/JS/UTILS/RELOAD.js"></SCRIPT>
 </HEAD>
 
 <BODY>
     <DIV ID="LOBBY">
-        <DIV ID="LOBBY-FORM">
-            <BUTTON ID="LOBBY-FORM-SUBMIT" onclick="TABLE_CREATION_REQUEST();">
+        <DIV ID="GAME-CREATE">
+            <BUTTON ID="LOBBY-FORM-TITLE">
                 Create Game
             </BUTTON>
+            <FIELDSET ID="LOBBY-FIELDSET">
+                <FORM METHOD="POST" ID="LOBBY-FORM">
+                    <INPUT ID="LOBBY-FORM-INPUT" TYPE="text" NAME="title" PLACEHOLDER="New Game" MAX="30">
+                    <INPUT ID="LOBBY-FORM-SUBMIT" TYPE="SUBMIT" VALUE="Create">
+                </FORM>
+            </FIELDSET>
         </DIV>
         <DIV ID="LOBBY-ROOMS">
         </DIV>
@@ -19,18 +25,32 @@
     <SCRIPT TYPE="text/javascript" SRC="/JS/UTILS/SOCKET.js"></SCRIPT>
     <SCRIPT TYPE="text/javascript" SRC="/JS/UTILS/SCROLLBARS.js"></SCRIPT>
     <SCRIPT>
-    	let socket = io();
+    const CREATE_TABLE_DISPLAY = function(table) {
+    	let container, header;
 
-    	const TABLE_CREATION_REQUEST = function() {
-    		"user-strict";
-    		socket.emit("creation-request");
-    	};
+    	container = document.createElement("div");
+    	header = document.createElement("h1");
 
-    	socket.on("redirect-to-table", function(destination) {
-    		window.location.href = destination;
-    	});
+    	container.classList.add("ROOM");
+    	header.classList.add("ROOM-HEADER");
 
-    	socket.emit("ready");
+    	header.innerHTML = table.id;
+
+    	container.append(header);
+
+    	document.getElementById("LOBBY-ROOMS").append(container);
+    }
+
+    let socket = io();
+
+    socket
+        .on("update-start", function() {
+            socket.emit("update-process");
+        })
+        .on("update-tables", function(tables) {
+            tables.forEach(CREATE_TABLE_DISPLAY);
+        })
+        .emit("ready");
     </SCRIPT>
 </BODY>
 

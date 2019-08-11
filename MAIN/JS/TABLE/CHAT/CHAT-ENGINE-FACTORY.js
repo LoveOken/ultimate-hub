@@ -2,10 +2,24 @@ function CHAT(name) {
     "use strict";
     this.id = name;
 
-    this.authors = [];
-    this.filters = [];
-    this.messages = [];
-}
+    let itself = {
+        authors: [],
+        filters: [],
+        messages: []
+    };
+
+    let methods = new METHODS(itself);
+
+    this.getMessages = () => JSON.parse(JSON.stringify(itself.messages));
+
+    this.newAuthor = methods.newAuthor;
+    this.newFilter = methods.newFilter;
+    this.newMessage = methods.newMessage;
+
+    this.addFilterToAuthor = methods.addFilterToAuthor;
+
+    Object.freeze(this);
+};
 
 function AUTHOR(name, tag) {
     "use strict";
@@ -13,13 +27,13 @@ function AUTHOR(name, tag) {
     this.filters = [];
 
     this.tag = tag;
-}
+};
 
 function FILTER(name, priority) {
     "use strict";
     this.name = name;
     this.priority = priority;
-}
+};
 
 function MESSAGE(content, author, time) {
     "use strict";
@@ -29,65 +43,59 @@ function MESSAGE(content, author, time) {
     this.filters = author.filters;
 
     this.time = time;
-}
-
-
-
-CHAT.prototype.newAuthor = function(name, tag) {
-    "use strict";
-    let from = this.authors.findIndex(author => author.tag === tag);
-
-    if (from === -1) {
-        let author = new AUTHOR(name, tag);
-        this.authors.push(author);
-    }
 };
 
-
-
-CHAT.prototype.newFilter = function(name, priority) {
+function METHODS(chat) {
     "use strict";
-    let filter = new FILTER(name, priority);
-    this.filters.push(filter);
+
+    this.newAuthor = function(name, tag) {
+        "use strict";
+        let from = chat.authors.findIndex(author => author.tag === tag);
+
+        if (from === -1) {
+            let author = new AUTHOR(name, tag);
+            chat.authors.push(author);
+        }
+    };
+
+    this.newFilter = function(name, priority) {
+        "use strict";
+        let filter = new FILTER(name, priority);
+        chat.filters.push(filter);
+    };
+
+    this.newMessage = function(tag, content) {
+        "use strict";
+        let from = chat.authors.findIndex(author => author.tag === tag);
+
+        if (from === -1) {
+            return false;
+        }
+
+        let message = new MESSAGE(content, chat.authors[from], 0);
+        chat.messages.push(message);
+
+        return true;
+    };
+
+    this.addFilterToAuthor = function(name, tag) {
+        "use strict";
+        let filter = chat.filters.find(target => target.name === name);
+        let author = chat.authors.find(target => target.tag === tag);
+
+        if (filter === undefined || author === undefined) {
+            return false;
+        }
+
+        author.filters
+            .filter(target => target.priority === filter.priority)
+            .forEach(function(target) {
+                let index = author.filters.findIndex(filter => filter === target);
+                author.filters.splice(index);
+            });
+
+        author.filters.push(filter);
+    };
 };
-
-
-
-CHAT.prototype.newMessage = function(tag, content) {
-    "use strict";
-    let from = this.authors.findIndex(author => author.tag === tag);
-
-    if (from === -1) {
-        return false;
-    }
-
-    let message = new MESSAGE(content, this.authors[from], 0);
-    this.messages.push(message);
-
-    return true;
-};
-
-
-
-CHAT.prototype.addFilterToAuthor = function(name, tag) {
-    "use strict";
-    let filter = this.filters.find(target => target.name === name);
-    let author = this.authors.find(target => target.tag === tag);
-
-    if (filter === undefined || author === undefined) {
-        return false;
-    }
-
-    author.filters
-        .filter(target => target.priority === filter.priority)
-        .forEach(function(target) {
-            let index = author.filters.findIndex(filter => filter === target);
-            author.filters.splice(index);
-        });
-
-    author.filters.push(filter);
-};
-
-
 
 module.exports.CHAT = CHAT;

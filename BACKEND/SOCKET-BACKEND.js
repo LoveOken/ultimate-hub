@@ -1,58 +1,86 @@
-const { Table } = require("../MAIN/JS/TABLE/TABLE-ENGINE-FACTORY.js");
 const { Router } = require("./EXPRESS-ROUTING.js");
+const { Table } = require("../MAIN/JS/TABLE/TABLE-ENGINE-FACTORY.js");
 
 function SOCKET(dirname) {
     "use strict";
-    let router = this;
+    let express = new Router(dirname);
 
-    this.express = new Router(dirname);
+    let engine = require("socket.io");
+    let session = require("express-socket.io-session");
 
-    this.engine = require("socket.io");
-    this.session = require("express-socket.io-session");
+    let io = engine(express.getServer);
 
-    this.io = this.engine(this.express.server);
+    let socketList = [];
+    let socketsOnline = 0;
 
-    this.socketStart = function() {
-        router.io.use(
-            router.session(router.express.session, {
+    let tableList = [];
+
+    let debug = false;
+
+    function tableRequest(title) {
+        this.foundation =
+            new Date()
+            .toISOString()
+            .replace(/\:/g, "")
+            .replace(/\-/g, "")
+            .replace(/\./, "_@")
+            .replace("T", "_T");
+
+        this.table = tableList.push(new Table(title)) - 1;   
+
+        io.sockets
+            .in("Lobby")
+            .emit("update-start");
+    };
+
+    const socketStart = function() {
+        express.routeStart();
+
+        io.use(
+            session(express.getSession, {
                 autoSave: true
             })
         );
+
+        express.initialRoutingSetup(tableRequest);
     };
 
-    this.socketList = [];
-    this.socketsOnline = 0;
-
-    this.tableList = [];
-
-    this.socketInitialize = function(socket) {
+    const socketInitialize = function(socket) {
         socket.already_connected = false;
 
         let handshake = socket.handshake.session;
 
         if (handshake.tag == null) {
-            handshake.tag = router.socketsOnline;
-            router.socketsOnline++;
+            handshake.tag = socketsOnline;
+            socketsOnline++;
 
             handshake.save();
         }
 
-        router.socketList[handshake.tag] = socket;
+        socketList[handshake.tag] = socket;
+
+        if (debug) {
+            console.log("Socket Initialized with tag: ", handshake.tag);
+        }
     };
 
-    this.socketsOnMain = function(socket) {
+    const socketsOnMain = function(socket) {
         let handshake = socket.handshake.session;
 
         let room = handshake.room + handshake.table;
         socket.join(room);
 
-        let table = router.tableList[handshake.table];
-        let game = table.game;
-        let chat = table.chat;
+        let table = tableList[handshake.table];
+        let game = table.getGame();
+        let chat = table.getChat();
 
         socket
             .on("update-process", () => {
                 let output = game.parseForUpdate(handshake.tag);
+
+                if (debug) {
+                    console.log("Update processed");
+                }
 
                 socket
                     .emit("update-finish", {
@@ -60,7 +88,7 @@ function SOCKET(dirname) {
                         already_connected: socket.already_connected,
                         logged: handshake.logged
                     })
-                    .emit("receive-messages", chat.messages);
+                    .emit("receive-messages", chat.getMessages());
             })
             .on("validate-connection", () => {
                 socket.already_connected = true;
@@ -77,7 +105,7 @@ function SOCKET(dirname) {
                 .on("debug-player", () => {
                     game.createDebugPlayer();
 
-                    router.io.sockets
+                    io.sockets
                         .in(room)
                         .emit("update-start");
                 })
@@ -88,34 +116,32 @@ function SOCKET(dirname) {
                         chat.addFilterToAuthor("Player", handshake.tag) :
                         chat.addFilterToAuthor("Spectator", handshake.tag);
 
-                    router.io.sockets
+                    io.sockets
                         .in(room)
                         .emit("update-start");
                 })
                 .on("toggle-role-activity", data => {
-                    game.toggleRole(
-                        handshake.tag,
-                        data.value,
-                        data.which
-                    );
+                    game.toggleRole(handshake.tag, data.value, data.which);
 
-                    router.io.sockets
+                    io.sockets
                         .in(room)
                         .emit("update-start");
                 })
                 .on("set_ready_to_play", () => {
                     game.togglePlayerReady(handshake.tag);
 
-                    router.io.sockets
+                    io.sockets
                         .in(room)
                         .emit("update-start");
                 })
                 .on("confirm-settings", () => {
-                    game.preparationPhase(handshake.tag, () => {
-                        router.io.sockets
-                            .in(room)
-                            .emit("update-start");
-                    });
+                    game.preparationPhase(handshake.tag,
+                        () => {
+                            io.sockets
+                                .in(room)
+                                .emit("update-start");
+                        }
+                    );
                 })
                 .on("player-interaction", data => {
                     game.playerInteraction(handshake.tag, data.type, data.whom,
@@ -130,16 +156,16 @@ function SOCKET(dirname) {
 
                     socket.leave(room);
 
-                    router.io.sockets
+                    io.sockets
                         .in(room)
                         .emit("update-start");
                 })
                 .on("send-message", content => {
                     chat.newMessage(handshake.tag, content);
 
-                    router.io.sockets
+                    io.sockets
                         .in(room)
-                        .emit("receive-messages", chat.messages);
+                        .emit("receive-messages", chat.getMessages());
                 });
         }
 
@@ -147,43 +173,70 @@ function SOCKET(dirname) {
             .emit("update-start");
     };
 
-    this.socketsOnLobby = function(socket) {
-    	let handshake = socket.handshake.session;
+    const socketsOnLobby = function(socket) {
+        let handshake = socket.handshake.session;
 
         let room = handshake.room;
         socket.join(room);
 
         socket
-            .on("creation-request", () => {
-                let foundation = (new Date()).getTime().toString();
-                let table = router.tableList.push(new Table(foundation)) - 1;
+            .on("update-process", () => {
+                let tables = [];
 
-                router.express.routeMain(foundation, table);
+                if (debug) {
+                    console.log("Update processed");
+                }
 
-                socket.emit("redirect-to-table", "/main/" + foundation);
+                tableList.forEach(
+                    function(table) {
+                        tables.push(table.game.parseForUpdate(handshake.tag));
+                    }
+                );
+
+                socket
+                    .emit("update-tables", tables);
             })
             .on("disconnect", () => {
                 socket.leave(room);
-            });
+            })
+            .emit("update-start");
     };
 
-    this.socketConnect = function() {
-        router.io.sockets.on("connection", socket => {
+    const socketConnect = function() {
+        if (debug) {
+            console.log("Socket Connection Set Up");
+        }
+
+        io.sockets.on("connection", socket => {
             "use strict";
+            if (debug) {
+                console.log("Socket Connected");
+            }
+
             socket.on("ready", () => {
-                router.socketInitialize(socket);
+                socketInitialize(socket);
+
+                console.log("Ready is set");
 
                 switch (socket.handshake.session.room) {
                     case "Main":
-                        router.socketsOnMain(socket);
+                        socketsOnMain(socket);
                         break;
                     case "Lobby":
-                        router.socketsOnLobby(socket);
+                        socketsOnLobby(socket);
                         break;
                 }
             });
         });
     };
+
+    this.run = function(port) {
+        socketStart();
+        socketConnect();
+        express.serverListen(port);
+    };
+
+    Object.freeze(this);
 }
 
 module.exports.Socket = SOCKET;
