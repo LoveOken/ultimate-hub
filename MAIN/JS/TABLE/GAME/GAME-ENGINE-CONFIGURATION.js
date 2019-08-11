@@ -1,155 +1,160 @@
-const { GAME, PLAYER } = require("./GAME-ENGINE-FACTORY.js");
+const { PLAYER } = require("./GAME-ENGINE-FACTORY.js");
 
-
-
-GAME.prototype.createDebugPlayer = function() {
+const moduleConfiguration = function(game, accessor) {
     "use strict";
-    let dummy;
-    dummy = new PLAYER("Dummy", -1);
-    dummy.ready = true;
-    this.player_list.push(dummy);
 
-    this.setReady();
-};
+    game.createDebugPlayer = function() {
+        "use strict";
+        let dummy;
+        dummy = new PLAYER("Dummy", -1);
+        dummy.ready = true;
+        game.player_list.push(dummy);
 
-
-
-GAME.prototype.debugPlayerList = function() {
-    "use strict";
-    this.player_list.forEach(function(player) {
-        console.log(player);
-    });
-
-    this.center_cards.forEach(function(center) {
-        console.log(center);
-    });
-};
+        game.setReady();
+    };
 
 
 
-GAME.prototype.disconnectPlayer = function(tag) {
-    "use strict";
-    let me;
-    me = this.player_list.findIndex(player => player.tag === tag);
-
-    if (me !== -1 && this.stage === 0) {
-        this.player_list.splice(me, 1);
-    }
-
-    this.setReady();
-};
+    game.debugPlayerList = function() {
+        "use strict";
+        console.log(game.player_list);
+        console.log(game.center_cards);
+    };
 
 
 
-GAME.prototype.seatRequest = function(name, tag) {
-    "use strict";
-    let me;
-    me = this.player_list.findIndex(player => player.tag === tag)
+    game.disconnectPlayer = function(tag) {
+        "use strict";
+        let me;
+        me = game.player_list.findIndex(player => player.tag === tag);
 
-    if (me === -1) {
-        if (this.player_list.length !== this.player_max) { this.player_list.push(new PLAYER(name, tag)) };
-    } else {
-        this.player_list.splice(me, 1);
-    }
-
-    this.setReady();
-};
-
-
-
-GAME.prototype.toggleRole = function(tag, value, which) {
-    "use strict";
-    let from;
-    from = this.player_list.findIndex(player => player.tag === tag);
-
-    try {
-        if (from !== 0) {
-            throw new Error(
-                "The player selecting roles is not table leader. (Modified Client)"
-            );
+        if (me !== -1 && game.stage === 0) {
+            game.player_list.splice(me, 1);
         }
-        if (this.roles[value] === null) {
-            throw new Error("Invalid index. (Modified Client)");
+
+        game.setReady();
+    };
+
+
+
+    game.seatRequest = function(name, tag) {
+        "use strict";
+        let me;
+        me = game.player_list.findIndex(player => player.tag === tag)
+
+        if (me === -1) {
+            if (game.player_list.length !== game.player_max) { game.player_list.push(new PLAYER(name, tag)) };
+        } else {
+            game.player_list.splice(me, 1);
         }
-        if (this.roles[value].active[which] === null) {
-            throw new Error("Invalid subindex. (Modified Client)");
-        }
-    } catch (e) {
-        console.log(e);
-        return;
-    }
 
-    this.roles[value].active[which] = !this.roles[value].active[which];
-
-    this.setReady();
-};
+        game.setReady();
+    };
 
 
 
-GAME.prototype.togglePlayerReady = function(tag) {
-    "use strict";
-    let from;
-    from = this.player_list.findIndex(player => player.tag === tag);
+    game.toggleRole = function(tag, value, which) {
+        "use strict";
+        let from;
+        from = game.player_list.findIndex(player => player.tag === tag);
 
-    try {
-        if (from === -1) {
-            throw new Error("The player is not seated. (Modified Client)");
-        }
-    } catch (e) {
-        console.log(e);
-        return;
-    }
-
-    this.player_list[from].ready = !this.player_list[from].ready;
-
-    this.setReady();
-};
-
-
-
-GAME.prototype.setReady = function() {
-    "use strict";
-    let amount_of_cards_picked;
-
-    let not_everyone_is_ready,
-        not_enough_players,
-        no_necessary_roles_active,
-        cards_dont_align;
-
-    amount_of_cards_picked = 0;
-
-    let count_active_cards = function(role) {
-
-        role.active.forEach(function(active) {
-            if (active === true) {
-                amount_of_cards_picked += 1;
+        try {
+            if (from !== 0) {
+                throw new Error(
+                    "The player selecting roles is not table leader. (Modified Client)"
+                );
             }
-        });
+            if (game.roles[value] === null) {
+                throw new Error("Invalid index. (Modified Client)");
+            }
+            if (game.roles[value].active[which] === null) {
+                throw new Error("Invalid subindex. (Modified Client)");
+            }
+        } catch (e) {
+            console.log(e);
+            return;
+        }
 
-    }
+        game.roles[value].active[which] = !game.roles[value].active[which];
 
-    this.roles
-        .filter(role => role.active.includes(true))
-        .forEach(count_active_cards);
+        game.setReady();
+    };
 
-    not_everyone_is_ready =
-        this.player_list.filter(player => player.ready === false).length > 0;
 
-    not_enough_players =
-        this.player_list.length < 3;
 
-    no_necessary_roles_active =
-        this.roles.filter(
-            role => role.necessary === true && role.active.includes(true)
-        ).length === 0;
+    game.togglePlayerReady = function(tag) {
+        "use strict";
+        let from;
+        from = game.player_list.findIndex(player => player.tag === tag);
 
-    cards_dont_align =
-        amount_of_cards_picked !== this.player_list.length + 3;
+        try {
+            if (from === -1) {
+                throw new Error("The player is not seated. (Modified Client)");
+            }
+        } catch (e) {
+            console.log(e);
+            return;
+        }
 
-    this.ready = !(
-        not_everyone_is_ready ||
-        not_enough_players ||
-        no_necessary_roles_active ||
-        cards_dont_align
-    );
+        game.player_list[from].ready = !game.player_list[from].ready;
+
+        game.setReady();
+    };
+
+
+
+    game.setReady = function() {
+        "use strict";
+        let amount_of_cards_picked;
+
+        let not_everyone_is_ready,
+            not_enough_players,
+            no_necessary_roles_active,
+            cards_dont_align;
+
+        amount_of_cards_picked = 0;
+
+        let count_active_cards = function(role) {
+
+            role.active.forEach(function(active) {
+                if (active === true) {
+                    amount_of_cards_picked += 1;
+                }
+            });
+
+        }
+
+        game.roles
+            .filter(role => role.active.includes(true))
+            .forEach(count_active_cards);
+
+        not_everyone_is_ready =
+            game.player_list.filter(player => player.ready === false).length > 0;
+
+        not_enough_players =
+            game.player_list.length < 3;
+
+        no_necessary_roles_active =
+            game.roles.filter(
+                role => role.necessary === true && role.active.includes(true)
+            ).length === 0;
+
+        cards_dont_align =
+            amount_of_cards_picked !== game.player_list.length + 3;
+
+        game.ready = !(
+            not_everyone_is_ready ||
+            not_enough_players ||
+            no_necessary_roles_active ||
+            cards_dont_align
+        );
+    };
+
+    accessor.createDebugPlayer = game.createDebugPlayer;
+    accessor.seatRequest = game.seatRequest;
+    accessor.toggleRole = game.toggleRole;
+    accessor.togglePlayerReady = game.togglePlayerReady;
+    accessor.disconnectPlayer = game.disconnectPlayer;
 };
+
+module.exports.moduleConfiguration = moduleConfiguration;

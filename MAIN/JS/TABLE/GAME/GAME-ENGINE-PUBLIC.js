@@ -1,55 +1,60 @@
-const { GAME } = require("./GAME-ENGINE-FACTORY.js");
-
-
-
-GAME.prototype.parseForUpdate = function(tag) {
+const modulePublic = function(game, accessor) {
     "use strict";
-    let game, me;
 
-    game = JSON.parse(JSON.stringify(this));
-    me = game.player_list.findIndex(player => player.tag === tag);
+    game.parseForUpdate = function(tag) {
+        "use strict";
+        let clone, me;
 
-    if (me !== -1) {
-        delete game.player_list[me].actual_role;
-        delete game.player_list[me].actual_team;
-    }
+        clone = JSON.parse(JSON.stringify(game));
+        me = clone.player_list.findIndex(player => player.tag === tag);
 
-    let other_players = game.player_list.filter(player => player.tag !== tag);
-    other_players.forEach(function(player) {
-        player.visible = false;
+        if (me !== -1) {
+            delete clone.player_list[me].actual_role;
+            delete clone.player_list[me].actual_team;
+        }
 
-        delete player.player_knowledge;
-        delete player.center_knowledge;
+        let other_players = clone.player_list.filter(player => player.tag !== tag);
+        other_players.forEach(function(player) {
+            player.visible = false;
 
-        delete player.actual_role;
-        delete player.original_role;
+            delete player.player_knowledge;
+            delete player.center_knowledge;
 
-        delete player.actual_team;
-        delete player.original_team;
+            delete player.actual_role;
+            delete player.original_role;
 
-        delete player.action;
-        delete player.vote;
-        delete player.end;
-        delete player.evaluate;
-        delete player.action_state;
-    });
+            delete player.actual_team;
+            delete player.original_team;
 
-    game.center_cards.forEach(function(center) {
-        delete center.actual_role;
+            delete player.action;
+            delete player.vote;
+            delete player.end;
+            delete player.evaluate;
+            delete player.action_state;
+        });
 
-        delete center.actual_team;
-    });
+        clone.center_cards.forEach(function(center) {
+            delete center.actual_role;
 
-    game.roles.forEach(function(role) {
-        delete role.team;
-        delete role.action;
-    });
+            delete center.actual_team;
+        });
 
-    return game;
-};
+        clone.roles.forEach(function(role) {
+            delete role.team;
+            delete role.action;
+        });
+
+        return clone;
+    };
 
 
 
-GAME.prototype.doesPlayerExist = function(tag) {
-    return (this.player_list.findIndex(player => player.tag === tag) >= 0);
-};
+    game.doesPlayerExist = function(tag) {
+        return (game.player_list.findIndex(player => player.tag === tag) >= 0);
+    };
+
+    accessor.parseForUpdate = game.parseForUpdate;
+    accessor.doesPlayerExist = game.doesPlayerExist;
+}
+
+module.exports.modulePublic = modulePublic;

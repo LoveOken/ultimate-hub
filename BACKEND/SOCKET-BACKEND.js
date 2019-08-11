@@ -26,7 +26,7 @@ function SOCKET(dirname) {
             .replace(/\./, "_@")
             .replace("T", "_T");
 
-        this.table = tableList.push(new Table(title)) - 1;   
+        this.table = tableList.push(new Table(title)) - 1;
 
         io.sockets
             .in("Lobby")
@@ -216,7 +216,9 @@ function SOCKET(dirname) {
             socket.on("ready", () => {
                 socketInitialize(socket);
 
-                console.log("Ready is set");
+                if (debug) {
+                    console.log("Ready Set");
+                }
 
                 switch (socket.handshake.session.room) {
                     case "Main":
