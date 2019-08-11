@@ -72,6 +72,8 @@ function GAME(name) {
     this.id = name;
 
     let game = {
+        id: name,
+
         options: {
             action_time_multiplier: 0,
             discussion_time: 0,
