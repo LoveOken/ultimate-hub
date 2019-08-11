@@ -95,8 +95,6 @@ const moduleStaging = function(game, accessor) {
 
     game.clockStart = function(update_function, end_function) {
         "use strict";
-        let game;
-        game = game;
 
         update_function();
 
@@ -114,9 +112,8 @@ const moduleStaging = function(game, accessor) {
 
     game.preparationPhase = function(tag, update_function) {
         "use strict";
-        let from, game;
+        let from;
         from = game.player_list.findIndex(player => player.tag === tag);
-        game = game;
 
         try {
             if (from !== 0) {
@@ -152,9 +149,8 @@ const moduleStaging = function(game, accessor) {
 
     game.nightPhase = function(update_function, i) {
         "use strict";
-        let roles, players, game;
+        let roles, players;
         roles = game.roles.filter(role => role.active.includes(true));
-        game = game;
 
         if (roles[i] !== undefined) {
             players = game.player_list.filter(
@@ -198,8 +194,6 @@ const moduleStaging = function(game, accessor) {
 
     game.discussionPhase = function(update_function) {
         "use strict";
-        let game;
-        game = game;
 
         let determine_result = function() {
             game.stage = 5;
@@ -263,7 +257,6 @@ const moduleStaging = function(game, accessor) {
 
     game.revealAll = function() {
         "use strict";
-        let game = game;
 
         game.player_list.forEach(
             function(target) {
