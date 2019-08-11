@@ -1,32 +1,30 @@
 function ROUTER(dirname) {
     "use strict";
-    let router = this;
+    let express = require("express");
 
-    this.express = require("express");
+    let http = require("http");
+    let path = require("path");
 
-    this.http = require("http");
-    this.path = require("path");
+    let app = express();
+    let server = http.Server(app);
 
-    this.app = this.express();
-    this.server = this.http.Server(this.app);
-
-    this.session = require("express-session")({
+    let session = require("express-session")({
         secret: "ultimatehub",
         resave: true,
         saveUninitialized: true
     });
 
-    this.routeStart = function() {
-        router.app.set("port", 2000);
-        router.app.set("trust proxy", 1);
+    const routeStart = function() {
+        app.set("port", 2000);
+        app.set("trust proxy", 1);
 
-        router.app.use(router.express.urlencoded());
-        router.app.use(router.express.static(dirname + "/MAIN"));
-        router.app.use(router.session);
+        app.use(express.urlencoded());
+        app.use(express.static(dirname + "/MAIN"));
+        app.use(session);
     };
 
-    this.routeRoot = function() {
-        router.app.get("/", function(request, response) {
+    const routeRoot = function() {
+        app.get("/", function(request, response) {
             "use strict";
 
             if (request.session.logged) {
@@ -39,16 +37,16 @@ function ROUTER(dirname) {
         });
     };
 
-    this.routeLogin = function() {
-        router.app.get("/login", function(request, response) {
+    const routeLogin = function() {
+        app.get("/login", function(request, response) {
             "use strict";
-            response.sendFile(router.path.join(dirname, "/MAIN/LOGIN.html"));
+            response.sendFile(path.join(dirname, "/MAIN/LOGIN.html"));
 
             request.session.room = "Login";
             request.session.save();
         });
 
-        router.app.post("/login/handshake", function(request, response) {
+        app.post("/login", function(request, response) {
             "use strict";
 
             request.session.logged = true;
@@ -63,20 +61,30 @@ function ROUTER(dirname) {
         });
     };
 
-    this.routeLobby = function() {
-        router.app.get("/lobby", function(request, response) {
+   	const routeLobby = function(tableRequest) {
+        app.get("/lobby", function(request, response) {
             "use strict";
-            response.sendFile(router.path.join(dirname, "/MAIN/LOBBY.html"));
+            response.sendFile(path.join(dirname, "/MAIN/LOBBY.html"));
 
             request.session.room = "Lobby";
             request.session.save();
         });
+
+        app.post("/lobby", function(request, response) {
+            "use strict";
+            let target = new tableRequest(request.body.title);
+
+            routeMain(target.foundation, target.table);
+
+            response.redirect("/main/" + target.foundation);
+            response.end();
+        });
     };
 
-    this.routeMain = function(foundation, table) {
-        router.app.get("/main/" + foundation, function(request, response) {
+    const routeMain = function(foundation, table) {
+        app.get("/main/" + foundation, function(request, response) {
             "use strict";
-            response.sendFile(router.path.join(dirname, "/MAIN/MAIN.html"));
+            response.sendFile(path.join(dirname, "/MAIN/MAIN.html"));
 
             request.session.room = "Main";
             request.session.table = table;
@@ -84,15 +92,23 @@ function ROUTER(dirname) {
         });
     };
 
-    this.initialRoutingSetup = function() {
-        router.routeRoot();
-        router.routeLogin();
-        router.routeLobby();
+    this.getServer = server;
+    this.getSession = session;
+
+    this.routeStart = () => routeStart();
+    this.routeMain = () => routeMain();
+
+    this.initialRoutingSetup = function(tableRequest) {
+        routeRoot();
+        routeLogin();
+        routeLobby(tableRequest);
     };
 
     this.serverListen = function(port) {
-        router.server.listen(port);
+        server.listen(port);
     };
+
+    Object.freeze(this);
 }
 
 module.exports.Router = ROUTER;

@@ -1,23 +1,15 @@
-const { GAME, ROLE } = require("./GAME-ENGINE-FACTORY.js");
+const { ROLE } = require("./GAME-ENGINE-FACTORY.js");
 const VOTE = require("./GAME-STAGING-VOTE.js");
 
-
-
-GAME.prototype.roleTrack = function() {
+const moduleRoles = function(game, accessor) {
     "use strict";
-    this.trackers = {
+
+    game.trackers = {
         wolf_in_play: false,
         tanner_in_play: false
     };
 
-    this.options.lone_wolf = false;
-};
-
-
-
-GAME.prototype.roleStage = function() {
-    "use strict";
-    let game = this;
+    game.options.lone_wolf = false;
 
     const DOPPELGANGER = new ROLE(
         "DOPPELGANGER",
@@ -50,6 +42,7 @@ GAME.prototype.roleStage = function() {
         false,
         30
     );
+
     const WEREWOLF = new ROLE(
         "WEREWOLF",
         2,
@@ -102,6 +95,7 @@ GAME.prototype.roleStage = function() {
         true,
         5
     );
+
     const MINION = new ROLE(
         "MINION",
         1,
@@ -132,6 +126,7 @@ GAME.prototype.roleStage = function() {
         false,
         5
     );
+
     const MASON = new ROLE(
         "MASON",
         2,
@@ -158,6 +153,7 @@ GAME.prototype.roleStage = function() {
         false,
         5
     );
+
     const SEER = new ROLE(
         "SEER",
         1,
@@ -205,6 +201,7 @@ GAME.prototype.roleStage = function() {
         false,
         20
     );
+
     const ROBBER = new ROLE(
         "ROBBER",
         1,
@@ -237,6 +234,7 @@ GAME.prototype.roleStage = function() {
         false,
         20
     );
+
     const TROUBLEMAKER = new ROLE(
         "TROUBLEMAKER",
         1,
@@ -279,6 +277,7 @@ GAME.prototype.roleStage = function() {
         false,
         20
     );
+
     const DRUNK = new ROLE(
         "DRUNK",
         1,
@@ -310,6 +309,7 @@ GAME.prototype.roleStage = function() {
         false,
         20
     );
+
     const INSOMNIAC = new ROLE(
         "INSOMNIAC",
         1,
@@ -337,6 +337,7 @@ GAME.prototype.roleStage = function() {
         false,
         5
     );
+
     const VILLAGER = new ROLE(
         "VILLAGER",
         3,
@@ -353,6 +354,7 @@ GAME.prototype.roleStage = function() {
         false,
         0
     );
+
     const HUNTER = new ROLE(
         "HUNTER",
         1,
@@ -370,6 +372,7 @@ GAME.prototype.roleStage = function() {
         false,
         0
     );
+
     const TANNER = new ROLE(
         "TANNER",
         1,
@@ -387,7 +390,7 @@ GAME.prototype.roleStage = function() {
         0
     );
 
-    this.roles = [
+    game.roles = [
         DOPPELGANGER,
         WEREWOLF,
         MINION,
@@ -401,117 +404,118 @@ GAME.prototype.roleStage = function() {
         HUNTER,
         TANNER
     ];
-}
 
 
 
-GAME.prototype.roleWin = function(player) {
-    "use strict";
-    let game = this;
-    let won;
+    game.roleWin = function(player) {
+        "use strict";
+        let won;
 
-    switch (player.actual_team) {
-        case "Villager":
-            {
-                let villager_win_condition = function(dead) {
-                    let dead_wolf = false;
-                    let dead_villager = false;
-                    won = true;
+        switch (player.actual_team) {
+            case "Villager":
+                {
+                    let villager_win_condition = function(dead) {
+                        let dead_wolf = false;
+                        let dead_villager = false;
+                        won = true;
 
-                    let check_condition = function(target) {
-                        if (target.actual_team === "Werewolf" && target.actual_role !== "MINION") {
-                            dead_wolf = true;
-                        }
-                        if (target.actual_team === "Villager") {
-                            dead_villager = true;
-                        }
-                        if (target.actual_team === "Tanner") {
+                        let check_condition = function(target) {
+                            if (target.actual_team === "Werewolf" && target.actual_role !== "MINION") {
+                                dead_wolf = true;
+                            }
+                            if (target.actual_team === "Villager") {
+                                dead_villager = true;
+                            }
+                            if (target.actual_team === "Tanner") {
+                                won = false;
+                            }
+                        };
+
+                        dead.forEach(check_condition);
+
+                        if (game.trackers.wolf_in_play && !dead_wolf) {
                             won = false;
                         }
+
+                        if (!game.trackers.wolf_in_play && dead_villager) {
+                            won = false;
+                        }
+
+                        player.won = won;
+                        return won;
                     };
 
-                    dead.forEach(check_condition);
+                    player.evaluate = villager_win_condition;
 
-                    if (game.trackers.wolf_in_play && !dead_wolf) {
+                    break;
+                }
+
+            case "Werewolf":
+                {
+                    let werewolf_win_condition = function(dead) {
+                        let dead_wolf = false;
+                        let dead_villager = false;
+                        let dead_tanner = false;
                         won = false;
-                    }
 
-                    if (!game.trackers.wolf_in_play && dead_villager) {
-                        won = false;
-                    }
+                        let check_condition = function(target) {
+                            if (target.actual_team === "Werewolf" && target.actual_role !== "MINION") {
+                                dead_wolf = true;
+                            }
+                            if (target.actual_team === "Villager") {
+                                dead_villager = true;
+                            }
+                            if (target.actual_team === "Tanner") {
+                                dead_tanner = false;
+                            }
+                        };
 
-                    player.won = won;
-                    return won;
-                };
+                        dead.forEach(check_condition);
 
-                player.evaluate = villager_win_condition;
-
-                break;
-            }
-
-        case "Werewolf":
-            {
-                let werewolf_win_condition = function(dead) {
-                    let dead_wolf = false;
-                    let dead_villager = false;
-                    let dead_tanner = false;
-                    won = false;
-
-                    let check_condition = function(target) {
-                        if (target.actual_team === "Werewolf" && target.actual_role !== "MINION") {
-                            dead_wolf = true;
-                        }
-                        if (target.actual_team === "Villager") {
-                            dead_villager = true;
-                        }
-                        if (target.actual_team === "Tanner") {
-                            dead_tanner = false;
-                        }
-                    };
-
-                    dead.forEach(check_condition);
-
-                    if (game.trackers.wolf_in_play && !dead_wolf) {
-                        won = true;
-                    }
-
-                    if (!game.trackers.wolf_in_play && dead_villager) {
-                        won = true;
-                    }
-
-                    if (dead_tanner) {
-                        won = false;
-                    }
-
-                    player.won = won;
-                    return won;
-                };
-
-                player.evaluate = werewolf_win_condition;
-
-                break;
-            }
-
-        case "Tanner":
-            {
-                let tanner_win_condition = function(dead) {
-                    won = false;
-
-                    let check_condition = function(target) {
-                        if (target.actual_team === "Tanner") {
+                        if (game.trackers.wolf_in_play && !dead_wolf) {
                             won = true;
                         }
+
+                        if (!game.trackers.wolf_in_play && dead_villager) {
+                            won = true;
+                        }
+
+                        if (dead_tanner) {
+                            won = false;
+                        }
+
+                        player.won = won;
+                        return won;
                     };
 
-                    dead.forEach(check_condition);
+                    player.evaluate = werewolf_win_condition;
 
-                    player.won = won;
-                    return won;
-                };
+                    break;
+                }
 
-                player.evaluate = tanner_win_condition;
+            case "Tanner":
+                {
+                    let tanner_win_condition = function(dead) {
+                        won = false;
 
-                break;
-            }
-    }
+                        let check_condition = function(target) {
+                            if (target.actual_team === "Tanner") {
+                                won = true;
+                            }
+                        };
+
+                        dead.forEach(check_condition);
+
+                        player.won = won;
+                        return won;
+                    };
+
+                    player.evaluate = tanner_win_condition;
+
+                    break;
+                }
+        }
+    };
 };
+
+module.exports.moduleRoles = moduleRoles;

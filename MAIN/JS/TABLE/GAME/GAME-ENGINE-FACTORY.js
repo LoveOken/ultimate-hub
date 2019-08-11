@@ -1,33 +1,3 @@
-function GAME(name) {
-    "use strict";
-    this.id = name;
-
-    this.options = {
-        action_time_multiplier: 0,
-        discussion_time: 0,
-        voting_time: 5
-    };
-    this.roleTrack();
-
-    this.role_on_play = 0;
-    this.roleStage();
-
-    this.player_list = [];
-    this.player_max = 10;
-
-    this.center_cards = [];
-
-    this.stage = 0;
-    this.stage_clock = 0;
-
-    this.ready = false;
-
-    this.public_player_knowledge = [];
-    this.public_center_knowledge = [];
-
-    this.winners = [];
-}
-
 function PLAYER(name, tag) {
     "use strict";
     this.name = name;
@@ -56,7 +26,7 @@ function PLAYER(name, tag) {
     this.alive = true;
 
     this.won = false;
-}
+};
 
 function CENTER(name, role) {
     "use strict";
@@ -65,7 +35,7 @@ function CENTER(name, role) {
     this.actual_role = role.name;
 
     this.actual_team = role.team;
-}
+};
 
 function ROLE(name, quantity, team, description, action, necessary, time) {
     "use strict";
@@ -83,17 +53,60 @@ function ROLE(name, quantity, team, description, action, necessary, time) {
     this.necessary = necessary;
 
     this.time = time;
-}
+};
 
-module.exports.GAME = GAME;
 module.exports.PLAYER = PLAYER;
 module.exports.CENTER = CENTER;
 module.exports.ROLE = ROLE;
 
-require("./GAME-STAGING-ROLE.js");
+const { moduleRoles } = require("./GAME-STAGING-ROLE.js");
 
-require("./GAME-ENGINE-CONFIGURATION.js");
-require("./GAME-ENGINE-INPUT.js");
-require("./GAME-ENGINE-STAGING.js");
+const { moduleConfiguration } = require("./GAME-ENGINE-CONFIGURATION.js");
+const { moduleInput } = require("./GAME-ENGINE-INPUT.js");
+const { moduleStaging } = require("./GAME-ENGINE-STAGING.js");
 
-require("./GAME-ENGINE-PUBLIC.js");
+const { modulePublic } = require("./GAME-ENGINE-PUBLIC.js");
+
+function GAME(name) {
+    "use strict";
+    this.id = name;
+
+    let game = {
+        id: name,
+
+        options: {
+            action_time_multiplier: 0,
+            discussion_time: 0,
+            voting_time: 5
+        },
+
+        role_on_play: 0,
+
+        player_list: [],
+        player_max: 10,
+
+        center_cards: [],
+
+        stage: 0,
+        stage_clock: 0,
+        ready: false,
+
+        public_player_knowledge: [],
+        public_center_knowledge: [],
+
+        winners: []
+    };
+
+    moduleRoles(game, this);
+
+    moduleConfiguration(game, this);
+    moduleInput(game, this);
+    moduleStaging(game, this);
+
+    modulePublic(game, this);
+
+    Object.freeze(this);
+};
+
+module.exports.GAME = GAME;
+
