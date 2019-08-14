@@ -76,7 +76,7 @@ function GAME(name) {
 
         options: {
             action_time_multiplier: 1,
-            discussion_time: 30,
+            discussion_time: 1,
             voting_time: 5
         },
 
