@@ -1,11 +1,11 @@
 const { GAME } = require("./GAME/GAME-ENGINE-FACTORY.js");
 const { CHAT } = require("./CHAT/CHAT-ENGINE-FACTORY.js");
 
-function TABLE(name) {
+function TABLE(name, url) {
     "use strict";
     let id = name;
 
-    let game = new GAME(name);
+    let game = new GAME(name, url);
     let chat = new CHAT(name);
 
     chat.newFilter("Spectator", 1);

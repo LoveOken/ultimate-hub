@@ -1,228 +1,173 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto+Slab');
-
-* {
-    box-sizing: border-box;
-}
-
-*[DISABLED="true"] {
-    pointer-events: none;
-}
-
-body {
-    margin: 0px;
-}
-
-div {
-    overflow: auto;
-}
-
-button {
-    cursor: pointer;
-}
-
-button::-moz-focus-inner {
-    border: 0;
-}
-
-button:focus {
-    outline: 0;
-}
-
-label {
-    cursor: pointer;
-}
-
-.LOADER {
-    position: absolute;
-    border: 5px solid transparent;
-    border-top: 5px solid #0066ff;
-    border-left: 5px solid #0066ff;
-    border-radius: 50%;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%,-50%);
-    width: 20px;
-    height: 20px;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
+@import url(./GLOBALS.css);
 
 #MAIN-BOARD {
-    position: absolute;
-    z-index: 3;
-    box-shadow: 0px 0px 5px black;
+    background-color: var(--lowmid-primary);
+    bottom: 0;
+    box-shadow: 0 0 5px #000;
+    color: var(--achromatic1);
     overflow: visible;
-    background-color: #1c1c1c;
-    color: #dedede;
+    position: absolute;
+    top: 0;
     width: 800px;
-    top: 0px;
-    bottom: 0px;
-    font-family: 'Roboto Slab', serif;
+    z-index: 3;
 }
 
 #MAIN-BOARD * {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
     user-select: none;
 }
 
-#CONFIGURATION,
-#DISPLAY {
-    background-color: #1c1c1c;
-}
-
 #CONFIGURATION {
-    display: block;
+    background-color: var(--himid-primary);
+    box-shadow: 0 1px 20px #000;
     clip-path: polygon(0 0%, 0 120%, 100% 120%, 100% 0);
-    position: relative;
-    z-index: 1;
-    width: 100%;
+    display: block;
     height: 240px;
     overflow: hidden;
-    box-shadow: 0px 1px 20px black;
+    position: relative;
+    width: 100%;
+    z-index: 1;
+}
+
+#DISPLAY {
+    background-color: var(--lowmid-primary);
+    height: 510px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    z-index: 0;
 }
 
 #CONFIGURATION-TITLE {
-    font-size: 24px;
-    line-height: 24px;
-    vertical-align: middle;
     display: block;
     float: left;
-    margin: 0px;
-    padding: 5px 10px;
-    width: 60%;
+    font-size: 24px;
     height: 40px;
+    line-height: 24px;
+    margin: 0;
+    padding: 5px 10px;
+    vertical-align: middle;
+    width: 60%;
 }
 
 #CONFIGURATION-TABS {
     display: block;
     float: left;
-    width: 40%;
     height: 40px;
+    width: 40%;
 }
 
 #CONFIGURATION-TABS button {
-    font-family: 'Roboto Slab', serif;
-    font-size: 24px;
-    font-weight: bold;
-    line-height: 24px;
-    vertical-align: middle;
-    background-color: #3c3c3c;
-    color: #dedede;
-    text-align: left;
+    background-color: var(--himid-primary);
+    border: 0;
+    color: var(--achromatic1);
     display: block;
     float: left;
-    margin: 0px;
-    border: 0px;
-    padding: 5px 10px;
-    width: 50%;
+    font-size: 24px;
+    font-weight: 700;
     height: 40px;
-    transition: background-color 0.5s;
+    line-height: 24px;
+    margin: 0;
+    padding: 5px 10px;
+    text-align: left;
+    transition: background-color .5s;
+    vertical-align: middle;
+    width: 50%;
 }
 
 #ROLES,
 #ROLES-FIELDSET,
 #SETTINGS,
 #SETTINGS-FIELDSET {
-    background-color: #dedede;
-    position: relative;
+    background-color: var(--achromatic1);
+    border: 0;
     display: block;
+    height: 160px;
+    margin: 0;
     overflow: hidden;
+    padding: 0;
+    position: relative;
     table-layout: fixed;
     white-space: nowrap;
-    margin: 0px;
-    border: 0px;
-    padding: 0px;
     width: 100%;
-    height: 160px;
 }
 
-#ROLES-FORM,
-#SETTINGS-FORM {
-    position: absolute;
+#ROLES-FORM {
+    background-color: var(--achromatic1);
     display: inline-block;
-    background-color: #dedede;
-    padding: 5px;
     height: 160px;
+    padding: 5px;
+    position: absolute;
 }
 
 #SETTINGS-FORM {
+    background-color: var(--achromatic1);
     display: block;
+    height: 160px;
+    padding: 5px;
     position: relative;
     width: 100%;
 }
 
 #ROLES-SCROLLRAIL {
+    bottom: 0;
+    height: 16px;
     overflow: hidden;
     position: absolute;
-    height: 16px;
     width: 100%;
-    bottom: 0;
 }
 
 #ROLES-SCROLLBAR {
+    height: 16px;
     position: absolute;
     width: 300px;
-    height: 16px;
 }
 
 #ROLES-SCROLLBAR-VISIBLE {
-    top: 2px;
-    left: 2px;
-    right: 2px;
-    bottom: 2px;
-    position: absolute;
-    background-color: #1c1c1c;
+    background-color: var(--lowmid-primary);
     border-radius: 15px;
+    bottom: 2px;
+    left: 2px;
+    position: absolute;
+    right: 2px;
+    top: 2px;
 }
 
 .ROLE-GRID {
     display: inline-block;
-    text-align: center;
-    padding: 0px 5px;
-    width: 90px;
     height: 140px;
-}
-
-#ROLES-FORM INPUT[TYPE=checkbox] {
-    display: none;
+    padding: 0 5px;
+    text-align: center;
+    width: 90px;
 }
 
 .CHECKMARK {
+    background-color: #fff;
+    border-radius: 3px;
     cursor: pointer;
     display: block;
-    margin: 8px auto 3px;
     height: 15px;
+    margin: 8px auto 3px;
+    transition: background-color .2s;
     width: 15px;
-    background-color: #eeeeee;
-    border-radius: 3px;
-    transition: background-color 0.2s;
 }
 
 .ROLE-GRID:hover INPUT[TYPE=checkbox]~.CHECKMARK {
-    background-color: #ffffff;
+    background-color: #fff;
 }
 
 .ROLE-GRID INPUT[TYPE=checkbox]:checked~.CHECKMARK {
-    background-color: #4c4c4c;
+    background-color: var(--lowmid-primary);
 }
 
 .CHECKMARK:after {
     content: "";
-    position: relative;
     display: none;
+    position: relative;
 }
 
 .ROLE-GRID INPUT[TYPE=checkbox]:checked~.CHECKMARK:after {
@@ -230,27 +175,27 @@ label {
 }
 
 .ROLE-GRID .CHECKMARK:after {
-    top: 2px;
-    left: 5px;
-    border: solid white;
-    border-width: 0px 3px 3px 0px;
-    width: 3px;
-    height: 6px;
-    -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    border: solid #FFF;
+    border-width: 0 3px 3px 0;
+    height: 6px;
+    left: 5px;
+    top: 2px;
     transform: rotate(45deg);
+    width: 3px;
 }
 
 #ROLES-FIELDSET[DISABLED=true] .CHECKMARK {
-    background-color: #ff4336;
+    background-color: var(--hi-primary);
 }
 
 .CARD-SPRITE {
-    display: block;
+    border: 3px solid #FFF;
     border-radius: 5px;
-    border: 3px solid white;
-    width: 80px;
+    display: block;
     height: 108px;
+    width: 80px;
 }
 
 .CARD-SPRITE.DOPPELGANGER {
@@ -310,124 +255,103 @@ label {
 }
 
 .CARD.DEAD .CARD-SPRITE {
-    border-color: #00bcc9;
+    border-color: var(--hi-primary-negative);
     filter: invert(1);
 }
 
 .CONFIGURATION-SEATS {
+    background-color: var(--himid-primary);
+    border: 0;
+    color: var(--achromatic1);
     display: block;
     float: left;
-    font-family: 'Roboto Slab', serif;
-    font-weight: bold;
     font-size: 15px;
-    line-height: 40px;
-    text-align: center;
-    background-color: #1c1c1c;
-    color: #dedede;
-    border: 0px;
-    padding: 0px;
-    width: 10%;
+    font-weight: 700;
     height: 40px;
-}
-
-#SEATS-SIT[disabled="true"] {
-    color: #FF4336;
+    line-height: 40px;
+    padding: 0;
+    text-align: center;
+    width: 10%;
 }
 
 #CONTENTS-READY {
-    float: right;
+    color: var(--achromatic1);
     display: block;
-    font-family: 'Roboto Slab', serif;
-    font-weight: bold;
+    float: right;
     font-size: 15px;
+    font-weight: 700;
     line-height: 40px;
-    padding: 0px 18px;
-    color: #dedede;
-    transition: color 0.2s;
-}
-
-#CONTENTS-READY-CHECKBOX {
-    display: none;
+    padding: 0 18px;
+    transition: color .2s;
 }
 
 #CONTENTS-READY-CHECKMARK {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
+    background-color: var(--achromatic1);
     border-radius: 75px;
-    background-color: #dedede;
-    transition: background-color 0.2s;
+    display: inline-block;
+    height: 10px;
+    transition: background-color .2s;
+    width: 10px;
 }
 
 #CONTENTS-READY-CHECKBOX:checked~#CONTENTS-READY-CHECKMARK {
-    background-color: #eeff33;
+    background-color: #ef3;
 }
 
 #CONTENTS-BUTTON-ON {
-    font-family: 'Roboto Slab', serif;
-    font-size: 18px;
-    font-weight: bold;
-    font-style: oblique;
-    line-height: 18px;
-    vertical-align: middle;
-    background-color: #0066ff;
-    color: #dedede;
-    text-align: center;
+    background-color: var(--hi-contrast);
+    border: 0;
+    color: var(--achromatic1);
     display: none;
     float: right;
-    margin: 0px;
-    border: 0px;
-    padding: 5px 10px;
-    width: 33%;
+    font-size: 18px;
+    font-style: oblique;
+    font-weight: 700;
     height: 40px;
-    transition: background-color 0.5s, color 0.5s;
+    line-height: 18px;
+    margin: 0;
+    padding: 5px 10px;
+    text-align: center;
+    transition: background-color .5s color .5s;
+    vertical-align: middle;
+    width: 33%;
 }
 
 #CONTENTS-BUTTON-ON[DISABLED=true] {
-    background-color: #444;
+    background-color: var(--low-contrast);
     color: #888;
 }
 
-
 #CONTENTS-BUTTON-OFF {
-    font-size: 18px;
-    font-weight: bold;
-    font-style: oblique;
-    line-height: 18px;
-    vertical-align: middle;
-    background-color: #ff4336;
-    color: #dedede;
-    text-align: center;
+    background-color: var(--hi-primary);
+    border: 0;
+    color: var(--achromatic1);
     display: none;
-    /* Default is "display: block", use with player variables */
     float: right;
-    margin: 0px;
-    border: 0px;
-    padding: 11px 10px;
-    width: 33%;
+    font-size: 18px;
+    font-style: oblique;
+    font-weight: 700;
     height: 40px;
+    line-height: 18px;
+    margin: 0;
+    padding: 11px 10px;
+    text-align: center;
+    vertical-align: middle;
+    width: 33%;
 }
 
 #GAME {
     overflow: visible;
     position: absolute;
-    z-index: 0;
-    width: 100%;
     top: 50px;
-}
-
-#DISPLAY {
-    position: relative;
-    z-index: 0;
     width: 100%;
-    height: 510px;
-    overflow: hidden;
+    z-index: 0;
 }
 
 #DISPLAY-CENTER,
 #DISPLAY-PLAYERS {
-    width: 100%;
     height: 190px;
+    width: 100%;
 }
 
 #DISPLAY-PLAYERS {
@@ -436,306 +360,308 @@ label {
 
 #CENTER-TITLE,
 #PLAYERS-TITLE {
-    font-size: 18px;
-    font-weight: bold;
-    line-height: 18px;
-    vertical-align: middle;
-    background-color: #151515;
-    color: #ffbf00;
-    text-align: center;
+    background-color: var(--low-primary);
+    color: var(--custom-gold);
     display: block;
-    margin: 0px;
-    padding: 11px 10px;
-    width: 100%;
+    font-size: 18px;
+    font-weight: 700;
     height: 40px;
+    line-height: 18px;
+    margin: 0;
+    padding: 11px 10px;
+    text-align: center;
+    vertical-align: middle;
+    width: 100%;
 }
 
 #PLAYERS-CONTENTS {
+    box-shadow: inset 0 0 5px #000;
     display: block;
     height: 280px;
-    padding: 10px 0px;
+    padding: 10px 0;
 }
 
 #CENTER-CONTENTS,
 .PLAYERS-CONTENTS {
     display: block;
-    padding: 0px 10px;
-    width: 100%;
+    height: 130px;
+    overflow: hidden;
+    padding: 0 10px;
     text-align: center;
     white-space: nowrap;
-    overflow: hidden;
-    height: 130px;
+    width: 100%;
 }
 
 #CENTER-CONTENTS {
+    box-shadow: inset 0 0 5px #000;
     height: 150px;
-    padding: 10px 0px;
+    padding: 10px 0;
 }
 
 .CARD {
-    transform: translateX(5px) translateY(18px);
-    position: absolute;
-    top: 300px;
+    height: 110px;
     left: 200px;
     overflow: visible;
-    width: 82px;
-    height: 110px;
     perspective: 1000px;
     pointer-events: none;
+    position: absolute;
+    top: 300px;
+    transform: translateX(5px) translateY(18px);
+    width: 82px;
 }
 
 .CARD-CONTENTS {
+    height: 100%;
     overflow: visible;
     position: relative;
-    width: 100%;
-    height: 100%;
     text-align: center;
-    transition: transform 0.8s;
     transform-style: preserve-3d;
+    transition: transform .8s;
+    width: 100%;
 }
 
-.CARD[data-flip="BACK"] .CARD-CONTENTS {
-    transform: rotateY(180deg);
-}
-
-.CARD-FRONT, .CARD-BACK {
+.CARD-FRONT,
+.CARD-BACK {
+    backface-visibility: hidden;
+    height: 100%;
     position: absolute;
     width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
 }
 
 .CARD-FRONT {
     transform: rotateY(0deg);
 }
 
-.CARD-BACK {
-    transform: rotateY(180deg);
-}
-
 .CARD-GRID {
-    font-family: 'Roboto Slab', serif;
-    background-color: #1c1c1c;
-    color: #dedede;
-    text-align: center;
+    background-color: transparent;
+    border: 0;
+    border-radius: 9px;
+    color: #fff;
     display: inline-block;
-    margin: 0px;
-    border: 0px;
-    padding: 0px 5px;
-    width: 90px;
+    font-family: 'Roboto Slab', serif;
     height: 130px;
+    margin: 0;
+    padding: 0 5px;
+    text-align: center;
+    width: 90px;
 }
 
 .CARD-NAME {
+    display: block;
     font-size: 12px;
-    font-weight: bold;
+    font-weight: 700;
+    height: 14px;
+    letter-spacing: -1px;
     line-height: 14px;
     text-align: center;
-    letter-spacing: -1px;
-    display: block;
-    height: 14px;
 }
 
 .CARD-PLACEHOLDER {
-    width: 80px;
-    height: 108px;
-    border: 2px solid gray;
+    border: 2px solid #fff;
     border-radius: 5px;
-}
-
-.CARD-GRID.DEAD {
-    color: #ff4336;
+    height: 108px;
+    width: 80px;
 }
 
 #STATUS {
-    clip-path: polygon(0 -20px, 0 100%, 100% 100%, 100% -20px);
+    background-color: var(--achromatic1);
+    box-shadow: 0 1px 20px #000;
+    clip-path: polygon(0-20px, 0100%, 100%100%, 100%-20px);
     position: relative;
-    z-index: 1;
-    background-color: #dedede;
     width: 100%;
-    box-shadow: 0px 1px 20px black;
+    z-index: 1;
 }
 
 #STATUS-TITLE,
 #STATUS-TIME,
 #STATUS-SUBTITLE {
-    color: #1c1c1c;
-    font-size: 15px;
-    font-weight: bold;
-    font-style: oblique;
-    text-align: center;
-    line-height: 40px;
+    color: var(--himid-primary);
     display: block;
-    width: 100%;
+    font-size: 15px;
+    font-style: oblique;
+    font-weight: 700;
     height: 40px;
+    line-height: 40px;
+    text-align: center;
+    width: 100%;
 }
 
 #STATUS-TIME {
-    background-color: purple;
-    color: #dedede;
+    background-color: var(--hi-primary);
+    color: var(--achromatic1);
     float: left;
     width: 20%;
 }
 
 #STATUS-SUBTITLE {
-    background-color: #151515;
-    color: #dedede;
+    background-color: var(--low-primary);
+    color: var(--achromatic1);
     float: left;
     width: 80%;
 }
 
 #STATUS-CONTENTS {
     display: table;
-    width: 100%;
     height: 60px;
+    width: 100%;
 }
 
 #STATUS-DESCRIPTION {
-    position: relative;
+    background-color: var(--lowmid-primary);
+    color: var(--achromatic1);
     display: table-cell;
-    font-style: oblique;
-    font-weight: bold;
-    text-align: center;
     font-size: 13px;
-    vertical-align: middle;
-    line-height: 20px;
-    background-color: #1c1c1c;
-    color: #dedede;
-    table-layout: fixed;
-    padding: 0 10px;
-    width: 100%;
+    font-style: oblique;
+    font-weight: 700;
     height: 60px;
+    line-height: 20px;
+    padding: 0 10px;
+    position: relative;
+    table-layout: fixed;
+    text-align: center;
+    vertical-align: middle;
+    width: 100%;
 }
 
 #INFO-BOARD {
-    position: absolute;
+    background-color: #eee;
+    bottom: 0;
+    font-family: 'Roboto Slab', serif;
     left: 800px;
+    position: absolute;
     right: 0;
     top: 0;
-    bottom: 0;
-    background-color: #eee;
-    font-family: 'Roboto Slab', serif;
 }
 
 #CHAT-TITLE {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    user-select: none;
-    position: absolute;
-    z-index: 2;
-    font-size: 20px;
-    line-height: 22px;
-    vertical-align: middle;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    background: var(--himid-primary);
+    box-shadow: 0 0 3px #000;
+    color: var(--achromatic1);
     display: block;
     float: left;
-    margin: 0px;
-    padding: 4px 10px;
-    width: 100%;
+    font-size: 20px;
     height: 30px;
-    background: #333;
-    color: #e6e6e6;
-    box-shadow: 0px 0px 3px black;
+    line-height: 22px;
+    margin: 0;
+    padding: 4px 10px;
+    position: absolute;
+    user-select: none;
+    vertical-align: middle;
+    width: 100%;
+    z-index: 2;
 }
 
 #CHAT-SCROLLABLE {
-    padding: 0px;
-    position: absolute;
-    z-index: 1;
-    width: 100%;
-    top: 30px;
+    background-color: var(--achromatic1);
     bottom: 30px;
-    overflow: hidden;
-    background-color: #eee;
     color: #000;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    top: 30px;
+    width: 100%;
+    z-index: 1;
 }
 
 #CHAT-FIELD {
+    background-color: var(--achromatic1);
+    bottom: 0;
+    color: #000;
     overflow: hidden;
     position: absolute;
-    z-index: 1;
+    top: 0;
     width: 100%;
-    top: 0px;
-    bottom: 0px;
-    background-color: #eee;
-    color: #000;
+    z-index: 1;
 }
 
 #CHAT-CONTAINER {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 10px;
+    left: 0;
     padding: 3px 10px 5px;
+    position: absolute;
+    right: 10px;
+    top: 0;
 }
 
 #CHAT-SCROLLRAIL {
+    height: 100%;
     overflow: hidden;
     position: absolute;
-    z-index: 2;
-    width: 16px;
-    height: 100%;
     right: 0;
+    width: 16px;
+    z-index: 2;
 }
 
 #CHAT-SCROLLBAR {
-    position: absolute;
     height: 300px;
+    position: absolute;
     width: 16px;
 }
 
 #CHAT-SCROLLBAR-VISIBLE {
-    top: 2px;
-    left: 2px;
-    right: 2px;
-    bottom: 2px;
-    position: absolute;
-    background-color: #1c1c1c;
+    background-color: #280e17;
     border-radius: 15px;
+    bottom: 2px;
+    left: 2px;
+    position: absolute;
+    right: 2px;
+    top: 2px;
 }
 
 .MESSAGE p {
     display: inline-block;
-    white-space: normal;
-    overflow-wrap: break-word;
     margin: 1px 3px;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 
 .MESSAGE-EMBLEMS {
-    font-weight: bold;
+    font-weight: 700;
     margin-right: 4px;
 }
 
 .MESSAGE-AUTHOR {
-    font-weight: bold;
-    color: #0066ff;
+    color: var(--hi-primary);
+    font-weight: 700;
 }
 
 #CHAT-FORM {
-    position: absolute;
-    z-index: 1;
-    width: 100%;
     bottom: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 1;
 }
 
 #CHAT-INPUT {
-    font-size: 15px;
-    line-height: 20px;
-    width: 100%;
-    height: 30px;
-    border: 0px solid black;
-    padding: 5px 15px;
-    font-family: 'Roboto Slab', serif;
-    font-style: italic;
     background-color: #dedede;
-    box-shadow: 0px 0px 10px black;
-    color: #333;
+    border: 0 solid #000;
+    box-shadow: 0 0 10px #000;
+    color: #280e17;
+    font-family: 'Roboto Slab', serif;
+    font-size: 15px;
+    font-style: italic;
+    height: 30px;
+    line-height: 20px;
+    padding: 5px 15px;
+    width: 100%;
 }
 
+#ROLES-FORM INPUT[TYPE=checkbox],
+#CONTENTS-READY-CHECKBOX,
 #CHAT-SUBMIT {
     display: none;
 }
 
+#SEATS-SIT[disabled="true"],
+.CARD-GRID.DEAD {
+    color: var(--hi-primary);
+}
 
+.CARD[data-flip="BACK"] .CARD-CONTENTS,
+.CARD-BACK {
+    transform: rotateY(180deg);
+}

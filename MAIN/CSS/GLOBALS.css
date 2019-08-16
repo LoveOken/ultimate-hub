@@ -1,0 +1,68 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto+Slab);
+
+:root {
+    --hi-primary: #f06;
+    --himid-primary: #502;
+    --lowmid-primary: #280b17;
+    --low-primary: #11040a;
+    --achromatic1: #ececec;
+    --hi-contrast: #2a7fff;
+    --low-contrast: #140021;
+    --hi-primary-negative: #0f9;
+    --custom-gold: #ffbf00;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Roboto Slab', serif;
+}
+
+[DISABLED="true"] {
+    pointer-events: none;
+}
+
+body {
+    margin: 0;
+}
+
+div {
+    overflow: auto;
+}
+
+button,
+input,
+label {
+    cursor: pointer;
+}
+
+::-moz-focus-inner {
+    border: 0;
+}
+
+:focus {
+    outline: 0;
+}
+
+.LOADER {
+    animation: spin 1s linear infinite;
+    border: 5px solid transparent;
+    border-left: 5px solid #06f;
+    border-radius: 50%;
+    border-top: 5px solid #06f;
+    height: 20px;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

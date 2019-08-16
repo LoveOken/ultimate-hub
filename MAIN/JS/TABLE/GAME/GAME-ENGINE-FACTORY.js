@@ -67,12 +67,12 @@ const { moduleStaging } = require("./GAME-ENGINE-STAGING.js");
 
 const { modulePublic } = require("./GAME-ENGINE-PUBLIC.js");
 
-function GAME(name) {
+function GAME(name, url) {
     "use strict";
-    this.id = name;
 
     let game = {
         id: name,
+        url: url,
 
         options: {
             action_time_multiplier: 1,

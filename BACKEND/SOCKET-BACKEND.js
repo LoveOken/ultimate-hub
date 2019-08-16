@@ -26,7 +26,7 @@ function SOCKET(dirname) {
             .replace(/\./, "_@")
             .replace("T", "_T");
 
-        this.table = tableList.push(new Table(title)) - 1;
+        this.table = tableList.push(new Table(title, "/main/" + this.foundation)) - 1;
 
         io.sockets
             .in("Lobby")

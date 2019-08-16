@@ -17,6 +17,7 @@ const moduleConfiguration = function(game, accessor) {
 
     game.debugPlayerList = function() {
         "use strict";
+        return false;
         console.log(game.player_list);
         console.log(game.center_cards);
     };

@@ -27,8 +27,8 @@ const DISPLAY_CONFIGURATION_TAB = function(content_to_see, tab_to_see) {
 
     document.getElementById(content_to_see).style.display = "block";
 
-    tab_to_see.style.backgroundColor = "#dedede";
-    tab_to_see.style.color = "#1c1c1c";
+    tab_to_see.style.backgroundColor = "#ececec";
+    tab_to_see.style.color = "#550022";
 };
 
 const DISPLAY_CONFIGURATION_SEAT = function(seat) {
