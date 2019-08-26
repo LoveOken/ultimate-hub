@@ -2,21 +2,13 @@ function CHAT(name) {
     "use strict";
     this.id = name;
 
-    let itself = {
+    let chat = {
         authors: [],
         filters: [],
         messages: []
     };
 
-    let methods = new METHODS(itself);
-
-    this.getMessages = () => JSON.parse(JSON.stringify(itself.messages));
-
-    this.newAuthor = methods.newAuthor;
-    this.newFilter = methods.newFilter;
-    this.newMessage = methods.newMessage;
-
-    this.addFilterToAuthor = methods.addFilterToAuthor;
+    moduleMethods(chat, this);
 
     Object.freeze(this);
 };
@@ -45,10 +37,10 @@ function MESSAGE(content, author, time) {
     this.time = time;
 };
 
-function METHODS(chat) {
+const moduleMethods = function(chat, accessor) {
     "use strict";
 
-    this.newAuthor = function(name, tag) {
+    chat.newAuthor = function(name, tag) {
         "use strict";
         let from = chat.authors.findIndex(author => author.tag === tag);
 
@@ -58,13 +50,13 @@ function METHODS(chat) {
         }
     };
 
-    this.newFilter = function(name, priority) {
+    chat.newFilter = function(name, priority) {
         "use strict";
         let filter = new FILTER(name, priority);
         chat.filters.push(filter);
     };
 
-    this.newMessage = function(tag, content) {
+    chat.newMessage = function(tag, content) {
         "use strict";
         let from = chat.authors.findIndex(author => author.tag === tag);
 
@@ -78,7 +70,7 @@ function METHODS(chat) {
         return true;
     };
 
-    this.addFilterToAuthor = function(name, tag) {
+    chat.addFilterToAuthor = function(name, tag) {
         "use strict";
         let filter = chat.filters.find(target => target.name === name);
         let author = chat.authors.find(target => target.tag === tag);
@@ -96,6 +88,14 @@ function METHODS(chat) {
 
         author.filters.push(filter);
     };
+
+    chat.getMessages = () => JSON.parse(JSON.stringify(itself.messages));
+
+    accessor.newAuthor = chat.newAuthor;
+    accessor.newFilter = chat.newFilter;
+    accessor.newMessage = chat.newMessage;
+    accesor.addFilterToAuthor = chat.addFilterToAuthor;
+    accessor.getMessages = chat.getMessages;
 };
 
 module.exports.CHAT = CHAT;

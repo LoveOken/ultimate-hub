@@ -20,4 +20,4 @@ function TABLE(name, url) {
     Object.freeze(this);
 };
 
-module.exports.Table = TABLE;
+module.exports.TABLE = TABLE;

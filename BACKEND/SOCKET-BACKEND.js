@@ -1,9 +1,9 @@
-const { Router } = require("./EXPRESS-ROUTING.js");
-const { Table } = require("../MAIN/JS/TABLE/TABLE-ENGINE-FACTORY.js");
+const { ROUTER } = require("./EXPRESS-ROUTING.js");
+const { TABLE } = require("../MAIN/JS/TABLE/TABLE-ENGINE-FACTORY.js");
 
 function SOCKET(dirname) {
     "use strict";
-    let express = new Router(dirname);
+    let express = new ROUTER(dirname);
 
     let engine = require("socket.io");
     let session = require("express-socket.io-session");
@@ -26,7 +26,7 @@ function SOCKET(dirname) {
             .replace(/\./, "_@")
             .replace("T", "_T");
 
-        this.table = tableList.push(new Table(title, "/main/" + this.foundation)) - 1;
+        this.table = tableList.push(new TABLE(title, "/main/" + this.foundation)) - 1;
 
         io.sockets
             .in("Lobby")

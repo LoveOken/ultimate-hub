@@ -21,7 +21,7 @@ The code is divided into separate folders for each module:
 
 ### Backend Folder
 
-The Backend Folder exclusively consists only of modules that affect routing, packaging and communication of the app directly.
+The Backend Folder exclusively consists of modules that affect routing, packaging and communication of the app directly.
 
 + The **Express Module** goes inside this folder.
 + The **Socket.io Module** goes inside this folder.

@@ -98,11 +98,9 @@ function GAME(name, url) {
     };
 
     moduleRoles(game, this);
-
     moduleConfiguration(game, this);
     moduleInput(game, this);
     moduleStaging(game, this);
-
     modulePublic(game, this);
 
     Object.freeze(this);

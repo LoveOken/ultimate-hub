@@ -111,4 +111,4 @@ function ROUTER(dirname) {
     Object.freeze(this);
 }
 
-module.exports.Router = ROUTER;
+module.exports.ROUTER = ROUTER;

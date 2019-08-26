@@ -1,344 +1,207 @@
-let cards,
-    card_sprites,
-    player_seats,
-    center_seats;
+(function() {
+    let cards = document.getElementsByClassName("CARD");
+    let card_sprites = document.getElementsByClassName("CARD-FRONT");
 
-cards = document.getElementsByClassName("CARD");
-card_sprites = document.getElementsByClassName("CARD-FRONT");
+    let player_seats = document.getElementsByClassName("PLAYER-GRID");
+    let center_seats = document.getElementsByClassName("CENTER-GRID");
 
-player_seats = document.getElementsByClassName("PLAYER-GRID");
-center_seats = document.getElementsByClassName("CENTER-GRID");
+    function GENERAL() {
+        "use strict";
 
-function GENERAL() {
-    "use strict";
+        let itself = this;
 
-    let itself = this;
-
-    this.start = function() {
-        let i;
-        for (i = 0; 20 > i; i += 1) {
-            CREATE_CARD();
-        }
-
-        document.getElementsByClassName("LOADER").forEach(function(element) {
-            element.style.display = "none";
-        });
-
-        document.getElementsByClassName("CONFIGURATION-DEFAULT")[0].click();
-
-        document.getElementById("CONFIGURATION").style.visibility = "visible";
-        document.getElementById("GAME").style.visibility = "visible";
-        document.getElementById("STATUS").style.display = "";
-
-        document.getElementById("CHAT").style.visibility = "visible";
-
-
-    };
-
-    this.unlogged = function() {
-        document.getElementsByClassName("CONFIGURATION-SEATS").forEach(
-            function(element) {
-                element.style.display = "none";
-            }
-        );
-
-        document.getElementById("CONTENTS-BUTTON-ON").style.display = "none";
-        document.getElementById("CONTENTS-BUTTON-OFF").style.display = "none";
-    };
-
-    this.default = function() {
-        document.getElementById("SEATS-SIT").removeAttribute("disabled");
-
-        cards.forEach(function(element) {
-            if (element.getAttribute("DATA-ANIMATING") == "TRUE") {
-                return;
+        this.start = function() {
+            let i;
+            for (i = 0; 20 > i; i += 1) {
+                FACTORY.cardStructure();
             }
 
-            element.style.display = "none";
-        });
+            DISPLAY.startupDisplay()
+        };
 
-        player_seats.forEach(function(element) {
-            element.style.display = "none";
-        });
+        this.unlogged = DISPLAY.unloggedDisplay;
 
-        center_seats.forEach(function(element) {
-            element.style.display = "none";
-        });
-    };
+        this.default = DISPLAY.defaultDisplay;
 
-    this.sitting = function(my_player) {
-        DISPLAY_CONFIGURATION_SEAT("SEATS-STAND");
-
-        document.getElementById("CONTENTS-READY").style.display = "initial";
-        document.getElementById("CONTENTS-READY-CHECKBOX").checked =
-            my_player.ready;
-    };
+        this.sitting = function(my_player) {
+            DISPLAY.configurationSeatsButton("SEATS-STAND", my_player.ready);
+        };
 
 
-    this.standing = function() {
-        DISPLAY_CONFIGURATION_SEAT("SEATS-SIT");
-
-        document.getElementById("CONTENTS-READY").style.display = "none";
-    };
+        this.standing = function() {
+            DISPLAY.configurationSeatsButton("SEATS-SIT", false);
+        };
 
 
-    this.full = function() {
-        document.getElementById("SEATS-SIT").setAttribute("disabled", true);
-    };
+        this.full = DISPLAY.whenFull;
 
-    this.leading = function() {
-        document.getElementById("CONTENTS-BUTTON-ON").style.display = "block";
-        document.getElementById("CONTENTS-BUTTON-OFF").style.display = "none";
-        document.getElementById("CONTENTS-BUTTON-ON").removeAttribute("disabled");
-        document.getElementById("ROLES-FIELDSET").removeAttribute("disabled");
-    };
+        this.leading = function() {
+            DISPLAY.onPosition(true);
+        };
 
-    this.following = function() {
-        document.getElementById("CONTENTS-BUTTON-OFF").style.display = "block";
-        document.getElementById("CONTENTS-BUTTON-ON").style.display = "none";
-        document
-            .getElementById("CONTENTS-BUTTON-ON")
-            .setAttribute("disabled", true);
-        document.getElementById("ROLES-FIELDSET").setAttribute("disabled", true);
-    };
+        this.following = function() {
+            DISPLAY.onPosition(false);
+        };
 
-    this.stage = function(stage, role_on_play, winners) {
-        switch (stage) {
-            case 0:
-                {
-                    document.getElementById("GAME").style.top = "";
-                    document.getElementById("CONFIGURATION").style.display = "";
-                    document.getElementById("STATUS-HEADER").style.display = "none";
-                    document.getElementById("STATUS-CONTENTS").style.display = "none";
-                    break;
-                }
-            default:
-                {
-                    document.getElementById("GAME").style.top = "0px";
-                    document.getElementById("CONFIGURATION").style.display = "none";
-                    document.getElementById("STATUS-HEADER").style.display = "";
-                    document.getElementById("STATUS-CONTENTS").style.display = "";
-                    break;
-                }
-        }
+        this.stage = DISPLAY.onStage;
 
-        let title = document.getElementById("STATUS-TITLE");
-        let subtitle = document.getElementById("STATUS-SUBTITLE");
-        let description = document.getElementById("STATUS-DESCRIPTION");
+        this.ready = DISPLAY.onReady;
 
-        title.innerText = [
-            "Game hasn't started yet.",
-            "Game is about to start.",
-            "Game has started. Night Stage.",
-            "Game has started. Day Stage.",
-            "Game has started. Day Finished.",
-            "Game has ended."
-        ][stage];
+        this.clock = DISPLAY.forClock;
 
-        subtitle.innerText = [
-            "",
-            "Get ready on your seats!",
-            role_on_play.name + " is awake!",
-            "Talk and discuss!",
-            "Vote now!",
-            "Everyone has voted!"
-        ][stage];
-
-        let ending_description =
-            winners.length == 0 ?
-            "Nobody has won." :
-            "The winners are: " + winners.toString().replace(",", ", ");
-
-        description.innerText = [
-            "",
-            "Cards are being shuffled and dealt.",
-            role_on_play.description,
-            "Everybody will discuss the events happened at night. " +
-            "At the end of the day, everybody will vote to kill a person. " +
-            "If that person is your target, you win.",
-            "Everyone must vote now. " +
-            "Vote the person which you think is the enemy. " +
-            "You have limited time to vote. If you don't vote, your vote will be random.",
-            ending_description
-        ][stage];
-    };
-
-    this.ready = function(ready) {
-        if (ready) {
-            document
-                .getElementById("CONTENTS-BUTTON-ON")
-                .removeAttribute("disabled");
-        } else {
-            document
-                .getElementById("CONTENTS-BUTTON-ON")
-                .setAttribute("disabled", true);
-        }
-    };
-
-    this.clock = function(time) {
-        let clock = document.getElementById("STATUS-TIME");
-        clock.innerText = time.secondsToMinutesAndSeconds();
-    };
-
-    this.chatScroller = CREATE_VERTICAL_SCROLLBAR(
-        document.getElementById("CHAT-SCROLLBAR"),
-        document.getElementById("CHAT-SCROLLRAIL"),
-        document.getElementById("CHAT-FIELD"),
-        document.getElementById("CHAT-SCROLLABLE"),
-        document.getElementById("CHAT-CONTAINER")
-    );
-
-    this.chat = function(messages) {
-        let container = document.getElementById("CHAT-CONTAINER");
-        let field = document.getElementById("CHAT-FIELD");
-
-        let pre_bottom = field.offsetHeight - container.offsetTop - container.offsetHeight;
-
-        messages.forEach(CREATE_MESSAGE);
-
-        let post_bottom = field.offsetHeight - container.offsetTop - container.offsetHeight;
-
-        itself.chatScroller.scrollerUpdate();
-
-        if (pre_bottom >= 0 && post_bottom < 0) {
-            itself.chatScroller.scrollToBottom();
-        }
-    };
-};
-
-function ROLES() {
-    "use strict";
-
-    let container,
-        fieldset,
-        form,
-        scrollbar,
-        scrollrail;
-
-    container = document.getElementById("ROLES");
-    fieldset = document.getElementById("ROLES-FIELDSET");
-    form = document.getElementById("ROLES-FORM");
-
-    scrollbar = document.getElementById("ROLES-SCROLLBAR");
-    scrollrail = document.getElementById("ROLES-SCROLLRAIL");
-
-    this.undisplayed = () => form.children.length == 0;
-
-    this.display = function(role, index, active, subindex, onclick) {
-        CREATE_SELECTABLE_ROLE(
-            form,
-            role,
-            index,
-            active,
-            subindex,
-            onclick
+        this.chatScroller = SCROLLBARS.createVertical(
+            document.getElementById("CHAT-SCROLLBAR"),
+            document.getElementById("CHAT-SCROLLRAIL"),
+            document.getElementById("CHAT-FIELD"),
+            document.getElementById("CHAT-SCROLLABLE"),
+            document.getElementById("CHAT-CONTAINER")
         );
+
+        this.chat = function(messages) {
+            let at_bottom = itself.chatScroller.isAtBottom();
+
+            messages.forEach(FACTORY.messageStructure);
+            itself.chatScroller.scrollerUpdate();
+
+            if (at_bottom) {
+                itself.chatScroller.scrollToBottom();
+            }
+        };
     };
 
-    this.after_display = function() {
-        CREATE_HORIZONTAL_SCROLLBAR(
-            scrollbar,
-            scrollrail,
-            container,
+    function ROLES() {
+        "use strict";
+
+        let container,
             fieldset,
-            form
-        );
+            form,
+            scrollbar,
+            scrollrail;
+
+        container = document.getElementById("ROLES");
+        fieldset = document.getElementById("ROLES-FIELDSET");
+        form = document.getElementById("ROLES-FORM");
+
+        scrollbar = document.getElementById("ROLES-SCROLLBAR");
+        scrollrail = document.getElementById("ROLES-SCROLLRAIL");
+
+        this.undisplayed = () => form.children.length == 0;
+
+        this.display = function(role, index, active, subindex, onclick) {
+            FACTORY.selectableRoleStructure(
+                form,
+                role,
+                index,
+                active,
+                subindex,
+                onclick
+            );
+        };
+
+        this.after_display = function() {
+            SCROLLBARS.createHorizontal(
+                scrollbar,
+                scrollrail,
+                container,
+                fieldset,
+                form
+            );
+        };
+
+        this.update = function(role, index, active, subindex) {
+            document.getElementById(role.name + subindex).checked = active;
+        };
     };
 
-    this.update = function(role, index, active, subindex) {
-        document.getElementById(role.name + subindex).checked = active;
-    };
-};
+    function PLAYERS() {
+        "use strict";
+        this.initialize = function(player, index) {
+            let seat = player_seats[index];
 
-function PLAYERS() {
-    "use strict";
-    this.initialize = function(player, index) {
-        let seat = player_seats[index];
+            seat.style.display = "";
+            seat.children[0].innerText = player.name;
 
-        seat.style.display = "";
-        seat.children[0].innerText = player.name;
+            if (!player.alive) {
+                seat.classList.add("DEAD");
+            }
+        };
 
-        if (!player.alive) {
-            seat.classList.add("DEAD");
-        }
-    };
+        this.position = function(player, index) {
+            let seat = player_seats[index];
+            let card = cards[index];
 
-    this.position = function(player, index) {
-        let seat = player_seats[index];
-        let card = cards[index];
+            if (card.getAttribute("DATA-ANIMATING") == "TRUE") return;
 
-        if (card.getAttribute("DATA-ANIMATING") == "TRUE") return;
+            if (!player.alive) {
+                card.classList.add("DEAD");
+            }
 
-        if (!player.alive) {
-            card.classList.add("DEAD");
-        }
+            card.style.display = "";
+            card.style.left = seat.offsetLeft + "px";
+            card.style.top = seat.offsetTop + "px";
+        };
 
-        card.style.display = "";
-        card.style.left = seat.offsetLeft + "px";
-        card.style.top = seat.offsetTop + "px";
-    };
+        this.display = function(knowledge, index, public_knowledge, stage) {
+            let sprite = card_sprites[index].children[0];
+            let old_sprite_name = sprite.classList.item(1);
 
-    this.display = function(knowledge, index, public_knowledge, stage) {
-        let sprite = card_sprites[index].children[0];
-        let old_sprite_name = sprite.classList.item(1);
+            let new_sprite_name;
 
-        let new_sprite_name;
+            if (knowledge == undefined) {
+                new_sprite_name = "UNKNOWN";
+            } else {
+                new_sprite_name = knowledge[index];
+            }
 
-        if (knowledge == undefined) {
-            new_sprite_name = "UNKNOWN";
-        } else {
-            new_sprite_name = knowledge[index];
-        }
+            if (stage == 5) new_sprite_name = public_knowledge[index];
 
-        if (stage == 5) new_sprite_name = public_knowledge[index];
-
-        if (old_sprite_name != new_sprite_name) {
-            sprite.classList.remove(old_sprite_name);
-            sprite.classList.add(new_sprite_name);
-        }
-    };
-};
-
-function CENTER() {
-    "use strict";
-    this.initialize = function(center, index) {
-        let seat = center_seats[index];
-
-        seat.style.display = "";
-        seat.children[0].innerText = center.name;
+            if (old_sprite_name != new_sprite_name) {
+                sprite.classList.remove(old_sprite_name);
+                sprite.classList.add(new_sprite_name);
+            }
+        };
     };
 
-    this.position = function(center, index) {
-        let seat = center_seats[index];
-        let card = cards[10 + index];
+    function CENTER() {
+        "use strict";
+        this.initialize = function(center, index) {
+            let seat = center_seats[index];
 
-        if (card.getAttribute("DATA-ANIMATING") == "TRUE") return;
+            seat.style.display = "";
+            seat.children[0].innerText = center.name;
+        };
 
-        card.style.display = "";
-        card.style.left = seat.offsetLeft + "px";
-        card.style.top = seat.offsetTop + "px";
+        this.position = function(center, index) {
+            let seat = center_seats[index];
+            let card = cards[10 + index];
+
+            if (card.getAttribute("DATA-ANIMATING") == "TRUE") return;
+
+            card.style.display = "";
+            card.style.left = seat.offsetLeft + "px";
+            card.style.top = seat.offsetTop + "px";
+        };
+
+        this.display = function(knowledge, index, public_knowledge, stage) {
+            let sprite = card_sprites[10 + index].children[0];
+            let old_sprite_name = sprite.classList.item(1);
+
+            let new_sprite_name;
+
+            if (knowledge == undefined) {
+                new_sprite_name = "UNKNOWN";
+            } else {
+                new_sprite_name = knowledge[index];
+            }
+
+            if (stage == 5) new_sprite_name = public_knowledge[index];
+
+            if (old_sprite_name != new_sprite_name) {
+                sprite.classList.remove(old_sprite_name);
+                sprite.classList.add(new_sprite_name);
+            }
+        };
     };
 
-    this.display = function(knowledge, index, public_knowledge, stage) {
-        let sprite = card_sprites[10 + index].children[0];
-        let old_sprite_name = sprite.classList.item(1);
-
-        let new_sprite_name;
-
-        if (knowledge == undefined) {
-            new_sprite_name = "UNKNOWN";
-        } else {
-            new_sprite_name = knowledge[index];
-        }
-
-        if (stage == 5) new_sprite_name = public_knowledge[index];
-
-        if (old_sprite_name != new_sprite_name) {
-            sprite.classList.remove(old_sprite_name);
-            sprite.classList.add(new_sprite_name);
-        }
-    };
-};
-
-
-CLIENT_INIT(new GENERAL(), new ROLES(), new PLAYERS(), new CENTER());
+    CLIENT.INIT(new GENERAL(), new ROLES(), new PLAYERS(), new CENTER());
+})();
