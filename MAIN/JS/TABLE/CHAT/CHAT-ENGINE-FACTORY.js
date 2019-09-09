@@ -89,12 +89,12 @@ const moduleMethods = function(chat, accessor) {
         author.filters.push(filter);
     };
 
-    chat.getMessages = () => JSON.parse(JSON.stringify(itself.messages));
+    chat.getMessages = () => JSON.parse(JSON.stringify(chat.messages));
 
     accessor.newAuthor = chat.newAuthor;
     accessor.newFilter = chat.newFilter;
     accessor.newMessage = chat.newMessage;
-    accesor.addFilterToAuthor = chat.addFilterToAuthor;
+    accessor.addFilterToAuthor = chat.addFilterToAuthor;
     accessor.getMessages = chat.getMessages;
 };
 
