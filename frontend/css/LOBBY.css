@@ -1,0 +1,181 @@
+@import url(./GLOBALS.css);
+
+#LOBBY {
+    background-color: var(--low-primary);
+    bottom: 0;
+    color: var(--achromatic1);
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+#GAME-CREATE {
+    height: 0;
+    overflow: visible;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+}
+
+#LOBBY-FORM-TITLE {
+    background-color: var(--achromatic1);
+    border: 0;
+    color: var(--himid-primary);
+    font-size: 16px;
+    font-weight: 400;
+    height: 30px;
+    letter-spacing: -1px;
+    line-height: 30px;
+    position: absolute;
+    right: 0px;
+    top: 10px;
+    width: 200px;
+    z-index: 2;
+}
+
+#LOBBY-FIELDSET {
+    display: none;
+    background-color: rgba(24, 24, 24, 0.5);
+    border: 0;
+    bottom: 0;
+    height: 100vh;
+    left: 0;
+    margin: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
+}
+
+#LOBBY-FORM {
+    background-color: var(--achromatic1);
+    color: var(--himid-primary);
+    left: 300px;
+    padding: 0;
+    width: 600px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#LOBBY-HEADER {
+    color: var(--hi-primary);
+    background-color: var(--achromatic2);
+    font-size: 14px;
+    font-weight: 700;
+    height: 30px;
+    line-height: 30px;
+    margin: 0;
+    text-align: center; 
+}
+
+#INPUT-PREFIX {
+    border-bottom: 1px solid var(--himid-primary);
+    display: block;
+    float: left;
+    font-size: 14px;
+    font-style: italic;
+    font-weight: 400;
+    height: 20px;
+    letter-spacing: -1px;
+    line-height: 20px;
+    margin: 10px 0;
+    margin-left: 120px;
+    padding: 0 20px;
+    text-align: right;
+    width: 160px;
+}
+
+#LOBBY-FORM-INPUT {
+    background-color: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--achromatic3);
+    color: #000;
+    display: block;
+    float: left;
+    font-size: 14px;
+    font-style: italic;
+    font-weight: 200;
+    height: 20px;
+    margin: 10px 0px;
+    padding: 0px 20px;
+    width: 320px;
+}
+
+#LOBBY-FORM-SUBMIT {
+    background-color: var(--hi-primary);
+    border: 0;
+    color: var(--achromatic1);
+    float: right;
+    font-size: 14px;
+    font-weight: 700;
+    height: 30px;
+    line-height: 16px;
+    margin: 0;
+    width: 240px;
+}
+
+#LOBBY-ROOMS {
+    padding-top: 50px;
+    left: 50%;
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    transform: translate(-50%, 0%);
+    width: 1200px;
+    z-index: 1;
+}
+
+.ROOM {
+    background-color: var(--achromatic1);
+    color: var(--himid-primary);
+    float: left;
+    margin-bottom: 20px;
+    width: 590px;
+}
+
+.ROOM:nth-child(odd) {
+    margin-right: 10px;
+}
+
+.ROOM:nth-child(even) {
+    margin-left: 10px;
+}
+
+.ROOM-HEADER {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 14px;
+}
+
+.ROOM-HEADER span {
+    display: block;
+    float: left;
+    height: 20px;
+    padding: 3px 5px;      
+}
+
+.ROOM-HEADER span:nth-child(1) {
+    border-bottom: 1px solid #aaa;
+    width: 60%;
+}
+
+.ROOM-HEADER span:nth-child(2) {
+    border-bottom: 1px solid var(--hi-primary);
+    color: var(--hi-primary);
+    text-align: center;
+    width: 10%;
+}
+
+.ROOM-HEADER span:nth-child(3) {
+    background-color: var(--himid-primary);
+    color: var(--achromatic1);
+    text-align: center;
+    width: 30%;
+}
+
+.ROOM-CONTENT {
+    height: 60px;
+}

@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<HTML>
+
+<HEAD>
+	<LINK REL="stylesheet" TYPE="text/css" HREF="/css/LOBBY.css" />
+    <SCRIPT TYPE="text/javascript" SRC="/js/global/RELOAD.js"></SCRIPT>
+</HEAD>
+
+<BODY>
+    <DIV ID="LOBBY">
+        <DIV ID="GAME-CREATE">
+            <BUTTON ID="LOBBY-FORM-TITLE" onclick="DISPLAY_FIELDSET();">
+                Create New Game
+            </BUTTON>
+            <FIELDSET ID="LOBBY-FIELDSET">
+                <FORM METHOD="POST" ID="LOBBY-FORM">
+                    <H1 ID="LOBBY-HEADER">New Game Settings</H1>
+                    <SPAN ID="INPUT-PREFIX">Game Name</SPAN>
+                    <INPUT ID="LOBBY-FORM-INPUT" TYPE="text" NAME="title" PLACEHOLDER="New Game" MAX="30">
+                    <INPUT ID="LOBBY-FORM-SUBMIT" TYPE="SUBMIT" VALUE="Create">
+                </FORM>
+            </FIELDSET>
+        </DIV>
+        <DIV ID="LOBBY-ROOMS">
+        </DIV>
+    </DIV>
+    <SCRIPT TYPE="text/javascript" SRC="/JS/global/PROTOTYPES.js"></SCRIPT>
+    <SCRIPT TYPE="text/javascript" SRC="/JS/global/SOCKET.js"></SCRIPT>
+    <SCRIPT TYPE="text/javascript" SRC="/JS/global/SCROLLBARS.js"></SCRIPT>
+    <SCRIPT>
+    const DISPLAY_FIELDSET = function() {
+        "use strict";
+
+        let fieldset = document.getElementById("LOBBY-FIELDSET");
+        let button = document.getElementById("LOBBY-FORM-TITLE");
+        let style = getComputedStyle(fieldset);
+
+        if (style.display === "none") {
+            fieldset.style.display = "block";
+            button.innerHTML = "Go Back";
+        } else {
+            fieldset.style.display = "none";
+            button.innerHTML = "Create New Game";
+        }
+    }
+
+    const CREATE_TABLE = function(table) {
+        "use strict";
+    	let container, header, title, players, stage, content;
+
+    	container = document.createElement("a");
+    	header = document.createElement("div");
+
+    	title = document.createElement("span");
+    	players = document.createElement("span");
+    	stage = document.createElement("span");
+
+    	content = document.createElement("div");
+
+    	container.classList.add("ROOM");
+
+    	header.classList.add("ROOM-HEADER");
+    	content.classList.add("ROOM-CONTENT");
+
+    	container.classList.add([
+    		"SETUP",
+    		"STARTING",
+    		"NIGHT",
+    		"DAY",
+    		"VOTING",
+    		"FINISHED"
+  		][table.stage]);
+
+    	title.innerHTML = table.id;
+    	players.innerHTML = table.player_list.length + "/" +  table.player_max;
+
+    	stage.innerHTML = [
+            "In Setup",
+            "Starting",
+            "Night",
+            "Day",
+            "Voting",
+            "Finished"
+        ][table.stage];
+
+        container.href = table.url;
+
+    	header.append(title, players, stage);
+    	container.append(header, content);
+
+    	document.getElementById("LOBBY-ROOMS").append(container);
+    }
+
+    let socket = io();
+
+    socket
+        .on("update-start", function() {
+            socket.emit("update-process");
+        })
+        .on("update-tables", function(tables) {
+            tables.forEach(CREATE_TABLE);
+            console.log(tables);
+        })
+        .emit("ready");
+    </SCRIPT>
+</BODY>
+
+</HTML>
